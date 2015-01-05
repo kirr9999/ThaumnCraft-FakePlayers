@@ -42,7 +42,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 {
 	private static final Block[] isEffective = new Block[] { Blocks.grass, Blocks.dirt, Blocks.sand, Blocks.gravel, Blocks.snow_layer, Blocks.snow, Blocks.clay, Blocks.farmland, Blocks.soul_sand, Blocks.mycelium };
 	public IIcon icon;
-	private int side = 0;
+	int side = 0;
 
 	public ItemElementalShovel(ToolMaterial enumtoolmaterial)
 	{
@@ -54,12 +54,6 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 	public Set<String> getToolClasses(ItemStack stack)
 	{
 		return ImmutableSet.of("shovel");
-	}
-
-	@Override
-	public int getHarvestLevel(ItemStack stack, String toolClass)
-	{
-		return 3;
 	}
 
 	@Override
@@ -95,7 +89,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		int ym = ForgeDirection.getOrientation(side).offsetY;
 		int zm = ForgeDirection.getOrientation(side).offsetZ;
 		Block block = world.getBlock(x, y, z);
-		int meta = world.getBlockMetadata(x, y, z);
+		int md = world.getBlockMetadata(x, y, z);
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (te == null)
 		{
@@ -169,10 +163,10 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 						yy = bb;
 					}
 
-					Block block1 = world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm);
-					if (world.isAirBlock(x + xx + xm, y + yy + ym, z + zz + zm) || block1 == Blocks.vine || block1 == Blocks.tallgrass || block1.getMaterial() == Material.water || block1 == Blocks.deadbush || block1.isReplaceable(world, x + xx + xm, y + yy + ym, z + zz + zm))
+					Block var24 = world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm);
+					if (world.isAirBlock(x + xx + xm, y + yy + ym, z + zz + zm) || var24 == Blocks.vine || var24 == Blocks.tallgrass || var24.getMaterial() == Material.water || var24 == Blocks.deadbush || var24.isReplaceable(world, x + xx + xm, y + yy + ym, z + zz + zm))
 					{
-						if (!player.capabilities.isCreativeMode && !InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(block), meta))
+						if (!player.capabilities.isCreativeMode && !InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(block), md))
 						{
 							if (block == Blocks.grass && (player.capabilities.isCreativeMode || InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(Blocks.dirt), 0)))
 							{
@@ -201,7 +195,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 							if (!event.isCanceled())
 							{
 								world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), block.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
-								world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, block, meta, 3);
+								world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, block, md, 3);
 								itemstack.damageItem(1, player);
 								Thaumcraft.proxy.blockSparkle(world, x + xx + xm, y + yy + ym, z + zz + zm, 8401408, 4);
 								player.swingItem();
@@ -284,10 +278,10 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 								if (block.getBlockHardness(world, x + xx, y + yy, z + zz) >= 0.0F && (ForgeHooks.isToolEffective(stack, block, md) || this.isEffectiveAgainst(block)))
 								{
 									// TODO gamerforEA code start
-									BlockEvent.BreakEvent breakEvent = new BlockEvent.BreakEvent(x + xx, y + yy, z + zz, world, block, md, (EntityPlayer) ent);
-									MinecraftForge.EVENT_BUS.post(breakEvent);
+									BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x + xx, y + yy, z + zz, world, block, md, (EntityPlayer) ent);
+									MinecraftForge.EVENT_BUS.post(event);
 									// TODO gamerforEA code end
-									if (!breakEvent.isCanceled())
+									if (!event.isCanceled())
 									{
 										stack.damageItem(1, ent);
 										BlockUtils.harvestBlock(world, (EntityPlayer) ent, x + xx, y + yy, z + zz, true, 3);
@@ -306,10 +300,10 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 	@Override
 	public ArrayList<BlockCoordinates> getArchitectBlocks(ItemStack focusstack, World world, int x, int y, int z, int side, EntityPlayer player)
 	{
-		ArrayList<BlockCoordinates> list = new ArrayList<BlockCoordinates>();
+		ArrayList b = new ArrayList();
 		if (!player.isSneaking())
 		{
-			return list;
+			return b;
 		}
 		else
 		{
@@ -387,18 +381,19 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 						yy = bb;
 					}
 
-					Block block = world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm);
-					if (world.isAirBlock(x + xx + xm, y + yy + ym, z + zz + zm) || block == Blocks.vine || block == Blocks.tallgrass || block.getMaterial() == Material.water || block == Blocks.deadbush || block.isReplaceable(world, x + xx + xm, y + yy + ym, z + zz + zm))
+					Block var19 = world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm);
+					if (world.isAirBlock(x + xx + xm, y + yy + ym, z + zz + zm) || var19 == Blocks.vine || var19 == Blocks.tallgrass || var19.getMaterial() == Material.water || var19 == Blocks.deadbush || var19.isReplaceable(world, x + xx + xm, y + yy + ym, z + zz + zm))
 					{
-						list.add(new BlockCoordinates(x + xx + xm, y + yy + ym, z + zz + zm));
+						b.add(new BlockCoordinates(x + xx + xm, y + yy + ym, z + zz + zm));
 					}
 				}
 			}
 
-			return list;
+			return b;
 		}
 	}
 
+	@Override
 	public boolean showAxis(ItemStack stack, World world, EntityPlayer player, int side, IArchitect.EnumAxis axis)
 	{
 		return false;
@@ -420,5 +415,6 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		{
 			stack.stackTagCompound.setByte("or", (byte) (o % 3));
 		}
+
 	}
 }

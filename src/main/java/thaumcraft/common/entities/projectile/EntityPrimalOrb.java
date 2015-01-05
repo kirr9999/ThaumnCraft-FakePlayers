@@ -175,7 +175,7 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 				var7 = 10.0F;
 			}
 
-			this.worldObj.createExplosion(null, this.posX, this.posY, this.posZ, var8, true);
+			this.worldObj.createExplosion((Entity) null, this.posX, this.posY, this.posZ, var8, true);
 			if (!this.seeker && (float) this.rand.nextInt(100) <= var7)
 			{
 				if (this.rand.nextBoolean())

@@ -103,27 +103,27 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 		}
 		else if (mop.typeOfHit == MovingObjectType.BLOCK)
 		{
-			ForgeDirection orient = ForgeDirection.getOrientation(mop.sideHit);
-			if (orient.offsetZ != 0)
+			ForgeDirection var10 = ForgeDirection.getOrientation(mop.sideHit);
+			if (var10.offsetZ != 0)
 			{
 				this.motionZ *= -1.0D;
 			}
 
-			if (orient.offsetX != 0)
+			if (var10.offsetX != 0)
 			{
 				this.motionX *= -1.0D;
 			}
 
-			if (orient.offsetY != 0)
+			if (var10.offsetY != 0)
 			{
 				this.motionY *= -0.9D;
 			}
 
-			Block block = this.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
+			Block var12 = this.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
 
 			try
 			{
-				this.playSound(block.stepSound.getBreakSound(), 0.3F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+				this.playSound(var12.stepSound.getBreakSound(), 0.3F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 			}
 			catch (Exception e)
 			{
@@ -131,7 +131,7 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 
 			for (a1 = 0; (float) a1 < this.getDamage(); ++a1)
 			{
-				this.worldObj.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_" + this.worldObj.getBlockMetadata(mop.blockX, mop.blockY, mop.blockZ), this.posX, this.posY, this.posZ, 4.0D * ((double) this.rand.nextFloat() - 0.5D), 0.5D, ((double) this.rand.nextFloat() - 0.5D) * 4.0D);
+				this.worldObj.spawnParticle("blockcrack_" + Block.getIdFromBlock(var12) + "_" + this.worldObj.getBlockMetadata(mop.blockX, mop.blockY, mop.blockZ), this.posX, this.posY, this.posZ, 4.0D * ((double) this.rand.nextFloat() - 0.5D), 0.5D, ((double) this.rand.nextFloat() - 0.5D) * 4.0D);
 			}
 		}
 
@@ -145,8 +145,8 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 		this.setBeenAttacked();
 		if (!this.worldObj.isRemote && mop.entityHit != null)
 		{
-			double mx = mop.entityHit.motionX;
-			double my = mop.entityHit.motionY;
+			double var13 = mop.entityHit.motionX;
+			double var14 = mop.entityHit.motionY;
 			double mz = mop.entityHit.motionZ;
 			mop.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), this.getDamage());
 			if (mop.entityHit instanceof EntityLivingBase && this.getFrosty() > 0)
@@ -159,8 +159,8 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 				mop.entityHit.hurtResistantTime = 0;
 				this.setDead();
 				this.playSound(Blocks.ice.stepSound.getBreakSound(), 0.3F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-				mop.entityHit.motionX = mx + (mop.entityHit.motionX - mx) / 10.0D;
-				mop.entityHit.motionY = my + (mop.entityHit.motionY - my) / 10.0D;
+				mop.entityHit.motionX = var13 + (mop.entityHit.motionX - var13) / 10.0D;
+				mop.entityHit.motionY = var14 + (mop.entityHit.motionY - var14) / 10.0D;
 				mop.entityHit.motionZ = mz + (mop.entityHit.motionZ - mz) / 10.0D;
 			}
 		}
@@ -181,21 +181,21 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 	public void onUpdate()
 	{
 		super.onUpdate();
-		float f;
+		float var20;
 		if (this.worldObj.isRemote && this.getFrosty() > 0)
 		{
-			f = this.getDamage() / 10.0F;
+			var20 = this.getDamage() / 10.0F;
 
 			for (int a = 0; a < this.getFrosty(); ++a)
 			{
-				Thaumcraft.proxy.sparkle((float) this.posX - f + this.rand.nextFloat() * f * 2.0F, (float) this.posY - f + this.rand.nextFloat() * f * 2.0F, (float) this.posZ - f + this.rand.nextFloat() * f * 2.0F, 0.4F, 6, 0.005F);
+				Thaumcraft.proxy.sparkle((float) this.posX - var20 + this.rand.nextFloat() * var20 * 2.0F, (float) this.posY - var20 + this.rand.nextFloat() * var20 * 2.0F, (float) this.posZ - var20 + this.rand.nextFloat() * var20 * 2.0F, 0.4F, 6, 0.005F);
 			}
 		}
 
-		f = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
+		var20 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
 		this.rotationYaw = (float) (Math.atan2(this.motionX, this.motionZ) * 180.0D / 3.141592653589793D);
 
-		for (this.rotationPitch = (float) (Math.atan2(this.motionY, (double) f) * 180.0D / 3.141592653589793D); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
+		for (this.rotationPitch = (float) (Math.atan2(this.motionY, (double) var20) * 180.0D / 3.141592653589793D); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
 		{
 		}
 

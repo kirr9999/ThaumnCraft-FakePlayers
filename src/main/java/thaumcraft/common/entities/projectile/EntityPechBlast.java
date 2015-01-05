@@ -81,27 +81,30 @@ public class EntityPechBlast extends EntityThrowable
 	{
 		if (this.worldObj.isRemote)
 		{
-			for (int i = 0; i < 9; ++i)
+			for (int list = 0; list < 9; ++list)
 			{
-				float f1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				float f2 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				float f3 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) f1, this.posY + (double) f2, this.posZ + (double) f3, this.posX + (double) (f1 * 8.0F), this.posY + (double) (f2 * 8.0F), this.posZ + (double) (f3 * 8.0F), 0.3F, 3, true, 0.02F);
-				f1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				f2 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				f3 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) f1, this.posY + (double) f2, this.posZ + (double) f3, this.posX + (double) (f1 * 8.0F), this.posY + (double) (f2 * 8.0F), this.posZ + (double) (f3 * 8.0F), 0.3F, 2, true, 0.02F);
-				f1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				f2 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				f3 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) f1, this.posY + (double) f2, this.posZ + (double) f3, this.posX + (double) (f1 * 8.0F), this.posY + (double) (f2 * 8.0F), this.posZ + (double) (f3 * 8.0F), 0.3F, 0, true, 0.02F);
+				float i = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				float entity1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				float e = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) i, this.posY + (double) entity1, this.posZ + (double) e, this.posX + (double) (i * 8.0F), this.posY + (double) (entity1 * 8.0F), this.posZ + (double) (e * 8.0F), 0.3F, 3, true, 0.02F);
+				i = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				entity1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				e = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) i, this.posY + (double) entity1, this.posZ + (double) e, this.posX + (double) (i * 8.0F), this.posY + (double) (entity1 * 8.0F), this.posZ + (double) (e * 8.0F), 0.3F, 2, true, 0.02F);
+				i = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				entity1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				e = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) i, this.posY + (double) entity1, this.posZ + (double) e, this.posX + (double) (i * 8.0F), this.posY + (double) (entity1 * 8.0F), this.posZ + (double) (e * 8.0F), 0.3F, 0, true, 0.02F);
 			}
 		}
 
 		if (!this.worldObj.isRemote)
 		{
-			for (Entity entity : (List<Entity>) this.worldObj.getEntitiesWithinAABBExcludingEntity(this.getThrower(), this.boundingBox.expand(2.0D, 2.0D, 2.0D)))
+			List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this.getThrower(), this.boundingBox.expand(2.0D, 2.0D, 2.0D));
+
+			for (int i = 0; i < list.size(); ++i)
 			{
+				Entity entity = list.get(i);
 				// TODO gamerforEA code start
 				if (entity instanceof EntityPlayer) continue;
 				// TODO gamerforEA code end
@@ -132,7 +135,7 @@ public class EntityPechBlast extends EntityThrowable
 							}
 						}
 					}
-					catch (Exception var6)
+					catch (Exception e)
 					{
 					}
 				}

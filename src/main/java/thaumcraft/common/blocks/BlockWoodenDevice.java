@@ -106,7 +106,6 @@ public class BlockWoodenDevice extends BlockContainer
 			banner.stackTagCompound.setByte("color", (byte) a);
 			par3List.add(banner);
 		}
-
 	}
 
 	@Override
@@ -569,7 +568,7 @@ public class BlockWoodenDevice extends BlockContainer
 			((TileOwned) tile).owner = ((EntityPlayer) p).getCommandSenderName();
 			tile.markDirty();
 		}
-		
+
 		// TODO gamerforEA code start
 		if (tile != null && tile instanceof TileArcaneBore && p instanceof EntityPlayer)
 		{
@@ -616,7 +615,7 @@ public class BlockWoodenDevice extends BlockContainer
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World var1, int md)
+	public TileEntity createNewTileEntity(World world, int metadata)
 	{
 		return null;
 	}
@@ -671,6 +670,7 @@ public class BlockWoodenDevice extends BlockContainer
 			{
 				this.setStateIfMobInteractsWithPlate(par1World, par2, par3, par4);
 			}
+
 		}
 	}
 

@@ -78,10 +78,10 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 				for (md = -1; md <= 1; ++md)
 				{
 					// TODO gamerforEA code start
-					BlockEvent.BreakEvent breakEvent = new BlockEvent.BreakEvent(x + bi, y, z + md, world, world.getBlock(x + bi, y, z + md), md, player);
-					MinecraftForge.EVENT_BUS.post(breakEvent);
+					BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x + bi, y, z + md, world, world.getBlock(x + bi, y, z + md), md, player);
+					MinecraftForge.EVENT_BUS.post(event);
 					// TODO gamerforEA code end
-					if (!breakEvent.isCanceled())
+					if (!event.isCanceled())
 					{
 						if (super.onItemUse(stack, player, world, x + bi, y, z + md, par7, par8, par9, par10))
 						{

@@ -40,7 +40,7 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 	@Override
 	protected float func_70182_d()
 	{
-		return 1.33F;
+		return 1.0F;
 	}
 
 	@Override
@@ -103,7 +103,6 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 				if (!mop.entityHit.isImmuneToFire() && mop.entityHit.attackEntityFrom((new EntityDamageSourceIndirect("fireball", this, this.getThrower())).setFireDamage(), this.damage))
 				{
 					mop.entityHit.setFire(3 + this.firey);
-					this.setDead();
 				}
 			}
 			else if (this.rand.nextFloat() < 0.025F * (float) this.firey)
@@ -136,10 +135,10 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 				{
 					this.worldObj.setBlock(i, j, k, Blocks.fire);
 				}
-
-				this.setDead();
 			}
 		}
+
+		this.setDead();
 	}
 
 	@Override
