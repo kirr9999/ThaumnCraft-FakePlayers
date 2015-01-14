@@ -127,6 +127,7 @@ public class AIEssentiaGather extends EntityAIBase
 			MinecraftForge.EVENT_BUS.post(event);
 			if (event.isCanceled()) return;
 			// TODO gamerforEA code end
+
 			if (te instanceof TileAlembic || te instanceof TileJarFillable)
 			{
 				facing = ForgeDirection.UP;

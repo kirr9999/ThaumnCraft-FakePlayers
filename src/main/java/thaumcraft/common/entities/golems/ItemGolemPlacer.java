@@ -240,23 +240,23 @@ public class ItemGolemPlacer extends Item
 
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("upgrades"))
 			{
-				int upgrade = golem.upgrades.length;
+				int deco = golem.upgrades.length;
 				golem.upgrades = stack.stackTagCompound.getByteArray("upgrades");
-				if (upgrade != golem.upgrades.length)
+				if (deco != golem.upgrades.length)
 				{
-					byte[] a = new byte[upgrade];
+					byte[] a = new byte[deco];
 
-					int i;
-					for (i = 0; i < upgrade; ++i)
+					int nbttaglist2;
+					for (nbttaglist2 = 0; nbttaglist2 < deco; ++nbttaglist2)
 					{
-						a[i] = -1;
+						a[nbttaglist2] = -1;
 					}
 
-					for (i = 0; i < golem.upgrades.length; ++i)
+					for (nbttaglist2 = 0; nbttaglist2 < golem.upgrades.length; ++nbttaglist2)
 					{
-						if (i < upgrade)
+						if (nbttaglist2 < deco)
 						{
-							a[i] = golem.upgrades[i];
+							a[nbttaglist2] = golem.upgrades[nbttaglist2];
 						}
 					}
 
@@ -264,25 +264,27 @@ public class ItemGolemPlacer extends Item
 				}
 			}
 
-			String deco = "";
+			String var19 = "";
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("deco"))
 			{
-				deco = stack.stackTagCompound.getString("deco");
-				golem.decoration = deco;
+				var19 = stack.stackTagCompound.getString("deco");
+				golem.decoration = var19;
 			}
 
 			golem.setup(side);
 			par0World.spawnEntityInWorld(golem);
-			golem.setGolemDecoration(deco);
+			golem.setGolemDecoration(var19);
 			golem.setOwner(player.getCommandSenderName());
 			golem.setMarkers(ItemGolemBell.getMarkers(stack));
-			int j = 0;
+			int var20 = 0;
+			byte[] var21 = golem.upgrades;
+			int len$ = var21.length;
 
-			for (int i = 0; i < golem.upgrades.length; ++i)
+			for (int i$ = 0; i$ < len$; ++i$)
 			{
-				byte b = golem.upgrades[i];
-				golem.setUpgrade(j, b);
-				++j;
+				byte b = var21[i$];
+				golem.setUpgrade(var20, b);
+				++var20;
 			}
 
 			if (stack.hasDisplayName())
@@ -293,8 +295,8 @@ public class ItemGolemPlacer extends Item
 
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("Inventory"))
 			{
-				NBTTagList nbtList = stack.stackTagCompound.getTagList("Inventory", 10);
-				golem.inventory.readFromNBT(nbtList);
+				NBTTagList var22 = stack.stackTagCompound.getTagList("Inventory", 10);
+				golem.inventory.readFromNBT(var22);
 			}
 
 			// TODO gamerforEA code start

@@ -212,7 +212,6 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 				}
 			}
 		}
-
 	}
 
 	@Override

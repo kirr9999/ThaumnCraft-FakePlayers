@@ -615,7 +615,7 @@ public class BlockWoodenDevice extends BlockContainer
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata)
+	public TileEntity createNewTileEntity(World var1, int md)
 	{
 		return null;
 	}
@@ -670,7 +670,6 @@ public class BlockWoodenDevice extends BlockContainer
 			{
 				this.setStateIfMobInteractsWithPlate(par1World, par2, par3, par4);
 			}
-
 		}
 	}
 

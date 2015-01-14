@@ -23,6 +23,7 @@ import thaumcraft.client.fx.bolt.FXLightningBolt;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.entities.projectile.EntityShockOrb;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.items.wands.WandManager;
 import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.fx.PacketFXZap;
 import thaumcraft.common.lib.utils.BlockUtils;
@@ -34,11 +35,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemFocusShock extends ItemFocusBasic
 {
-	private static final AspectList costBase = new AspectList().add(Aspect.AIR, 25);
-	private static final AspectList costChain = new AspectList().add(Aspect.AIR, 40).add(Aspect.WATER, 10);
-	private static final AspectList costGround = new AspectList().add(Aspect.AIR, 75).add(Aspect.EARTH, 25);
-	public static FocusUpgradeType chainlightning = new FocusUpgradeType(17, new ResourceLocation("thaumcraft", "textures/foci/chainlightning.png"), "focus.upgrade.chainlightning.name", "focus.upgrade.chainlightning.text", new AspectList().add(Aspect.WEATHER, 1));
-	public static FocusUpgradeType earthshock = new FocusUpgradeType(18, new ResourceLocation("thaumcraft", "textures/foci/earthshock.png"), "focus.upgrade.earthshock.name", "focus.upgrade.earthshock.text", new AspectList().add(Aspect.WEATHER, 1));
+	private static final AspectList costBase;
+	private static final AspectList costChain;
+	private static final AspectList costGround;
+	public static FocusUpgradeType chainlightning;
+	public static FocusUpgradeType earthshock;
 
 	public ItemFocusShock()
 	{
@@ -134,6 +135,7 @@ public class ItemFocusShock extends ItemFocusBasic
 		else
 		{
 			p.setItemInUse(itemstack, Integer.MAX_VALUE);
+			WandManager.setCooldown(p, -1);
 		}
 
 		return itemstack;
@@ -241,6 +243,7 @@ public class ItemFocusShock extends ItemFocusBasic
 					}
 				}
 			}
+
 		}
 	}
 
@@ -268,5 +271,14 @@ public class ItemFocusShock extends ItemFocusBasic
 			default:
 				return null;
 		}
+	}
+
+	static
+	{
+		costBase = (new AspectList()).add(Aspect.AIR, 25);
+		costChain = (new AspectList()).add(Aspect.AIR, 40).add(Aspect.WATER, 10);
+		costGround = (new AspectList()).add(Aspect.AIR, 75).add(Aspect.EARTH, 25);
+		chainlightning = new FocusUpgradeType(17, new ResourceLocation("thaumcraft", "textures/foci/chainlightning.png"), "focus.upgrade.chainlightning.name", "focus.upgrade.chainlightning.text", (new AspectList()).add(Aspect.WEATHER, 1));
+		earthshock = new FocusUpgradeType(18, new ResourceLocation("thaumcraft", "textures/foci/earthshock.png"), "focus.upgrade.earthshock.name", "focus.upgrade.earthshock.text", (new AspectList()).add(Aspect.WEATHER, 1));
 	}
 }

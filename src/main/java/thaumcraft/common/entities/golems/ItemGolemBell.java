@@ -76,20 +76,20 @@ public class ItemGolemBell extends Item
 
 	public static ArrayList<Marker> getMarkers(ItemStack stack)
 	{
-		ArrayList<Marker> markers = new ArrayList();
+		ArrayList markers = new ArrayList();
 		if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("markers"))
 		{
 			NBTTagList tl = stack.stackTagCompound.getTagList("markers", 10);
 
 			for (int i = 0; i < tl.tagCount(); ++i)
 			{
-				NBTTagCompound nbt = tl.getCompoundTagAt(i);
-				int x = nbt.getInteger("x");
-				int y = nbt.getInteger("y");
-				int z = nbt.getInteger("z");
-				int dim = nbt.getInteger("dim");
-				byte s = nbt.getByte("side");
-				byte c = nbt.getByte("color");
+				NBTTagCompound nbttagcompound1 = tl.getCompoundTagAt(i);
+				int x = nbttagcompound1.getInteger("x");
+				int y = nbttagcompound1.getInteger("y");
+				int z = nbttagcompound1.getInteger("z");
+				int dim = nbttagcompound1.getInteger("dim");
+				byte s = nbttagcompound1.getByte("side");
+				byte c = nbttagcompound1.getByte("color");
 				markers.add(new Marker(x, y, z, (byte) dim, s, c));
 			}
 		}
@@ -100,10 +100,10 @@ public class ItemGolemBell extends Item
 	public static void resetMarkers(ItemStack stack, World world, EntityPlayer player)
 	{
 		Entity golem = null;
-		int id = getGolemId(stack);
-		if (id > -1)
+		int gid = getGolemId(stack);
+		if (gid > -1)
 		{
-			golem = world.getEntityByID(id);
+			golem = world.getEntityByID(gid);
 			if (golem != null && golem instanceof EntityGolemBase)
 			{
 				stack.setTagInfo("markers", new NBTTagList());
@@ -116,12 +116,12 @@ public class ItemGolemBell extends Item
 	public static void changeMarkers(ItemStack stack, EntityPlayer player, World world, int par4, int par5, int par6, int side)
 	{
 		Entity golem = null;
-		ArrayList<Marker> markers = getMarkers(stack);
+		ArrayList markers = getMarkers(stack);
 		boolean markMultipleColors = false;
-		int id = getGolemId(stack);
-		if (id > -1)
+		int gid = getGolemId(stack);
+		if (gid > -1)
 		{
-			golem = world.getEntityByID(id);
+			golem = world.getEntityByID(gid);
 			if (golem != null && golem instanceof EntityGolemBase && ((EntityGolemBase) golem).getUpgradeAmount(4) > 0)
 			{
 				markMultipleColors = true;
@@ -137,10 +137,10 @@ public class ItemGolemBell extends Item
 		}
 		else
 		{
-			for (int i = -1; i < 16; ++i)
+			for (int tl = -1; tl < 16; ++tl)
 			{
-				index = markers.indexOf(new Marker(par4, par5, par6, world.provider.dimensionId, (byte) side, (byte) i));
-				color = i;
+				index = markers.indexOf(new Marker(par4, par5, par6, world.provider.dimensionId, (byte) side, (byte) tl));
+				color = tl;
 				if (index != -1)
 				{
 					break;
@@ -160,17 +160,17 @@ public class ItemGolemBell extends Item
 					++count;
 					if (world.isRemote)
 					{
-						String s = StatCollector.translateToLocal("tc.markerchange");
+						String var18 = StatCollector.translateToLocal("tc.markerchange");
 						if (color > -1)
 						{
-							s = s.replaceAll("%n", UtilsFX.colorNames[color]);
+							var18 = var18.replaceAll("%n", UtilsFX.colorNames[color]);
 						}
 						else
 						{
-							s = StatCollector.translateToLocal("tc.markerchangeany");
+							var18 = StatCollector.translateToLocal("tc.markerchangeany");
 						}
 
-						PlayerNotifications.addNotification(s);
+						PlayerNotifications.addNotification(var18);
 					}
 				}
 			}
@@ -182,22 +182,24 @@ public class ItemGolemBell extends Item
 
 		if (count != markers.size())
 		{
-			NBTTagList nbtList = new NBTTagList();
-			
-			for (Marker marker : markers)
+			NBTTagList var19 = new NBTTagList();
+			Iterator i$ = markers.iterator();
+
+			while (i$.hasNext())
 			{
-				NBTTagCompound nbt = new NBTTagCompound();
-				nbt.setInteger("x", marker.x);
-				nbt.setInteger("y", marker.y);
-				nbt.setInteger("z", marker.z);
-				nbt.setInteger("dim", marker.dim);
-				nbt.setByte("side", marker.side);
-				nbt.setByte("color", marker.color);
-				nbtList.appendTag(nbt);
+				Marker l = (Marker) i$.next();
+				NBTTagCompound nbtc = new NBTTagCompound();
+				nbtc.setInteger("x", l.x);
+				nbtc.setInteger("y", l.y);
+				nbtc.setInteger("z", l.z);
+				nbtc.setInteger("dim", l.dim);
+				nbtc.setByte("side", l.side);
+				nbtc.setByte("color", l.color);
+				var19.appendTag(nbtc);
 			}
 
-			stack.setTagInfo("markers", nbtList);
-			if (id > -1)
+			stack.setTagInfo("markers", var19);
+			if (gid > -1)
 			{
 				if (golem != null && golem instanceof EntityGolemBase)
 				{
@@ -221,19 +223,19 @@ public class ItemGolemBell extends Item
 	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int par4, int par5, int par6, int side, float par8, float par9, float par10)
 	{
-		MovingObjectPosition mop = this.getMovingObjectPositionFromPlayer(world, player, true);
-		if (mop == null)
+		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
+		if (movingobjectposition == null)
 		{
 			return true;
 		}
 		else
 		{
-			if (mop.typeOfHit == MovingObjectType.BLOCK)
+			if (movingobjectposition.typeOfHit == MovingObjectType.BLOCK)
 			{
-				int x = mop.blockX;
-				int y = mop.blockY;
-				int z = mop.blockZ;
-				changeMarkers(stack, player, world, x, y, z, mop.sideHit);
+				int i = movingobjectposition.blockX;
+				int j = movingobjectposition.blockY;
+				int k = movingobjectposition.blockZ;
+				changeMarkers(stack, player, world, i, j, k, movingobjectposition.sideHit);
 			}
 
 			return !world.isRemote;
@@ -268,22 +270,24 @@ public class ItemGolemBell extends Item
 			}
 			else
 			{
-				ArrayList<Marker> markers = ((EntityGolemBase) target).getMarkers();
-				NBTTagList nbtList = new NBTTagList();
-				
-				for (Marker marker : markers)
+				ArrayList markers = ((EntityGolemBase) target).getMarkers();
+				NBTTagList tl = new NBTTagList();
+				Iterator i$ = markers.iterator();
+
+				while (i$.hasNext())
 				{
-					NBTTagCompound nbt = new NBTTagCompound();
-					nbt.setInteger("x", marker.x);
-					nbt.setInteger("y", marker.y);
-					nbt.setInteger("z", marker.z);
-					nbt.setInteger("dim", marker.dim);
-					nbt.setByte("side", marker.side);
-					nbt.setByte("color", marker.color);
-					nbtList.appendTag(nbt);
+					Marker l = (Marker) i$.next();
+					NBTTagCompound nbtc = new NBTTagCompound();
+					nbtc.setInteger("x", l.x);
+					nbtc.setInteger("y", l.y);
+					nbtc.setInteger("z", l.z);
+					nbtc.setInteger("dim", l.dim);
+					nbtc.setByte("side", l.side);
+					nbtc.setByte("color", l.color);
+					tl.appendTag(nbtc);
 				}
 
-				stack.setTagInfo("markers", nbtList);
+				stack.setTagInfo("markers", tl);
 				stack.getTagCompound().setInteger("golemid", target.getEntityId());
 				stack.getTagCompound().setInteger("golemhomex", ((EntityGolemBase) target).getHomePosition().posX);
 				stack.getTagCompound().setInteger("golemhomey", ((EntityGolemBase) target).getHomePosition().posY);
@@ -309,8 +313,8 @@ public class ItemGolemBell extends Item
 	{
 		if (entity instanceof EntityTravelingTrunk && !entity.isDead)
 		{
-			byte upgrade = (byte) ((EntityTravelingTrunk) entity).getUpgrade();
-			if (upgrade == 3 && !((EntityTravelingTrunk) entity).func_152113_b().equals(player.getCommandSenderName()))
+			byte var15 = (byte) ((EntityTravelingTrunk) entity).getUpgrade();
+			if (var15 == 3 && !((EntityTravelingTrunk) entity).func_152113_b().equals(player.getCommandSenderName()))
 			{
 				return false;
 			}
@@ -321,30 +325,30 @@ public class ItemGolemBell extends Item
 			}
 			else
 			{
-				ItemStack stack1 = new ItemStack(ConfigItems.itemTrunkSpawner);
+				ItemStack var16 = new ItemStack(ConfigItems.itemTrunkSpawner);
 				if (player.isSneaking())
 				{
-					if (upgrade > -1 && entity.worldObj.rand.nextBoolean())
+					if (var15 > -1 && entity.worldObj.rand.nextBoolean())
 					{
-						((EntityTravelingTrunk) entity).entityDropItem(new ItemStack(ConfigItems.itemGolemUpgrade, 1, upgrade), 0.5F);
+						((EntityTravelingTrunk) entity).entityDropItem(new ItemStack(ConfigItems.itemGolemUpgrade, 1, var15), 0.5F);
 					}
 				}
 				else
 				{
 					if (((EntityTravelingTrunk) entity).hasCustomNameTag())
 					{
-						stack1.setStackDisplayName(((EntityTravelingTrunk) entity).getCustomNameTag());
+						var16.setStackDisplayName(((EntityTravelingTrunk) entity).getCustomNameTag());
 					}
 
-					stack1.setTagInfo("upgrade", new NBTTagByte(upgrade));
-					if (upgrade == 4)
+					var16.setTagInfo("upgrade", new NBTTagByte(var15));
+					if (var15 == 4)
 					{
-						stack1.setTagInfo("inventory", ((EntityTravelingTrunk) entity).inventory.writeToNBT(new NBTTagList()));
+						var16.setTagInfo("inventory", ((EntityTravelingTrunk) entity).inventory.writeToNBT(new NBTTagList()));
 					}
 				}
 
-				((EntityTravelingTrunk) entity).entityDropItem(stack1, 0.5F);
-				if (upgrade != 4 || player.isSneaking())
+				((EntityTravelingTrunk) entity).entityDropItem(var16, 0.5F);
+				if (var15 != 4 || player.isSneaking())
 				{
 					((EntityTravelingTrunk) entity).inventory.dropAllItems();
 				}
@@ -372,10 +376,10 @@ public class ItemGolemBell extends Item
 				byte core = ((EntityGolemBase) entity).getCore();
 				byte[] upgrades = ((EntityGolemBase) entity).upgrades;
 				boolean advanced = ((EntityGolemBase) entity).advanced;
-				ItemStack stack1 = new ItemStack(ConfigItems.itemGolemPlacer, 1, type);
+				ItemStack dropped = new ItemStack(ConfigItems.itemGolemPlacer, 1, type);
 				if (advanced)
 				{
-					stack1.setTagInfo("advanced", new NBTTagByte((byte) 1));
+					dropped.setTagInfo("advanced", new NBTTagByte((byte) 1));
 				}
 
 				if (player.isSneaking())
@@ -385,9 +389,12 @@ public class ItemGolemBell extends Item
 						((EntityGolemBase) entity).entityDropItem(new ItemStack(ConfigItems.itemGolemCore, 1, core), 0.5F);
 					}
 
-					for (int i = 0; i < upgrades.length; ++i)
+					byte[] markers = upgrades;
+					int tl = upgrades.length;
+
+					for (int i$ = 0; i$ < tl; ++i$)
 					{
-						byte l = upgrades[i];
+						byte l = markers[i$];
 						if (l > -1 && entity.worldObj.rand.nextBoolean())
 						{
 							((EntityGolemBase) entity).entityDropItem(new ItemStack(ConfigItems.itemGolemUpgrade, 1, l), 0.5F);
@@ -398,40 +405,42 @@ public class ItemGolemBell extends Item
 				{
 					if (((EntityGolemBase) entity).hasCustomNameTag())
 					{
-						stack1.setStackDisplayName(((EntityGolemBase) entity).getCustomNameTag());
+						dropped.setStackDisplayName(((EntityGolemBase) entity).getCustomNameTag());
 					}
 
 					if (deco.length() > 0)
 					{
-						stack1.setTagInfo("deco", new NBTTagString(deco));
+						dropped.setTagInfo("deco", new NBTTagString(deco));
 					}
 
 					if (core > -1)
 					{
-						stack1.setTagInfo("core", new NBTTagByte(core));
+						dropped.setTagInfo("core", new NBTTagByte(core));
 					}
 
-					stack1.setTagInfo("upgrades", new NBTTagByteArray(upgrades));
-					ArrayList<Marker> markers = ((EntityGolemBase) entity).getMarkers();
-					NBTTagList nbtList = new NBTTagList();
-					
-					for (Marker marker : markers)
+					dropped.setTagInfo("upgrades", new NBTTagByteArray(upgrades));
+					ArrayList var17 = ((EntityGolemBase) entity).getMarkers();
+					NBTTagList var18 = new NBTTagList();
+					Iterator var19 = var17.iterator();
+
+					while (var19.hasNext())
 					{
-						NBTTagCompound nbt = new NBTTagCompound();
-						nbt.setInteger("x", marker.x);
-						nbt.setInteger("y", marker.y);
-						nbt.setInteger("z", marker.z);
-						nbt.setInteger("dim", marker.dim);
-						nbt.setByte("side", marker.side);
-						nbt.setByte("color", marker.color);
-						nbtList.appendTag(nbt);
+						Marker var20 = (Marker) var19.next();
+						NBTTagCompound nbtc = new NBTTagCompound();
+						nbtc.setInteger("x", var20.x);
+						nbtc.setInteger("y", var20.y);
+						nbtc.setInteger("z", var20.z);
+						nbtc.setInteger("dim", var20.dim);
+						nbtc.setByte("side", var20.side);
+						nbtc.setByte("color", var20.color);
+						var18.appendTag(nbtc);
 					}
 
-					stack1.setTagInfo("markers", nbtList);
-					stack1.setTagInfo("Inventory", ((EntityGolemBase) entity).inventory.writeToNBT(new NBTTagList()));
+					dropped.setTagInfo("markers", var18);
+					dropped.setTagInfo("Inventory", ((EntityGolemBase) entity).inventory.writeToNBT(new NBTTagList()));
 				}
 
-				((EntityGolemBase) entity).entityDropItem(stack1, 0.5F);
+				((EntityGolemBase) entity).entityDropItem(dropped, 0.5F);
 				((EntityGolemBase) entity).dropStuff();
 				entity.worldObj.playSoundAtEntity(entity, "thaumcraft:zap", 0.5F, 1.0F);
 				entity.setDead();

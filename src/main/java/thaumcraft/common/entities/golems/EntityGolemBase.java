@@ -151,6 +151,17 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		this.getNavigator().setCanSwim(true);
 	}
 
+	@Override
+	protected void applyEntityAttributes()
+	{
+		super.applyEntityAttributes();
+		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20.0D);
+		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
+		this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(1.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.6D);
+		this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(32.0D);
+	}
+
 	public EntityGolemBase(World par0World, EnumGolemType type, boolean adv)
 	{
 		this(par0World);
@@ -162,17 +173,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		{
 			this.upgrades[a] = -1;
 		}
-	}
 
-	@Override
-	protected void applyEntityAttributes()
-	{
-		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(20.0D);
-		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
-		this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(1.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.6D);
-		this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(32.0D);
 	}
 
 	public boolean setupGolemInventory()
@@ -256,8 +257,9 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		{
 			bonus = this.getGolemDecoration().contains("H") ? 5 : 0;
 		}
-		catch (Exception e)
+		catch (Exception var5)
 		{
+			;
 		}
 
 		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double) (this.getGolemType().health + bonus));
@@ -270,8 +272,9 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 				damage += 2;
 			}
 		}
-		catch (Exception e)
+		catch (Exception var4)
 		{
+			;
 		}
 
 		this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue((double) damage);
@@ -579,6 +582,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		{
 			super.setFire(par1);
 		}
+
 	}
 
 	@Override
@@ -734,13 +738,13 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			nbt.setByte("essentiaAmount", (byte) this.essentiaAmount);
 		}
 
-		NBTTagCompound nbt1 = new NBTTagCompound();
+		NBTTagCompound var4 = new NBTTagCompound();
 		if (this.itemCarried != null)
 		{
-			this.itemCarried.writeToNBT(nbt1);
+			this.itemCarried.writeToNBT(var4);
 		}
 
-		nbt.setTag("ItemCarried", nbt1);
+		nbt.setTag("ItemCarried", var4);
 		if (this.getOwnerName() == null)
 		{
 			nbt.setString("Owner", "");
@@ -1163,7 +1167,6 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			this.getDataWatcher().addObjectByDataType(16, 5);
 			this.getDataWatcher().setObjectWatched(16);
 		}
-
 	}
 
 	@Override
@@ -1184,6 +1187,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		{
 			this.entityDropItem(this.itemCarried, 0.5F);
 		}
+
 	}
 
 	protected boolean addDecoration(String type, ItemStack itemStack)
@@ -1351,6 +1355,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			this.leftArm = 5;
 			this.worldObj.setEntityState(this, (byte) 6);
 		}
+
 	}
 
 	public void startRightArmTimer()
@@ -1360,6 +1365,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			this.rightArm = 5;
 			this.worldObj.setEntityState(this, (byte) 8);
 		}
+
 	}
 
 	@Override
@@ -1431,7 +1437,6 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		{
 			this.fallDistance = (float) ((double) this.fallDistance - par1);
 		}
-
 	}
 
 	@Override
@@ -1511,7 +1516,6 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		return flag;
 	}
 
-	@Override
 	public boolean attackEntityFrom(DamageSource ds, float par2)
 	{
 		this.paused = false;
@@ -1543,7 +1547,6 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		}
 	}
 
-	@Override
 	public boolean canAttackClass(Class par1Class)
 	{
 		return EntityVillager.class != par1Class && EntityGolemBase.class != par1Class && EntityBat.class != par1Class;
@@ -1645,10 +1648,12 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		data.writeBoolean(this.advanced);
 		data.writeByte(this.inventory.slotCount);
 		data.writeByte(this.upgrades.length);
+		byte[] arr$ = this.upgrades;
+		int len$ = arr$.length;
 
-		for (int i = 0; i < this.upgrades.length; ++i)
+		for (int i$ = 0; i$ < len$; ++i$)
 		{
-			byte b = this.upgrades[i];
+			byte b = arr$[i$];
 			data.writeByte(b);
 		}
 	}
@@ -1668,30 +1673,31 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			this.inventory = new InventoryMob(this, data.readByte());
 			this.colors = new byte[this.inventory.slotCount];
 
-			int i;
-			for (i = 0; i < this.inventory.slotCount; ++i)
+			int e;
+			for (e = 0; e < this.inventory.slotCount; ++e)
 			{
-				this.colors[i] = -1;
+				this.colors[e] = -1;
 			}
 
 			this.upgrades = new byte[data.readByte()];
 
-			for (i = 0; i < this.upgrades.length; ++i)
+			for (e = 0; e < this.upgrades.length; ++e)
 			{
-				this.upgrades[i] = data.readByte();
+				this.upgrades[e] = data.readByte();
 			}
 
-			i = 0;
+			e = 0;
 
 			try
 			{
-				i = this.getGolemDecoration().contains("H") ? 5 : 0;
+				e = this.getGolemDecoration().contains("H") ? 5 : 0;
 			}
-			catch (Exception e)
+			catch (Exception var4)
 			{
+				;
 			}
 
-			this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double) (this.getGolemType().health + i));
+			this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double) (this.getGolemType().health + e));
 		}
 		catch (Exception e)
 		{

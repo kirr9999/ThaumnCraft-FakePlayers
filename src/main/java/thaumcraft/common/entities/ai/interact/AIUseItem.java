@@ -2,6 +2,7 @@ package thaumcraft.common.entities.ai.interact;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -15,6 +16,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.common.entities.golems.EntityGolemBase;
@@ -154,10 +156,10 @@ public class AIUseItem extends EntityAIBase
 		this.player.setPositionAndRotation(this.theGolem.posX, this.theGolem.posY, this.theGolem.posZ, this.theGolem.rotationYaw, this.theGolem.rotationPitch);
 		this.player.setCurrentItemOrArmor(0, this.theGolem.itemCarried);
 		this.player.setSneaking(this.theGolem.getToggles()[2]);
-		Iterator<Integer> iterator = GolemHelper.getMarkedSides(this.theGolem, this.xx, this.yy, this.zz, this.theGolem.worldObj.provider.dimensionId, (byte) this.color).iterator();
-		if (iterator.hasNext())
+		Iterator i$ = GolemHelper.getMarkedSides(this.theGolem, this.xx, this.yy, this.zz, this.theGolem.worldObj.provider.dimensionId, (byte) this.color).iterator();
+		if (i$.hasNext())
 		{
-			Integer side = iterator.next();
+			Integer side = (Integer) i$.next();
 			int x = 0;
 			int y = 0;
 			int z = 0;

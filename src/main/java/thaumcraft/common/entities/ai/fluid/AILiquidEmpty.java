@@ -103,6 +103,7 @@ public class AILiquidEmpty extends EntityAIBase
 			MinecraftForge.EVENT_BUS.post(event);
 			if (event.isCanceled()) return;
 			// TODO gamerforEA code end
+
 			IFluidHandler fh = (IFluidHandler) tile;
 			int amt = fh.fill(ForgeDirection.getOrientation(this.theGolem.homeFacing), this.theGolem.fluidCarried, true);
 			this.theGolem.fluidCarried.amount -= amt;

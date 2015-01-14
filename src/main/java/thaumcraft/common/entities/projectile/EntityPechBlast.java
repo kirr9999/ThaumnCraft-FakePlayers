@@ -100,38 +100,38 @@ public class EntityPechBlast extends EntityThrowable
 
 		if (!this.worldObj.isRemote)
 		{
-			List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this.getThrower(), this.boundingBox.expand(2.0D, 2.0D, 2.0D));
+			List var7 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this.getThrower(), this.boundingBox.expand(2.0D, 2.0D, 2.0D));
 
-			for (int i = 0; i < list.size(); ++i)
+			for (int var8 = 0; var8 < var7.size(); ++var8)
 			{
-				Entity entity = list.get(i);
+				Entity var9 = (Entity) var7.get(var8);
 				// TODO gamerforEA code start
-				if (entity instanceof EntityPlayer) continue;
+				if (var9 instanceof EntityPlayer) continue;
 				// TODO gamerforEA code end
-				if (!(entity instanceof EntityPech) && entity instanceof EntityLivingBase)
+				if (!(var9 instanceof EntityPech) && var9 instanceof EntityLivingBase)
 				{
-					((EntityLivingBase) entity).attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float) (this.strength + 2));
+					((EntityLivingBase) var9).attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float) (this.strength + 2));
 
 					try
 					{
 						if (this.nightshade)
 						{
-							((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.poison.id, 100 + this.duration * 40, this.strength));
-							((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 100 + this.duration * 40, this.strength + 1));
-							((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.weakness.id, 100 + this.duration * 40, this.strength));
+							((EntityLivingBase) var9).addPotionEffect(new PotionEffect(Potion.poison.id, 100 + this.duration * 40, this.strength));
+							((EntityLivingBase) var9).addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 100 + this.duration * 40, this.strength + 1));
+							((EntityLivingBase) var9).addPotionEffect(new PotionEffect(Potion.weakness.id, 100 + this.duration * 40, this.strength));
 						}
 						else
 						{
 							switch (this.rand.nextInt(3))
 							{
 								case 0:
-									((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.poison.id, 100 + this.duration * 40, this.strength));
+									((EntityLivingBase) var9).addPotionEffect(new PotionEffect(Potion.poison.id, 100 + this.duration * 40, this.strength));
 									break;
 								case 1:
-									((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 100 + this.duration * 40, this.strength + 1));
+									((EntityLivingBase) var9).addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 100 + this.duration * 40, this.strength + 1));
 									break;
 								case 2:
-									((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.weakness.id, 100 + this.duration * 40, this.strength));
+									((EntityLivingBase) var9).addPotionEffect(new PotionEffect(Potion.weakness.id, 100 + this.duration * 40, this.strength));
 							}
 						}
 					}

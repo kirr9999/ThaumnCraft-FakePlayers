@@ -60,8 +60,8 @@ public class EntityAlumentum extends EntityThrowable
 		// TODO gamerforEA code end
 		if (!this.worldObj.isRemote)
 		{
-			boolean grief = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-			this.worldObj.createExplosion((Entity) null, this.posX, this.posY, this.posZ, 1.66F, grief);
+			boolean var2 = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
+			this.worldObj.createExplosion((Entity) null, this.posX, this.posY, this.posZ, 1.66F, var2);
 			this.setDead();
 		}
 	}

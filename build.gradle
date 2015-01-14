@@ -19,7 +19,7 @@ apply plugin: 'forge'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-version = "4.2.3.0"
+version = "4.2.3.2"
 group= "thaumcraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "thaumcraft"
 
@@ -29,5 +29,5 @@ minecraft {
 }
 
 dependencies {
-	compile files("lib/Baubles-deobf-1.7.10-1.0.1.10.jar", "lib/Thaumcraft-deobf-1.7.10-4.2.3.0.jar")
+	compile fileTree(dir: "lib", include: "*.jar")
 }

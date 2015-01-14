@@ -164,15 +164,16 @@ public class BlockUtils
 				}
 			}
 		}
+
 	}
 
 	public static void destroyBlockPartially(World world, int par1, int par2, int par3, int par4, int par5)
 	{
-		Iterator<EntityPlayerMP> iterator = MinecraftServer.getServer().getConfigurationManager().playerEntityList.iterator();
+		Iterator iterator = MinecraftServer.getServer().getConfigurationManager().playerEntityList.iterator();
 
 		while (iterator.hasNext())
 		{
-			EntityPlayerMP entityplayermp = iterator.next();
+			EntityPlayerMP entityplayermp = (EntityPlayerMP) iterator.next();
 			if (entityplayermp != null && entityplayermp.worldObj == MinecraftServer.getServer().getEntityWorld() && entityplayermp.getEntityId() != par1)
 			{
 				double d0 = (double) par2 - entityplayermp.posX;
@@ -184,6 +185,7 @@ public class BlockUtils
 				}
 			}
 		}
+
 	}
 
 	public static boolean removeBlock(World world, int par1, int par2, int par3, EntityPlayer player)
@@ -248,6 +250,7 @@ public class BlockUtils
 				}
 			}
 		}
+
 	}
 
 	public static boolean breakFurthestBlock(World world, int x, int y, int z, Block block, EntityPlayer player)
