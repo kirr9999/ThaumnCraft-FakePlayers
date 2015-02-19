@@ -125,8 +125,9 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 			{
 				this.playSound(var12.stepSound.getBreakSound(), 0.3F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 			}
-			catch (Exception e)
+			catch (Exception var9)
 			{
+				;
 			}
 
 			for (a1 = 0; (float) a1 < this.getDamage(); ++a1)
@@ -197,6 +198,7 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 
 		for (this.rotationPitch = (float) (Math.atan2(this.motionY, (double) var20) * 180.0D / 3.141592653589793D); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
 		{
+			;
 		}
 
 		while (this.rotationPitch - this.prevRotationPitch >= 180.0F)

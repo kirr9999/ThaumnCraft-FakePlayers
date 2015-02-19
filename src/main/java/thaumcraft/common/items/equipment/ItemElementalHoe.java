@@ -29,39 +29,33 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 		this.setCreativeTab(Thaumcraft.tabTC);
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
 		this.icon = ir.registerIcon("thaumcraft:elementalhoe");
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1)
 	{
 		return this.icon;
 	}
 
-	@Override
 	public int getItemEnchantability()
 	{
 		return 5;
 	}
 
-	@Override
 	public EnumRarity getRarity(ItemStack itemstack)
 	{
 		return EnumRarity.rare;
 	}
 
-	@Override
 	public boolean getIsRepairable(ItemStack par1ItemStack, ItemStack par2ItemStack)
 	{
 		return par2ItemStack.isItemEqual(new ItemStack(ConfigItems.itemResource, 1, 2)) ? true : super.getIsRepairable(par1ItemStack, par2ItemStack);
 	}
 
-	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int par7, float par8, float par9, float par10)
 	{
 		if (player.isSneaking())
@@ -79,17 +73,14 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 				{
 					// TODO gamerforEA code start
 					BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x + bi, y, z + md, world, world.getBlock(x + bi, y, z + md), md, player);
-					MinecraftForge.EVENT_BUS.post(event);
+					if (MinecraftForge.EVENT_BUS.post(event)) continue;
 					// TODO gamerforEA code end
-					if (!event.isCanceled())
+					if (super.onItemUse(stack, player, world, x + bi, y, z + md, par7, par8, par9, par10))
 					{
-						if (super.onItemUse(stack, player, world, x + bi, y, z + md, par7, par8, par9, par10))
+						Thaumcraft.proxy.blockSparkle(world, x + bi, y, z + md, 8401408, 2);
+						if (!did)
 						{
-							Thaumcraft.proxy.blockSparkle(world, x + bi, y, z + md, 8401408, 2);
-							if (!did)
-							{
-								did = true;
-							}
+							did = true;
 						}
 					}
 				}

@@ -1,8 +1,5 @@
 package thaumcraft.common.entities.ai.fluid;
 
-import com.gamerforea.thaumcraft.FakePlayerGetter;
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -19,6 +16,9 @@ import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.tiles.TileAlembic;
 import thaumcraft.common.tiles.TileEssentiaReservoir;
 import thaumcraft.common.tiles.TileJarFillable;
+
+import com.gamerforea.thaumcraft.FakePlayerGetter;
+import com.mojang.authlib.GameProfile;
 
 public class AIEssentiaGather extends EntityAIBase
 {
@@ -37,7 +37,6 @@ public class AIEssentiaGather extends EntityAIBase
 		this.setMutexBits(3);
 	}
 
-	@Override
 	public boolean shouldExecute()
 	{
 		if (this.theGolem.getNavigator().noPath() && this.delay <= System.currentTimeMillis())
@@ -103,7 +102,6 @@ public class AIEssentiaGather extends EntityAIBase
 		}
 	}
 
-	@Override
 	public void startExecuting()
 	{
 		ChunkCoordinates home = this.theGolem.getHomePosition();
@@ -127,7 +125,6 @@ public class AIEssentiaGather extends EntityAIBase
 			MinecraftForge.EVENT_BUS.post(event);
 			if (event.isCanceled()) return;
 			// TODO gamerforEA code end
-
 			if (te instanceof TileAlembic || te instanceof TileJarFillable)
 			{
 				facing = ForgeDirection.UP;
@@ -175,5 +172,6 @@ public class AIEssentiaGather extends EntityAIBase
 				this.delay = System.currentTimeMillis() + 100L;
 			}
 		}
+
 	}
 }

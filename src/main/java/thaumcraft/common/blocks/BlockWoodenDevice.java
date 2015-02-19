@@ -1,7 +1,6 @@
 package thaumcraft.common.blocks;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -24,7 +23,6 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.Config;
@@ -99,11 +97,11 @@ public class BlockWoodenDevice extends BlockContainer
 		par3List.add(new ItemStack(par1, 1, 7));
 		par3List.add(new ItemStack(par1, 1, 8));
 
-		for (int a = 0; a < 16; ++a)
+		for (int i = 0; i < 16; ++i)
 		{
 			ItemStack banner = new ItemStack(par1, 1, 8);
 			banner.setTagCompound(new NBTTagCompound());
-			banner.stackTagCompound.setByte("color", (byte) a);
+			banner.stackTagCompound.setByte("color", (byte) i);
 			par3List.add(banner);
 		}
 	}
@@ -456,37 +454,37 @@ public class BlockWoodenDevice extends BlockContainer
 					{
 						if (meta == 8 && (p.isSneaking() || p.inventory.getCurrentItem() != null && p.inventory.getCurrentItem().getItem() instanceof ItemEssence))
 						{
-							TileBanner var13 = (TileBanner) w.getTileEntity(x, y, z);
-							if (var13 != null && var13.getColor() >= 0)
+							TileBanner tile = (TileBanner) w.getTileEntity(x, y, z);
+							if (tile != null && tile.getColor() >= 0)
 							{
 								if (p.isSneaking())
 								{
-									var13.setAspect((Aspect) null);
+									tile.setAspect(null);
 								}
 								else if (((IEssentiaContainerItem) ((IEssentiaContainerItem) p.getHeldItem().getItem())).getAspects(p.getHeldItem()) != null)
 								{
-									var13.setAspect(((IEssentiaContainerItem) ((IEssentiaContainerItem) p.getHeldItem().getItem())).getAspects(p.getHeldItem()).getAspects()[0]);
+									tile.setAspect(((IEssentiaContainerItem) ((IEssentiaContainerItem) p.getHeldItem().getItem())).getAspects(p.getHeldItem()).getAspects()[0]);
 									--p.getHeldItem().stackSize;
 								}
 
 								w.markBlockForUpdate(x, y, z);
-								var13.markDirty();
+								tile.markDirty();
 								w.playSoundEffect((double) x, (double) y, (double) z, "step.cloth", 1.0F, 1.0F);
 							}
 						}
 					}
 					else
 					{
-						TileArcanePressurePlate var12 = (TileArcanePressurePlate) w.getTileEntity(x, y, z);
-						if (var12 != null && (var12.owner.equals(p.getCommandSenderName()) || var12.accessList.contains("1" + p.getCommandSenderName())))
+						TileArcanePressurePlate tile = (TileArcanePressurePlate) w.getTileEntity(x, y, z);
+						if (tile != null && (tile.owner.equals(p.getCommandSenderName()) || tile.accessList.contains("1" + p.getCommandSenderName())))
 						{
-							++var12.setting;
-							if (var12.setting > 2)
+							++tile.setting;
+							if (tile.setting > 2)
 							{
-								var12.setting = 0;
+								tile.setting = 0;
 							}
 
-							switch (var12.setting)
+							switch (tile.setting)
 							{
 								case 0:
 									p.addChatMessage(new ChatComponentTranslation("It will now trigger on everything.", new Object[0]));
@@ -500,7 +498,7 @@ public class BlockWoodenDevice extends BlockContainer
 
 							w.playSoundEffect((double) x + 0.5D, (double) y + 0.1D, (double) z + 0.5D, "random.click", 0.1F, 0.9F);
 							w.markBlockForUpdate(x, y, z);
-							var12.markDirty();
+							tile.markDirty();
 						}
 					}
 
@@ -536,7 +534,7 @@ public class BlockWoodenDevice extends BlockContainer
 		}
 		else
 		{
-			ArrayList drops = new ArrayList();
+			ArrayList<ItemStack> drops = new ArrayList();
 			TileEntity te = world.getTileEntity(x, y, z);
 			if (te != null && te instanceof TileBanner)
 			{
@@ -623,33 +621,33 @@ public class BlockWoodenDevice extends BlockContainer
 	@Override
 	public boolean onBlockEventReceived(World par1World, int par2, int par3, int par4, int par5, int par6)
 	{
-		float var7 = (float) Math.pow(2.0D, (double) (par6 - 12) / 12.0D);
+		final float f = (float) Math.pow(2.0D, (double) (par6 - 12) / 12.0D);
 		if (par5 <= 4)
 		{
 			if (par5 >= 0)
 			{
-				String var8 = "harp";
+				String effect = "harp";
 				if (par5 == 1)
 				{
-					var8 = "bd";
+					effect = "bd";
 				}
 
 				if (par5 == 2)
 				{
-					var8 = "snare";
+					effect = "snare";
 				}
 
 				if (par5 == 3)
 				{
-					var8 = "hat";
+					effect = "hat";
 				}
 
 				if (par5 == 4)
 				{
-					var8 = "bassattack";
+					effect = "bassattack";
 				}
 
-				par1World.playSoundEffect((double) par2 + 0.5D, (double) par3 + 0.5D, (double) par4 + 0.5D, "note." + var8, 3.0F, var7);
+				par1World.playSoundEffect((double) par2 + 0.5D, (double) par3 + 0.5D, (double) par4 + 0.5D, "note." + effect, 3.0F, f);
 			}
 
 			par1World.spawnParticle("note", (double) par2 + 0.5D, (double) par3 + 1.2D, (double) par4 + 0.5D, (double) par6 / 24.0D, 0.0D, 0.0D);
@@ -687,13 +685,13 @@ public class BlockWoodenDevice extends BlockContainer
 
 	private void setStateIfMobInteractsWithPlate(World world, int x, int y, int z)
 	{
-		boolean var5 = world.getBlockMetadata(x, y, z) == 3;
-		boolean var6 = false;
-		float var7 = 0.125F;
-		List var8 = null;
+		boolean b1 = world.getBlockMetadata(x, y, z) == 3;
+		boolean b2 = false;
+		float f = 0.125F;
+		List<Entity> list = new ArrayList();
 		String username = "";
 		byte setting = 0;
-		ArrayList accessList = new ArrayList();
+		List<String> accessList = new ArrayList();
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile != null && tile instanceof TileArcanePressurePlate)
 		{
@@ -704,35 +702,29 @@ public class BlockWoodenDevice extends BlockContainer
 
 		if (setting == 0)
 		{
-			var8 = world.getEntitiesWithinAABBExcludingEntity((Entity) null, AxisAlignedBB.getBoundingBox((double) ((float) x + var7), (double) y, (double) ((float) z + var7), (double) ((float) (x + 1) - var7), (double) y + 0.25D, (double) ((float) (z + 1) - var7)));
+			list = world.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox((double) ((float) x + f), (double) y, (double) ((float) z + f), (double) ((float) (x + 1) - f), (double) y + 0.25D, (double) ((float) (z + 1) - f)));
 		}
 
 		if (setting == 1)
 		{
-			var8 = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox((double) ((float) x + var7), (double) y, (double) ((float) z + var7), (double) ((float) (x + 1) - var7), (double) y + 0.25D, (double) ((float) (z + 1) - var7)));
+			list = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox((double) ((float) x + f), (double) y, (double) ((float) z + f), (double) ((float) (x + 1) - f), (double) y + 0.25D, (double) ((float) (z + 1) - f)));
 		}
 
 		if (setting == 2)
 		{
-			var8 = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox((double) ((float) x + var7), (double) y, (double) ((float) z + var7), (double) ((float) (x + 1) - var7), (double) y + 0.25D, (double) ((float) (z + 1) - var7)));
+			list = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox((double) ((float) x + f), (double) y, (double) ((float) z + f), (double) ((float) (x + 1) - f), (double) y + 0.25D, (double) ((float) (z + 1) - f)));
 		}
 
-		if (!var8.isEmpty())
+		for (Entity entity : list)
 		{
-			Iterator var9 = var8.iterator();
-
-			while (var9.hasNext())
+			if (!entity.doesEntityNotTriggerPressurePlate() && (setting != 1 || !(entity instanceof EntityPlayer) || !((EntityPlayer) entity).getCommandSenderName().equals(username) && !accessList.contains("0" + ((EntityPlayer) entity).getCommandSenderName()) && !accessList.contains("1" + ((EntityPlayer) entity).getCommandSenderName())) && (setting != 2 || !(entity instanceof EntityPlayer) || ((EntityPlayer) entity).getCommandSenderName().equals(username) || accessList.contains("0" + ((EntityPlayer) entity).getCommandSenderName()) || accessList.contains("1" + ((EntityPlayer) entity).getCommandSenderName())))
 			{
-				Entity var10 = (Entity) var9.next();
-				if (!var10.doesEntityNotTriggerPressurePlate() && (setting != 1 || !(var10 instanceof EntityPlayer) || !((EntityPlayer) var10).getCommandSenderName().equals(username) && !accessList.contains("0" + ((EntityPlayer) var10).getCommandSenderName()) && !accessList.contains("1" + ((EntityPlayer) var10).getCommandSenderName())) && (setting != 2 || !(var10 instanceof EntityPlayer) || ((EntityPlayer) var10).getCommandSenderName().equals(username) || accessList.contains("0" + ((EntityPlayer) var10).getCommandSenderName()) || accessList.contains("1" + ((EntityPlayer) var10).getCommandSenderName())))
-				{
-					var6 = true;
-					break;
-				}
+				b2 = true;
+				break;
 			}
 		}
 
-		if (var6 && !var5)
+		if (b2 && !b1)
 		{
 			world.setBlockMetadataWithNotify(x, y, z, 3, 2);
 			world.notifyBlocksOfNeighborChange(x, y, z, this);
@@ -741,7 +733,7 @@ public class BlockWoodenDevice extends BlockContainer
 			world.playSoundEffect((double) x + 0.5D, (double) y + 0.1D, (double) z + 0.5D, "random.click", 0.2F, 0.6F);
 		}
 
-		if (!var6 && var5)
+		if (!b2 && b1)
 		{
 			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
 			world.notifyBlocksOfNeighborChange(x, y, z, this);
@@ -750,7 +742,7 @@ public class BlockWoodenDevice extends BlockContainer
 			world.playSoundEffect((double) x + 0.5D, (double) y + 0.1D, (double) z + 0.5D, "random.click", 0.2F, 0.5F);
 		}
 
-		if (var6)
+		if (b2)
 		{
 			world.scheduleBlockUpdate(x, y, z, this, this.tickRate());
 		}

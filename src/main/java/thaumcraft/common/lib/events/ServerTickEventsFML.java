@@ -93,7 +93,6 @@ public class ServerTickEventsFML
 		{
 			FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, "[Thaumcraft] Regenerated " + count + " chunks. " + Math.max(0, chunks.size()) + " chunks left");
 		}
-
 	}
 
 	private void tickBlockSwap(World world)
@@ -205,7 +204,6 @@ public class ServerTickEventsFML
 
 			swapList.put(Integer.valueOf(dim), queue);
 		}
-
 	}
 
 	public static void addSwapper(World world, int x, int y, int z, Block bs, int ms, ItemStack target, int life, EntityPlayer player, int wand)
@@ -248,7 +246,6 @@ public class ServerTickEventsFML
 				this.nbt = new NBTTagCompound();
 				te.writeToNBT(this.nbt);
 			}
-
 		}
 	}
 

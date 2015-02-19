@@ -33,7 +33,6 @@ public class ItemGolemPlacer extends Item
 		this.setMaxStackSize(1);
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
@@ -50,40 +49,34 @@ public class ItemGolemPlacer extends Item
 		this.iconBlank = ir.registerIcon("thaumcraft:blank");
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public int getRenderPasses(int metadata)
 	{
 		return 3;
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1)
 	{
 		return this.iconGolem[par1];
 	}
 
-	@Override
 	public IIcon getIcon(ItemStack stack, int pass)
 	{
 		return pass == 0 ? super.getIcon(stack, pass) : (pass == 1 && stack.hasTagCompound() && stack.stackTagCompound.hasKey("advanced") ? this.iconAdvanced : (pass == 2 && stack.hasTagCompound() && stack.stackTagCompound.hasKey("core") ? this.iconCore : this.iconBlank));
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean requiresMultipleRenderPasses()
 	{
 		return true;
 	}
 
-	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack)
 	{
 		return super.getUnlocalizedName() + "." + par1ItemStack.getItemDamage();
 	}
 
-	@Override
 	public void addInformation(ItemStack stack, EntityPlayer par2EntityPlayer, List list, boolean par4)
 	{
 		if (stack.hasTagCompound())
@@ -166,21 +159,19 @@ public class ItemGolemPlacer extends Item
 				list.add(var12);
 			}
 		}
+
 	}
 
-	@Override
 	public boolean getShareTag()
 	{
 		return true;
 	}
 
-	@Override
 	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player)
 	{
 		return true;
 	}
 
-	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int par4, int par5, int par6, int side, float par8, float par9, float par10)
 	{
 		if (!world.isRemote && !player.isSneaking())
@@ -208,7 +199,6 @@ public class ItemGolemPlacer extends Item
 		}
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{

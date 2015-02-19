@@ -39,21 +39,18 @@ public class ItemGolemBell extends Item
 		this.setMaxStackSize(1);
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
 		this.icon = ir.registerIcon("thaumcraft:ironbell");
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1)
 	{
 		return this.icon;
 	}
 
-	@Override
 	public boolean getShareTag()
 	{
 		return true;
@@ -111,6 +108,7 @@ public class ItemGolemBell extends Item
 				world.playSoundAtEntity(player, "random.orb", 0.7F, 1.0F + world.rand.nextFloat() * 0.1F);
 			}
 		}
+
 	}
 
 	public static void changeMarkers(ItemStack stack, EntityPlayer player, World world, int par4, int par5, int par6, int side)
@@ -220,7 +218,6 @@ public class ItemGolemBell extends Item
 		world.playSoundEffect((double) par4, (double) par5, (double) par6, "random.orb", 0.7F, 1.0F + world.rand.nextFloat() * 0.1F);
 	}
 
-	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int par4, int par5, int par6, int side, float par8, float par9, float par10)
 	{
 		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
@@ -242,7 +239,6 @@ public class ItemGolemBell extends Item
 		}
 	}
 
-	@Override
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target)
 	{
 		if (target instanceof EntityGolemBase)
@@ -308,7 +304,6 @@ public class ItemGolemBell extends Item
 		}
 	}
 
-	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		if (entity instanceof EntityTravelingTrunk && !entity.isDead)

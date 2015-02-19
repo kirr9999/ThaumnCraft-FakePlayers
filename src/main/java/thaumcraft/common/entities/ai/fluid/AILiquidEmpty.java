@@ -3,9 +3,6 @@ package thaumcraft.common.entities.ai.fluid;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.gamerforea.thaumcraft.FakePlayerGetter;
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -20,6 +17,9 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.entities.golems.GolemHelper;
+
+import com.gamerforea.thaumcraft.FakePlayerGetter;
+import com.mojang.authlib.GameProfile;
 
 public class AILiquidEmpty extends EntityAIBase
 {
@@ -37,7 +37,6 @@ public class AILiquidEmpty extends EntityAIBase
 		this.setMutexBits(3);
 	}
 
-	@Override
 	public boolean shouldExecute()
 	{
 		ChunkCoordinates home = this.theGolem.getHomePosition();
@@ -73,13 +72,11 @@ public class AILiquidEmpty extends EntityAIBase
 		}
 	}
 
-	@Override
 	public boolean continueExecuting()
 	{
 		return false;
 	}
 
-	@Override
 	public void startExecuting()
 	{
 		ForgeDirection facing = ForgeDirection.getOrientation(this.theGolem.homeFacing);
@@ -103,7 +100,6 @@ public class AILiquidEmpty extends EntityAIBase
 			MinecraftForge.EVENT_BUS.post(event);
 			if (event.isCanceled()) return;
 			// TODO gamerforEA code end
-
 			IFluidHandler fh = (IFluidHandler) tile;
 			int amt = fh.fill(ForgeDirection.getOrientation(this.theGolem.homeFacing), this.theGolem.fluidCarried, true);
 			this.theGolem.fluidCarried.amount -= amt;
@@ -121,5 +117,6 @@ public class AILiquidEmpty extends EntityAIBase
 			this.theWorld.markBlockForUpdate(cX, cY, cZ);
 			this.theGolem.itemWatched = null;
 		}
+
 	}
 }

@@ -2,9 +2,6 @@ package thaumcraft.common.entities.ai.fluid;
 
 import java.util.Iterator;
 
-import com.gamerforea.thaumcraft.FakePlayerGetter;
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -20,6 +17,9 @@ import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.entities.golems.GolemHelper;
 import thaumcraft.common.tiles.TileEssentiaReservoir;
 import thaumcraft.common.tiles.TileJarFillable;
+
+import com.gamerforea.thaumcraft.FakePlayerGetter;
+import com.mojang.authlib.GameProfile;
 
 public class AIEssentiaEmpty extends EntityAIBase
 {
@@ -37,7 +37,6 @@ public class AIEssentiaEmpty extends EntityAIBase
 		this.setMutexBits(3);
 	}
 
-	@Override
 	public boolean shouldExecute()
 	{
 		ChunkCoordinates home = this.theGolem.getHomePosition();
@@ -66,13 +65,11 @@ public class AIEssentiaEmpty extends EntityAIBase
 		}
 	}
 
-	@Override
 	public boolean continueExecuting()
 	{
 		return false;
 	}
 
-	@Override
 	public void startExecuting()
 	{
 		TileEntity tile = this.theWorld.getTileEntity(this.jarX, this.jarY, this.jarZ);
@@ -152,5 +149,6 @@ public class AIEssentiaEmpty extends EntityAIBase
 				}
 			}
 		}
+
 	}
 }

@@ -39,33 +39,28 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 		this.oi = par2EntityLiving.getEntityId();
 	}
 
-	@Override
 	public void writeSpawnData(ByteBuf data)
 	{
 		data.writeBoolean(this.seeker);
 		data.writeInt(this.oi);
 	}
 
-	@Override
 	public void readSpawnData(ByteBuf data)
 	{
 		this.seeker = data.readBoolean();
 		this.oi = data.readInt();
 	}
 
-	@Override
 	protected float getGravityVelocity()
 	{
 		return 0.001F;
 	}
 
-	@Override
 	protected float func_70182_d()
 	{
 		return 0.5F;
 	}
 
-	@Override
 	public void onUpdate()
 	{
 		// TODO gamerforEA code start
@@ -146,9 +141,9 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 		{
 			this.setDead();
 		}
+
 	}
 
-	@Override
 	protected void onImpact(MovingObjectPosition mop)
 	{
 		if (this.worldObj.isRemote)
@@ -190,6 +185,7 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 
 			this.setDead();
 		}
+
 	}
 
 	public void taintSplosion()
@@ -212,9 +208,9 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 				}
 			}
 		}
+
 	}
 
-	@Override
 	public float getShadowSize()
 	{
 		return 0.1F;

@@ -46,38 +46,32 @@ public class ItemFocusShock extends ItemFocusBasic
 		this.setCreativeTab(Thaumcraft.tabTC);
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
 		this.icon = ir.registerIcon("thaumcraft:focus_shock");
 	}
 
-	@Override
 	public String getSortingHelper(ItemStack itemstack)
 	{
 		return "BL" + super.getSortingHelper(itemstack);
 	}
 
-	@Override
 	public int getFocusColor(ItemStack itemstack)
 	{
 		return 10466239;
 	}
 
-	@Override
 	public AspectList getVisCost(ItemStack itemstack)
 	{
 		return this.isUpgradedWith(itemstack, chainlightning) ? costChain : (this.isUpgradedWith(itemstack, earthshock) ? costGround : costBase);
 	}
 
-	@Override
 	public int getActivationCooldown(ItemStack focusstack)
 	{
 		return this.isUpgradedWith(focusstack, chainlightning) ? 500 : (this.isUpgradedWith(focusstack, earthshock) ? 1000 : 250);
 	}
 
-	@Override
 	public ItemFocusBasic.WandFocusAnimation getAnimation(ItemStack itemstack)
 	{
 		return this.isUpgradedWith(itemstack, earthshock) ? ItemFocusBasic.WandFocusAnimation.WAVE : ItemFocusBasic.WandFocusAnimation.CHARGE;
@@ -112,7 +106,6 @@ public class ItemFocusShock extends ItemFocusBasic
 		bolt.finalizeBolt();
 	}
 
-	@Override
 	public ItemStack onFocusRightClick(ItemStack itemstack, World world, EntityPlayer p, MovingObjectPosition movingobjectposition)
 	{
 		ItemWandCasting wand = (ItemWandCasting) itemstack.getItem();
@@ -141,7 +134,6 @@ public class ItemFocusShock extends ItemFocusBasic
 		return itemstack;
 	}
 
-	@Override
 	public void onUsingFocusTick(ItemStack stack, EntityPlayer p, int count)
 	{
 		this.doLightningBolt(stack, p, count);
@@ -196,10 +188,8 @@ public class ItemFocusShock extends ItemFocusBasic
 			else
 			{
 				p.worldObj.playSoundEffect(p.posX, p.posY, p.posZ, "thaumcraft:shock", 0.25F, 1.0F);
-				// TODO gamerforEA code start
-				if (pointedEntity != null && pointedEntity instanceof EntityPlayer) return;
-				// TODO gamerforEA code end
-				if (pointedEntity != null && pointedEntity instanceof EntityLivingBase && (!(pointedEntity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled()))
+				// TODO gamerforEA code replace, old code: if (pointedEntity != null && pointedEntity instanceof EntityLivingBase && (!(pointedEntity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled()))
+				if (pointedEntity != null && pointedEntity instanceof EntityLivingBase && !(pointedEntity instanceof EntityPlayer))
 				{
 					int var18 = this.getUpgradeLevel(wand.getFocusItem(stack), chainlightning) * 2;
 					pointedEntity.attackEntityFrom(DamageSource.causePlayerDamage(p), (float) ((var18 > 0 ? 6 : 4) + potency));
@@ -247,13 +237,11 @@ public class ItemFocusShock extends ItemFocusBasic
 		}
 	}
 
-	@Override
 	public boolean canApplyUpgrade(ItemStack focusstack, EntityPlayer player, FocusUpgradeType type, int rank)
 	{
 		return !type.equals(FocusUpgradeType.enlarge) || this.isUpgradedWith(focusstack, chainlightning) || this.isUpgradedWith(focusstack, earthshock);
 	}
 
-	@Override
 	public FocusUpgradeType[] getPossibleUpgradesByRank(ItemStack itemstack, int rank)
 	{
 		switch (rank)

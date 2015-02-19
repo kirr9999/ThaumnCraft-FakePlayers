@@ -19,15 +19,20 @@ apply plugin: 'forge'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-version = "4.2.3.2"
-group= "thaumcraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "4.2.3.4"
+group= "thaumcraft"
 archivesBaseName = "thaumcraft"
 
 minecraft {
-    version = "1.7.10-10.13.2.1232"
+    version = "1.7.10-10.13.2.1291"
     runDir = "eclipse"
 }
 
 dependencies {
-	compile fileTree(dir: "lib", include: "*.jar")
+	compile files('lib/Baubles-1.7.10-1.0.1.10-deobf.jar', 'lib/Thaumcraft-1.7.10-4.2.3.4-deobf.jar')
+}
+
+jar {
+	from zipTree('lib/Thaumcraft-1.7.10-4.2.3.4.jar')
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

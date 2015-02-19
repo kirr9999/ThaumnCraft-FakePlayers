@@ -50,39 +50,33 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		this.setCreativeTab(Thaumcraft.tabTC);
 	}
 
-	@Override
 	public Set<String> getToolClasses(ItemStack stack)
 	{
 		return ImmutableSet.of("shovel");
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
 		this.icon = ir.registerIcon("thaumcraft:elementalshovel");
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1)
 	{
 		return this.icon;
 	}
 
-	@Override
 	public EnumRarity getRarity(ItemStack itemstack)
 	{
 		return EnumRarity.rare;
 	}
 
-	@Override
 	public boolean getIsRepairable(ItemStack par1ItemStack, ItemStack par2ItemStack)
 	{
 		return par2ItemStack.isItemEqual(new ItemStack(ConfigItems.itemResource, 1, 2)) ? true : super.getIsRepairable(par1ItemStack, par2ItemStack);
 	}
 
-	@Override
 	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side, float par8, float par9, float par10)
 	{
 		int xm = ForgeDirection.getOrientation(side).offsetX;
@@ -173,16 +167,13 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 								// TODO gamerforEA code start
 								BlockSnapshot snapshot = new BlockSnapshot(world, x + xx + xm, y + yy + ym, z + zz + zm, world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm), world.getBlockMetadata(x + xx + xm, y + yy + ym, z + zz + zm));
 								BlockEvent.PlaceEvent event = new BlockEvent.PlaceEvent(snapshot, Blocks.dirt, player);
-								MinecraftForge.EVENT_BUS.post(event);
+								if (MinecraftForge.EVENT_BUS.post(event)) continue;
 								// TODO gamerforEA code end
-								if (!event.isCanceled())
-								{
-									world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
-									world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, Blocks.dirt, 0, 3);
-									itemstack.damageItem(1, player);
-									Thaumcraft.proxy.blockSparkle(world, x + xx + xm, y + yy + ym, z + zz + zm, 3, 4);
-									player.swingItem();
-								}
+								world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
+								world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, Blocks.dirt, 0, 3);
+								itemstack.damageItem(1, player);
+								Thaumcraft.proxy.blockSparkle(world, x + xx + xm, y + yy + ym, z + zz + zm, 3, 4);
+								player.swingItem();
 							}
 						}
 						else
@@ -190,16 +181,13 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 							// TODO gamerforEA code start
 							BlockSnapshot snapshot = new BlockSnapshot(world, x + xx + xm, y + yy + ym, z + zz + zm, world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm), world.getBlockMetadata(x + xx + xm, y + yy + ym, z + zz + zm));
 							BlockEvent.PlaceEvent event = new BlockEvent.PlaceEvent(snapshot, bi, player);
-							MinecraftForge.EVENT_BUS.post(event);
+							if (MinecraftForge.EVENT_BUS.post(event)) continue;
 							// TODO gamerforEA code end
-							if (!event.isCanceled())
-							{
-								world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
-								world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, bi, md, 3);
-								itemstack.damageItem(1, player);
-								Thaumcraft.proxy.blockSparkle(world, x + xx + xm, y + yy + ym, z + zz + zm, 8401408, 4);
-								player.swingItem();
-							}
+							world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
+							world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, bi, md, 3);
+							itemstack.damageItem(1, player);
+							Thaumcraft.proxy.blockSparkle(world, x + xx + xm, y + yy + ym, z + zz + zm, 8401408, 4);
+							player.swingItem();
 						}
 					}
 				}
@@ -222,7 +210,6 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		return false;
 	}
 
-	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, int X, int Y, int Z, EntityPlayer player)
 	{
 		MovingObjectPosition movingobjectposition = BlockUtils.getTargetBlock(player.worldObj, player, true);
@@ -234,7 +221,6 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		return super.onBlockStartBreak(itemstack, X, Y, Z, player);
 	}
 
-	@Override
 	public boolean onBlockDestroyed(ItemStack stack, World world, Block bi, int x, int y, int z, EntityLivingBase ent)
 	{
 		if (ent.isSneaking())
@@ -279,13 +265,10 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 								{
 									// TODO gamerforEA code start
 									BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x + xx, y + yy, z + zz, world, bl, md, (EntityPlayer) ent);
-									MinecraftForge.EVENT_BUS.post(event);
+									if (MinecraftForge.EVENT_BUS.post(event)) continue;
 									// TODO gamerforEA code end
-									if (!event.isCanceled())
-									{
-										stack.damageItem(1, ent);
-										BlockUtils.harvestBlock(world, (EntityPlayer) ent, x + xx, y + yy, z + zz, true, 3);
-									}
+									stack.damageItem(1, ent);
+									BlockUtils.harvestBlock(world, (EntityPlayer) ent, x + xx, y + yy, z + zz, true, 3);
 								}
 							}
 						}
@@ -297,7 +280,6 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		}
 	}
 
-	@Override
 	public ArrayList<BlockCoordinates> getArchitectBlocks(ItemStack focusstack, World world, int x, int y, int z, int side, EntityPlayer player)
 	{
 		ArrayList b = new ArrayList();
@@ -393,7 +375,6 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		}
 	}
 
-	@Override
 	public boolean showAxis(ItemStack stack, World world, EntityPlayer player, int side, IArchitect.EnumAxis axis)
 	{
 		return false;

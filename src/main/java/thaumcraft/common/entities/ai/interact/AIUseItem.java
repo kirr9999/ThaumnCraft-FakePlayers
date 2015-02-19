@@ -2,11 +2,9 @@ package thaumcraft.common.entities.ai.interact;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -37,8 +35,7 @@ public class AIUseItem extends EntityAIBase
 	private World theWorld;
 	private Block block;
 	private int blockMd;
-	// TODO gamerforEA code replace, old code: FakePlayer player;
-	EntityPlayer player;
+	FakePlayer player;
 	private int count;
 	private int color;
 	ItemInWorldManager im;
@@ -76,7 +73,6 @@ public class AIUseItem extends EntityAIBase
 		}
 	}
 
-	@Override
 	public boolean shouldExecute()
 	{
 		boolean ignoreItem = false;
@@ -108,13 +104,11 @@ public class AIUseItem extends EntityAIBase
 		}
 	}
 
-	@Override
 	public boolean continueExecuting()
 	{
 		return this.theWorld.getBlock(this.xx, this.yy, this.zz) == this.block && this.theWorld.getBlockMetadata(this.xx, this.yy, this.zz) == this.blockMd && this.count-- > 0 && !this.theGolem.getNavigator().noPath();
 	}
 
-	@Override
 	public void updateTask()
 	{
 		this.theGolem.getLookHelper().setLookPosition((double) this.xx + 0.5D, (double) this.yy + 0.5D, (double) this.zz + 0.5D, 30.0F, 30.0F);
@@ -123,16 +117,15 @@ public class AIUseItem extends EntityAIBase
 		{
 			this.click();
 		}
+
 	}
 
-	@Override
 	public void resetTask()
 	{
 		this.count = 0;
 		this.theGolem.getNavigator().clearPathEntity();
 	}
 
-	@Override
 	public void startExecuting()
 	{
 		this.count = 200;
