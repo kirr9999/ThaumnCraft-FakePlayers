@@ -15,7 +15,7 @@ public final class FakePlayerGetter
 
 	private static WeakReference<FakePlayer> createNewPlayer(WorldServer world)
 	{
-		return new WeakReference<FakePlayer>(FakePlayerFactory.get(world, new GameProfile(UUID.fromString("com.gamerforea.thaumcraft"), "[ThaumCraft]")));
+		return new WeakReference<FakePlayer>(FakePlayerFactory.get(world, new GameProfile(UUID.fromString("745dd166-13e9-41db-999d-6af5bacba7fd"), "[ThaumCraft]")));
 	}
 
 	public static final WeakReference<FakePlayer> getPlayer(WorldServer world)
