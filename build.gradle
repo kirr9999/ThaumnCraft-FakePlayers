@@ -19,7 +19,7 @@ apply plugin: 'forge'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-version = "4.2.3.4"
+version = "4.2.3.5"
 group= "thaumcraft"
 archivesBaseName = "thaumcraft"
 
@@ -29,10 +29,10 @@ minecraft {
 }
 
 dependencies {
-	compile files('lib/Baubles-1.7.10-1.0.1.10-deobf.jar', 'lib/Thaumcraft-1.7.10-4.2.3.4-deobf.jar')
+	compile files('lib/Baubles-1.7.10-1.0.1.10-deobf.jar', 'lib/Thaumcraft-deobf-1.7.10-4.2.3.5.jar')
 }
 
 jar {
-	from zipTree('lib/Thaumcraft-1.7.10-4.2.3.4.jar')
+	from zipTree('lib/Thaumcraft-1.7.10-4.2.3.5.jar')
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
