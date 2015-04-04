@@ -21,12 +21,13 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.world.BlockEvent;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.entities.EntityFollowingItem;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class BlockUtils
@@ -267,9 +268,7 @@ public class BlockUtils
 		findBlocks(world, x, y, z, block);
 		// TODO gamerforEA code replace, old code: boolean worked = harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
 		boolean worked = false;
-		BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(lastx, lasty, lastz, world, block, world.getBlockMetadata(lastx, lasty, lastz), player);
-		MinecraftForge.EVENT_BUS.post(event);
-		if (!event.isCanceled()) worked = harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
+		if (!FakePlayerUtils.callBlockBreakEvent(lastx, lasty, lastz, player).isCancelled()) worked = harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
 		// TODO gamerforEA code end
 		world.markBlockForUpdate(x, y, z);
 		if (worked)

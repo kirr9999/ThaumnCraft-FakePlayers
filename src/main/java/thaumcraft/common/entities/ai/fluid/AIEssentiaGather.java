@@ -1,15 +1,10 @@
 package thaumcraft.common.entities.ai.fluid;
 
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.world.BlockEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.common.entities.golems.EntityGolemBase;
@@ -17,8 +12,7 @@ import thaumcraft.common.tiles.TileAlembic;
 import thaumcraft.common.tiles.TileEssentiaReservoir;
 import thaumcraft.common.tiles.TileJarFillable;
 
-import com.gamerforea.thaumcraft.FakePlayerGetter;
-import com.mojang.authlib.GameProfile;
+import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 public class AIEssentiaGather extends EntityAIBase
 {
@@ -113,17 +107,7 @@ public class AIEssentiaGather extends EntityAIBase
 		if (te != null && te instanceof IEssentiaTransport)
 		{
 			// TODO gamerforEA code start
-			EntityPlayer player = null;
-			if (this.theGolem.ownerName != null && this.theGolem.ownerUUID != null)
-			{
-				if (this.theGolem.fakePlayer == null) this.theGolem.fakePlayer = FakePlayerFactory.get((WorldServer) this.theWorld, new GameProfile(this.theGolem.ownerUUID, this.theGolem.ownerName));
-				player = this.theGolem.fakePlayer;
-			}
-			else player = FakePlayerGetter.getPlayer((WorldServer) this.theWorld).get();
-
-			BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(cX, cY, cZ, this.theWorld, this.theWorld.getBlock(cX, cY, cZ), this.theWorld.getBlockMetadata(cX, cY, cZ), player);
-			MinecraftForge.EVENT_BUS.post(event);
-			if (event.isCanceled()) return;
+			if (FakePlayerUtils.callBlockBreakEvent(cX, cY, cZ, this.theGolem.getFakePlayer()).isCancelled()) return;
 			// TODO gamerforEA code end
 			if (te instanceof TileAlembic || te instanceof TileJarFillable)
 			{

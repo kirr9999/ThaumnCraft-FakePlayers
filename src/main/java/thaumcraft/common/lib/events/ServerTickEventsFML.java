@@ -15,10 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
-import net.minecraftforge.event.world.BlockEvent;
 
 import org.apache.logging.log4j.Level;
 
@@ -32,6 +30,9 @@ import thaumcraft.common.lib.utils.BlockUtils;
 import thaumcraft.common.lib.utils.InventoryUtils;
 import thaumcraft.common.lib.world.ChunkLoc;
 import thaumcraft.common.tiles.TileSensor;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -111,9 +112,7 @@ public class ServerTickEventsFML
 					Block bi = world.getBlock(vs.x, vs.y, vs.z);
 					int md = world.getBlockMetadata(vs.x, vs.y, vs.z);
 					// TODO gamerforEA code start
-					BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(vs.x, vs.y, vs.z, world, bi, md, vs.player);
-					MinecraftForge.EVENT_BUS.post(event);
-					if (event.isCanceled()) continue;
+					if (FakePlayerUtils.callBlockBreakEvent(vs.x, vs.y, vs.z, vs.player).isCancelled()) continue;
 					// TODO gamerforEA code end
 					ItemWandCasting wand = null;
 					ItemFocusBasic focus = null;

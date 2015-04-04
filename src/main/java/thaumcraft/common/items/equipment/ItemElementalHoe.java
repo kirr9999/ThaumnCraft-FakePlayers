@@ -8,14 +8,15 @@ import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent;
 import thaumcraft.api.IRepairable;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.blocks.BlockCustomPlant;
 import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.lib.utils.Utils;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -72,8 +73,7 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 				for (md = -1; md <= 1; ++md)
 				{
 					// TODO gamerforEA code start
-					BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x + bi, y, z + md, world, world.getBlock(x + bi, y, z + md), md, player);
-					if (MinecraftForge.EVENT_BUS.post(event)) continue;
+					if (FakePlayerUtils.callBlockBreakEvent(x + bi, y, z + md, player).isCancelled()) continue;
 					// TODO gamerforEA code end
 					if (super.onItemUse(stack, player, world, x + bi, y, z + md, par7, par8, par9, par10))
 					{

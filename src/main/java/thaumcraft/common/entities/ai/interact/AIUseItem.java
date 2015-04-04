@@ -15,14 +15,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.entities.golems.GolemHelper;
 import thaumcraft.common.entities.golems.Marker;
-
-import com.gamerforea.thaumcraft.FakePlayerGetter;
-import com.mojang.authlib.GameProfile;
 
 public class AIUseItem extends EntityAIBase
 {
@@ -55,12 +51,7 @@ public class AIUseItem extends EntityAIBase
 		if (this.theWorld instanceof WorldServer)
 		{
 			// TODO gamerforEA code replace, old code: this.player = FakePlayerFactory.get((WorldServer) this.theWorld, new GameProfile(null, "FakeThaumcraftGolem"));
-			if (this.theGolem.ownerName != null && this.theGolem.ownerUUID != null)
-			{
-				if (this.theGolem.fakePlayer == null) this.theGolem.fakePlayer = FakePlayerFactory.get((WorldServer) this.theWorld, new GameProfile(this.theGolem.ownerUUID, this.theGolem.ownerName));
-				this.player = this.theGolem.fakePlayer;
-			}
-			else this.player = FakePlayerGetter.getPlayer((WorldServer) this.theWorld).get();
+			this.player = this.theGolem.getFakePlayer();
 			// TODO gamerforEA code end
 		}
 

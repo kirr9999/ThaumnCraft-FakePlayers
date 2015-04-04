@@ -4,15 +4,19 @@ import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.entities.monster.EntityPech;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 public class EntityPechBlast extends EntityThrowable
 {
@@ -105,11 +109,11 @@ public class EntityPechBlast extends EntityThrowable
 			for (int var8 = 0; var8 < var7.size(); ++var8)
 			{
 				Entity var9 = (Entity) var7.get(var8);
-				// TODO gamerforEA code start
-				if (var9 instanceof EntityPlayer) continue;
-				// TODO gamerforEA code end
 				if (!(var9 instanceof EntityPech) && var9 instanceof EntityLivingBase)
 				{
+					// TODO gamerforEA code start
+					if (this.getThrower() != null && FakePlayerUtils.callEntityDamageByEntityEvent(this.getThrower(), var9, DamageCause.ENTITY_ATTACK, this.strength + 2).isCancelled()) continue;
+					// TODO gamerforEA code end
 					((EntityLivingBase) var9).attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float) (this.strength + 2));
 
 					try

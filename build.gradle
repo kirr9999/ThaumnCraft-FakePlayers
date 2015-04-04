@@ -29,7 +29,7 @@ minecraft {
 }
 
 dependencies {
-	compile files('lib/Baubles-1.7.10-1.0.1.10-deobf.jar', 'lib/Thaumcraft-deobf-1.7.10-4.2.3.5.jar')
+	compile files('lib/bukkit-api.jar', 'lib/WorldGuardEventWrapperPlugin.jar', 'lib/Baubles-1.7.10-1.0.1.10-deobf.jar', 'lib/Thaumcraft-deobf-1.7.10-4.2.3.5.jar')
 }
 
 jar {

@@ -21,10 +21,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.world.BlockEvent;
 import thaumcraft.api.BlockCoordinates;
 import thaumcraft.api.IArchitect;
 import thaumcraft.api.IRepairable;
@@ -33,6 +30,7 @@ import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.lib.utils.BlockUtils;
 import thaumcraft.common.lib.utils.InventoryUtils;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
 import com.google.common.collect.ImmutableSet;
 
 import cpw.mods.fml.relauncher.Side;
@@ -165,9 +163,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 							if (bi == Blocks.grass && (player.capabilities.isCreativeMode || InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(Blocks.dirt), 0)))
 							{
 								// TODO gamerforEA code start
-								BlockSnapshot snapshot = new BlockSnapshot(world, x + xx + xm, y + yy + ym, z + zz + zm, world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm), world.getBlockMetadata(x + xx + xm, y + yy + ym, z + zz + zm));
-								BlockEvent.PlaceEvent event = new BlockEvent.PlaceEvent(snapshot, Blocks.dirt, player);
-								if (MinecraftForge.EVENT_BUS.post(event)) continue;
+								if (FakePlayerUtils.callBlockBreakEvent(x + xx + xm, y + yy + ym, z + zz + zm, player).isCancelled()) continue;
 								// TODO gamerforEA code end
 								world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
 								world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, Blocks.dirt, 0, 3);
@@ -179,9 +175,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 						else
 						{
 							// TODO gamerforEA code start
-							BlockSnapshot snapshot = new BlockSnapshot(world, x + xx + xm, y + yy + ym, z + zz + zm, world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm), world.getBlockMetadata(x + xx + xm, y + yy + ym, z + zz + zm));
-							BlockEvent.PlaceEvent event = new BlockEvent.PlaceEvent(snapshot, bi, player);
-							if (MinecraftForge.EVENT_BUS.post(event)) continue;
+							if (FakePlayerUtils.callBlockBreakEvent(x + xx + xm, y + yy + ym, z + zz + zm, player).isCancelled()) continue;
 							// TODO gamerforEA code end
 							world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
 							world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, bi, md, 3);
@@ -264,8 +258,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 								if (bl.getBlockHardness(world, x + xx, y + yy, z + zz) >= 0.0F && (ForgeHooks.isToolEffective(stack, bl, md) || this.isEffectiveAgainst(bl)))
 								{
 									// TODO gamerforEA code start
-									BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x + xx, y + yy, z + zz, world, bl, md, (EntityPlayer) ent);
-									if (MinecraftForge.EVENT_BUS.post(event)) continue;
+									if (FakePlayerUtils.callBlockBreakEvent(x + xx, y + yy, z + zz, (EntityPlayer) ent).isCancelled()) continue;
 									// TODO gamerforEA code end
 									stack.damageItem(1, ent);
 									BlockUtils.harvestBlock(world, (EntityPlayer) ent, x + xx, y + yy, z + zz, true, 3);

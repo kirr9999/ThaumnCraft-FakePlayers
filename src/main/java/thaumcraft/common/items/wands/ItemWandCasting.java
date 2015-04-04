@@ -30,9 +30,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.world.BlockEvent;
 import thaumcraft.api.BlockCoordinates;
 import thaumcraft.api.IArchitect;
 import thaumcraft.api.aspects.Aspect;
@@ -49,6 +47,9 @@ import thaumcraft.common.config.Config;
 import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.tiles.TileOwned;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -480,9 +481,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		Block bi = world.getBlock(x, y, z);
 		int md = world.getBlockMetadata(x, y, z);
 		// TODO gamerforEA code start
-		BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x, y, z, world, bi, md, player);
-		MinecraftForge.EVENT_BUS.post(event);
-		if (event.isCanceled()) return super.onItemUseFirst(itemstack, player, world, x, y, z, side, hitX, hitY, hitZ);
+		if (FakePlayerUtils.callBlockBreakEvent(x, y, z, player).isCancelled()) return super.onItemUseFirst(itemstack, player, world, x, y, z, side, hitX, hitY, hitZ);
 		// TODO gamerforEA code end
 		boolean result = false;
 		ForgeDirection direction = ForgeDirection.getOrientation(side);
@@ -664,9 +663,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			Block bi = world.getBlock(x, y, z);
 			int meta = world.getBlockMetadata(x, y, z);
 			// TODO gamerforEA code start
-			BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(x, y, z, world, bi, meta, player);
-			MinecraftForge.EVENT_BUS.post(event);
-			if (event.isCanceled()) return super.onItemRightClick(itemstack, world, player);
+			if (FakePlayerUtils.callBlockBreakEvent(x, y, z, player).isCancelled()) return super.onItemRightClick(itemstack, world, player);
 			// TODO gamerforEA code end
 			if (bi instanceof IWandable)
 			{

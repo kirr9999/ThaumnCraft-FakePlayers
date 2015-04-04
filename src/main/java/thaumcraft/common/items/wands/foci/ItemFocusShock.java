@@ -15,6 +15,9 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.FocusUpgradeType;
@@ -28,6 +31,9 @@ import thaumcraft.common.lib.network.PacketHandler;
 import thaumcraft.common.lib.network.fx.PacketFXZap;
 import thaumcraft.common.lib.utils.BlockUtils;
 import thaumcraft.common.lib.utils.EntityUtils;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
@@ -189,7 +195,7 @@ public class ItemFocusShock extends ItemFocusBasic
 			{
 				p.worldObj.playSoundEffect(p.posX, p.posY, p.posZ, "thaumcraft:shock", 0.25F, 1.0F);
 				// TODO gamerforEA code replace, old code: if (pointedEntity != null && pointedEntity instanceof EntityLivingBase && (!(pointedEntity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled()))
-				if (pointedEntity != null && pointedEntity instanceof EntityLivingBase && !(pointedEntity instanceof EntityPlayer))
+				if (pointedEntity != null && pointedEntity instanceof EntityLivingBase && !(FakePlayerUtils.callEntityDamageByEntityEvent(p, pointedEntity, DamageCause.ENTITY_ATTACK, 1.0D).isCancelled()))
 				{
 					int var18 = this.getUpgradeLevel(wand.getFocusItem(stack), chainlightning) * 2;
 					pointedEntity.attackEntityFrom(DamageSource.causePlayerDamage(p), (float) ((var18 > 0 ? 6 : 4) + potency));
@@ -233,7 +239,6 @@ public class ItemFocusShock extends ItemFocusBasic
 					}
 				}
 			}
-
 		}
 	}
 

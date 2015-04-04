@@ -11,10 +11,14 @@ import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import thaumcraft.api.IRepairable;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
 import com.google.common.collect.ImmutableSet;
 
 import cpw.mods.fml.relauncher.Side;
@@ -60,7 +64,7 @@ public class ItemElementalPickaxe extends ItemPickaxe implements IRepairable
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		// TODO gamerforEA code replace, old code: if (!player.worldObj.isRemote && (!(entity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled()))
-		if (!player.worldObj.isRemote && !(entity instanceof EntityPlayer))
+		if (!player.worldObj.isRemote && !FakePlayerUtils.callEntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1.0D).isCancelled())
 		{
 			entity.setFire(2);
 		}

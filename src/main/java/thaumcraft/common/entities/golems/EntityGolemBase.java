@@ -38,6 +38,7 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.apache.logging.log4j.Level;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -82,6 +83,10 @@ import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.common.lib.utils.InventoryUtils;
 import thaumcraft.common.lib.utils.Utils;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.google.common.base.Strings;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
@@ -116,7 +121,19 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	// TODO gamerforEA code start
 	public String ownerName;
 	public UUID ownerUUID;
-	public FakePlayer fakePlayer;
+	private FakePlayer fakePlayer;
+
+	public FakePlayer getFakePlayer()
+	{
+		FakePlayer player;
+		if (!Strings.isNullOrEmpty(this.ownerName) && this.ownerUUID != null)
+		{
+			if (this.fakePlayer == null) this.fakePlayer = FakePlayerUtils.createNewPlayer(this.worldObj, this.ownerUUID, this.ownerName);
+			player = this.fakePlayer;
+		}
+		else player = FakePlayerUtils.getPlayer(this.worldObj);
+		return player;
+	}
 	// TODO gamerforEA code end
 
 	public EntityGolemBase(World par1World)
@@ -765,7 +782,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 
 		// TODO gamerforEA code start
 		if (this.ownerUUID != null) nbt.setString("ownerUUID", this.ownerUUID.toString());
-		if (this.ownerName != null) nbt.setString("ownerName", this.ownerName);
+		if (!Strings.isNullOrEmpty(this.ownerName)) nbt.setString("ownerName", this.ownerName);
 		// TODO gamerforEA code end
 	}
 
@@ -903,9 +920,9 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 
 		// TODO gamerforEA code start
 		String uuid = nbt.getString("ownerUUID");
-		if (!uuid.isEmpty()) this.ownerUUID = UUID.fromString(uuid);
+		if (!Strings.isNullOrEmpty(uuid)) this.ownerUUID = UUID.fromString(uuid);
 		String name = nbt.getString("ownerName");
-		if (!name.isEmpty()) this.ownerName = name;
+		if (!Strings.isNullOrEmpty(name)) this.ownerName = name;
 		// TODO gamerforEA code end
 	}
 
@@ -1506,10 +1523,9 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	{
 		this.paused = false;
 		// TODO gamerforEA code start
-		if (ds.getEntity() != null && ds.getEntity() instanceof EntityPlayer)
+		if (ds.getEntity() != null)
 		{
-			EntityPlayer player = (EntityPlayer) ds.getEntity();
-			if (!(player.getGameProfile().getName().equals(this.ownerName) && player.getGameProfile().getId().equals(this.ownerUUID))) return false;
+			if (FakePlayerUtils.callEntityDamageByEntityEvent(this.getFakePlayer(), ds.getEntity(), DamageCause.ENTITY_ATTACK, par2).isCancelled()) return false;
 		}
 		// TODO gamerforEA code end
 		if (ds == DamageSource.cactus)
@@ -1544,8 +1560,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		{
 			return false;
 		}
-		// TODO gamerforEA code replace, old code: else if (target instanceof EntityPlayer && ((EntityPlayer) target).getCommandSenderName().equals(this.getOwnerName()))
-		else if (target instanceof EntityPlayer)
+		else if (target instanceof EntityPlayer && ((EntityPlayer) target).getCommandSenderName().equals(this.getOwnerName()))
 		{
 			return false;
 		}

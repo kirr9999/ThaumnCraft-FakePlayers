@@ -3,23 +3,17 @@ package thaumcraft.common.entities.ai.fluid;
 import java.util.Iterator;
 
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.world.BlockEvent;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.entities.golems.GolemHelper;
 import thaumcraft.common.tiles.TileEssentiaReservoir;
 import thaumcraft.common.tiles.TileJarFillable;
 
-import com.gamerforea.thaumcraft.FakePlayerGetter;
-import com.mojang.authlib.GameProfile;
+import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 public class AIEssentiaEmpty extends EntityAIBase
 {
@@ -76,17 +70,7 @@ public class AIEssentiaEmpty extends EntityAIBase
 		// TODO gamerforEA code start
 		if (tile != null)
 		{
-			EntityPlayer player = null;
-			if (this.theGolem.ownerName != null && this.theGolem.ownerUUID != null)
-			{
-				if (this.theGolem.fakePlayer == null) this.theGolem.fakePlayer = FakePlayerFactory.get((WorldServer) this.theWorld, new GameProfile(this.theGolem.ownerUUID, this.theGolem.ownerName));
-				player = this.theGolem.fakePlayer;
-			}
-			else player = FakePlayerGetter.getPlayer((WorldServer) this.theWorld).get();
-
-			BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(this.jarX, this.jarY, this.jarZ, this.theWorld, this.theWorld.getBlock(this.jarX, this.jarY, this.jarZ), this.theWorld.getBlockMetadata(this.jarX, this.jarY, this.jarZ), player);
-			MinecraftForge.EVENT_BUS.post(event);
-			if (event.isCanceled()) return;
+			if (FakePlayerUtils.callBlockBreakEvent(this.jarX, this.jarY, this.jarZ, this.theGolem.getFakePlayer()).isCancelled()) return;
 		}
 		// TODO gamerforEA code end
 		if (tile != null && tile instanceof TileJarFillable)

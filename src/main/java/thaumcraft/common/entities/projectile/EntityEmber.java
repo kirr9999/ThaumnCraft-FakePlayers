@@ -2,7 +2,6 @@ package thaumcraft.common.entities.projectile;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,6 +9,11 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -94,7 +98,15 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 			if (mop.entityHit != null)
 			{
 				// TODO gamerforEA code start
-				if (mop.entityHit instanceof EntityPlayer)
+				if (this.getThrower() != null)
+				{
+					if (FakePlayerUtils.callEntityDamageByEntityEvent(this.getThrower(), mop.entityHit, DamageCause.ENTITY_ATTACK, this.damage).isCancelled())
+					{
+						this.setDead();
+						return;
+					}
+				}
+				else
 				{
 					this.setDead();
 					return;

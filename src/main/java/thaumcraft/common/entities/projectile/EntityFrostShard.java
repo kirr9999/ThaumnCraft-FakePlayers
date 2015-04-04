@@ -3,7 +3,6 @@ package thaumcraft.common.entities.projectile;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,8 +14,14 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigBlocks;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -64,10 +69,21 @@ public class EntityFrostShard extends EntityThrowable implements IEntityAddition
 	protected void onImpact(MovingObjectPosition mop)
 	{
 		// TODO gamerforEA code start
-		if (mop.entityHit != null && mop.entityHit instanceof EntityPlayer)
+		if (mop.entityHit != null)
 		{
-			this.setDead();
-			return;
+			if (this.getThrower() != null)
+			{
+				if (FakePlayerUtils.callEntityDamageByEntityEvent(this.getThrower(), mop.entityHit, DamageCause.ENTITY_ATTACK, this.getDamage()).isCancelled())
+				{
+					this.setDead();
+					return;
+				}
+			}
+			else
+			{
+				this.setDead();
+				return;
+			}
 		}
 		// TODO gamerforEA code end
 		int a;

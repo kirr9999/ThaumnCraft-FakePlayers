@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import joptsimple.internal.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -23,11 +24,9 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import thaumcraft.api.IRepairable;
 import thaumcraft.api.IRepairableExtended;
 import thaumcraft.api.TileThaumcraft;
@@ -51,7 +50,7 @@ import thaumcraft.common.lib.utils.InventoryUtils;
 import thaumcraft.common.lib.utils.TCVec3;
 import thaumcraft.common.lib.utils.Utils;
 
-import com.gamerforea.thaumcraft.FakePlayerGetter;
+import com.gamerforea.thaumcraft.FakePlayerUtils;
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -112,7 +111,19 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 	// TODO gamerforEA code start
 	public UUID ownerUUID;
 	public String ownerName;
-	public FakePlayer fakePlayerOwner;
+	private FakePlayer fakePlayerOwner;
+
+	public FakePlayer getFakePlayer()
+	{
+		FakePlayer player = null;
+		if (!Strings.isNullOrEmpty(this.ownerName) && this.ownerUUID != null)
+		{
+			if (this.fakePlayerOwner == null) this.fakePlayerOwner = FakePlayerUtils.createNewPlayer(worldObj, this.ownerUUID, this.ownerName);
+			player = this.fakePlayerOwner;
+		}
+		else player = FakePlayerUtils.getPlayer(this.worldObj);
+		return player;
+	}
 	// TODO gamerforEA code end
 
 	public TileArcaneBore()
@@ -420,17 +431,7 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 					Block vz = this.worldObj.getBlock(this.digX, this.digY, this.digZ);
 					int var3 = this.worldObj.getBlockMetadata(this.digX, this.digY, this.digZ);
 					// TODO gamerforEA code start
-					FakePlayer player = null;
-					if (this.ownerName != null && this.ownerUUID != null)
-					{
-						if (this.fakePlayerOwner == null) this.fakePlayerOwner = FakePlayerFactory.get((WorldServer) worldObj, new GameProfile(this.ownerUUID, this.ownerName));
-						player = this.fakePlayerOwner;
-					}
-					else player = FakePlayerGetter.getPlayer((WorldServer) this.worldObj).get();
-
-					BreakEvent breakEvent = new BreakEvent(this.digX, this.digY, this.digZ, worldObj, vz, var3, player);
-					MinecraftForge.EVENT_BUS.post(breakEvent);
-					if (breakEvent.isCanceled()) return;
+					if (FakePlayerUtils.callBlockBreakEvent(this.digX, this.digY, this.digZ, this.getFakePlayer()).isCancelled()) return;
 					// TODO gamerforEA code end
 					int dX;
 					if (!vz.isAir(this.worldObj, this.digX, this.digY, this.digZ))
@@ -907,9 +908,9 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 
 		// TODO gamerforEA code start
 		String uuid = nbttagcompound.getString("ownerUUID");
-		if (!uuid.isEmpty()) this.ownerUUID = UUID.fromString(uuid);
+		if (!Strings.isNullOrEmpty(uuid)) this.ownerUUID = UUID.fromString(uuid);
 		String name = nbttagcompound.getString("ownerName");
-		if (!name.isEmpty()) this.ownerName = name;
+		if (!Strings.isNullOrEmpty(name)) this.ownerName = name;
 		// TODO gamerforEA code end
 	}
 
@@ -921,7 +922,7 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 
 		// TODO gamerforEA code start
 		if (this.ownerUUID != null) nbttagcompound.setString("ownerUUID", this.ownerUUID.toString());
-		if (this.ownerName != null) nbttagcompound.setString("ownerName", this.ownerName);
+		if (!Strings.isNullOrEmpty(this.ownerName)) nbttagcompound.setString("ownerName", this.ownerName);
 		// TODO gamerforEA code end
 	}
 
