@@ -42,7 +42,7 @@ import cpw.mods.fml.relauncher.Side;
 
 public class ServerTickEventsFML
 {
-	public static Map<Integer, LinkedBlockingQueue<ServerTickEventsFML.VirtualSwapper>> swapList = new HashMap();
+	public static Map<Integer, LinkedBlockingQueue<VirtualSwapper>> swapList = new HashMap();
 	public static HashMap<Integer, ArrayList<ChunkLoc>> chunksToGenerate = new HashMap();
 
 	@SubscribeEvent
@@ -106,14 +106,14 @@ public class ServerTickEventsFML
 
 			while (!didSomething)
 			{
-				ServerTickEventsFML.VirtualSwapper vs = (ServerTickEventsFML.VirtualSwapper) queue.poll();
+				VirtualSwapper vs = (VirtualSwapper) queue.poll();
 				if (vs != null)
 				{
+					// TODO gamerforEA code start
+					if (Block.getBlockFromItem(vs.target.getItem()).getClass().getName().contains("BlockArmorStand") || FakePlayerUtils.callBlockBreakEvent(vs.x, vs.y, vs.z, vs.player).isCancelled()) continue;
+					// TODO gamerforEA code end
 					Block bi = world.getBlock(vs.x, vs.y, vs.z);
 					int md = world.getBlockMetadata(vs.x, vs.y, vs.z);
-					// TODO gamerforEA code start
-					if (FakePlayerUtils.callBlockBreakEvent(vs.x, vs.y, vs.z, vs.player).isCancelled()) continue;
-					// TODO gamerforEA code end
 					ItemWandCasting wand = null;
 					ItemFocusBasic focus = null;
 					ItemStack focusStack = null;
@@ -186,7 +186,7 @@ public class ServerTickEventsFML
 										{
 											if ((xx != 0 || var17 != 0 || var18 != 0) && world.getBlock(vs.x + xx, vs.y + var17, vs.z + var18) == vs.bSource && world.getBlockMetadata(vs.x + xx, vs.y + var17, vs.z + var18) == vs.mSource && BlockUtils.isBlockExposed(world, vs.x + xx, vs.y + var17, vs.z + var18))
 											{
-												queue.offer(new ServerTickEventsFML.VirtualSwapper(vs.x + xx, vs.y + var17, vs.z + var18, vs.bSource, vs.mSource, vs.target, vs.lifespan - 1, vs.player, vs.wand));
+												queue.offer(new VirtualSwapper(vs.x + xx, vs.y + var17, vs.z + var18, vs.bSource, vs.mSource, vs.target, vs.lifespan - 1, vs.player, vs.wand));
 											}
 										}
 									}
@@ -217,7 +217,7 @@ public class ServerTickEventsFML
 				queue = (LinkedBlockingQueue) swapList.get(Integer.valueOf(dim));
 			}
 
-			queue.offer(new ServerTickEventsFML.VirtualSwapper(x, y, z, bs, ms, target, life, player, wand));
+			queue.offer(new VirtualSwapper(x, y, z, bs, ms, target, life, player, wand));
 			world.playSoundAtEntity(player, "thaumcraft:wand", 0.25F, 1.0F);
 			swapList.put(Integer.valueOf(dim), queue);
 		}
