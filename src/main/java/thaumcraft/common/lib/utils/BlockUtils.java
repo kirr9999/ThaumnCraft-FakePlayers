@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -25,10 +28,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.ForgeEventFactory;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.entities.EntityFollowingItem;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-
-import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class BlockUtils
 {
@@ -266,10 +265,11 @@ public class BlockUtils
 		lastz = z;
 		lastdistance = 0.0D;
 		findBlocks(world, x, y, z, block);
+
 		// TODO gamerforEA code replace, old code: boolean worked = harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
-		boolean worked = false;
-		if (!FakePlayerUtils.callBlockBreakEvent(lastx, lasty, lastz, player).isCancelled()) worked = harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
+		boolean worked = !FakePlayerUtils.cantBreak(lastx, lasty, lastz, player) && harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
 		// TODO gamerforEA code end
+
 		world.markBlockForUpdate(x, y, z);
 		if (worked)
 		{

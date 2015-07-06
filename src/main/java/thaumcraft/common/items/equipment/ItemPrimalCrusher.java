@@ -3,6 +3,12 @@ package thaumcraft.common.items.equipment;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -25,13 +31,6 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.lib.utils.BlockUtils;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemPrimalCrusher extends ItemTool implements IRepairable, IWarpingGear
 {
@@ -156,7 +155,8 @@ public class ItemPrimalCrusher extends ItemTool implements IRepairable, IWarping
 								if (bl.getBlockHardness(world, x + xx, y + yy, z + zz) >= 0.0F && (ForgeHooks.isToolEffective(stack, bl, md) || this.isEffectiveAgainst(bl)))
 								{
 									// TODO gamerforEA code start
-									if (FakePlayerUtils.callBlockBreakEvent(x + xx, y + yy, z + zz, (EntityPlayer) ent).isCancelled()) return false;
+									EntityPlayer player = ent instanceof EntityPlayer ? (EntityPlayer) ent : FakePlayerUtils.getModFake(world);
+									if (FakePlayerUtils.cantBreak(x + xx, y + yy, z + zz, player)) return false;
 									// TODO gamerforEA code end
 									stack.damageItem(1, ent);
 									BlockUtils.harvestBlock(world, (EntityPlayer) ent, x + xx, y + yy, z + zz, true, 2);

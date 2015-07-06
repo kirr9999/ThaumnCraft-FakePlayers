@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -47,11 +51,6 @@ import thaumcraft.common.config.Config;
 import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.tiles.TileOwned;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemWandCasting extends Item implements IArchitect
 {
@@ -473,21 +472,21 @@ public class ItemWandCasting extends Item implements IArchitect
 				this.getRod(is).getOnUpdate().onUpdate(is, player);
 			}
 		}
-
 	}
 
 	public boolean onItemUseFirst(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
 	{
-		Block bi = world.getBlock(x, y, z);
-		int md = world.getBlockMetadata(x, y, z);
 		// TODO gamerforEA code start
-		if (FakePlayerUtils.callBlockBreakEvent(x, y, z, player).isCancelled()) return super.onItemUseFirst(itemstack, player, world, x, y, z, side, hitX, hitY, hitZ);
+		if (FakePlayerUtils.cantBreak(x, y, z, player)) return super.onItemUseFirst(itemstack, player, world, x, y, z, side, hitX, hitY, hitZ);
 		// TODO gamerforEA code end
+
+		Block block = world.getBlock(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
 		boolean result = false;
 		ForgeDirection direction = ForgeDirection.getOrientation(side);
-		if (bi instanceof IWandable)
+		if (block instanceof IWandable)
 		{
-			int tile = ((IWandable) bi).onWandRightClick(world, itemstack, player, x, y, z, side, md);
+			int tile = ((IWandable) block).onWandRightClick(world, itemstack, player, x, y, z, side, meta);
 			if (tile >= 0)
 			{
 				return tile == 1;
@@ -497,26 +496,26 @@ public class ItemWandCasting extends Item implements IArchitect
 		TileEntity tile1 = world.getTileEntity(x, y, z);
 		if (tile1 != null && tile1 instanceof IWandable)
 		{
-			int ret = ((IWandable) tile1).onWandRightClick(world, itemstack, player, x, y, z, side, md);
+			int ret = ((IWandable) tile1).onWandRightClick(world, itemstack, player, x, y, z, side, meta);
 			if (ret >= 0)
 			{
 				return ret == 1;
 			}
 		}
 
-		if (WandTriggerRegistry.hasTrigger(bi, md))
+		if (WandTriggerRegistry.hasTrigger(block, meta))
 		{
-			return WandTriggerRegistry.performTrigger(world, itemstack, player, x, y, z, side, bi, md);
+			return WandTriggerRegistry.performTrigger(world, itemstack, player, x, y, z, side, block, meta);
 		}
 		else
 		{
-			if ((bi == ConfigBlocks.blockWoodenDevice && md == 2 || bi == ConfigBlocks.blockCosmeticOpaque && md == 2) && (!Config.wardedStone || tile1 != null && tile1 instanceof TileOwned && player.getCommandSenderName().equals(((TileOwned) tile1).owner)))
+			if ((block == ConfigBlocks.blockWoodenDevice && meta == 2 || block == ConfigBlocks.blockCosmeticOpaque && meta == 2) && (!Config.wardedStone || tile1 != null && tile1 instanceof TileOwned && player.getCommandSenderName().equals(((TileOwned) tile1).owner)))
 			{
 				if (!world.isRemote)
 				{
 					((TileOwned) tile1).safeToRemove = true;
-					world.spawnEntityInWorld(new EntityItem(world, (double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, new ItemStack(bi, 1, md)));
-					world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(bi) + (md << 12));
+					world.spawnEntityInWorld(new EntityItem(world, (double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, new ItemStack(block, 1, meta)));
+					world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
 					world.setBlockToAir(x, y, z);
 				}
 				else
@@ -525,12 +524,12 @@ public class ItemWandCasting extends Item implements IArchitect
 				}
 			}
 
-			if (bi == ConfigBlocks.blockArcaneDoor && (!Config.wardedStone || tile1 != null && tile1 instanceof TileOwned && player.getCommandSenderName().equals(((TileOwned) tile1).owner)))
+			if (block == ConfigBlocks.blockArcaneDoor && (!Config.wardedStone || tile1 != null && tile1 instanceof TileOwned && player.getCommandSenderName().equals(((TileOwned) tile1).owner)))
 			{
 				if (!world.isRemote)
 				{
 					((TileOwned) tile1).safeToRemove = true;
-					if ((md & 8) == 0)
+					if ((meta & 8) == 0)
 					{
 						tile1 = world.getTileEntity(x, y + 1, z);
 					}
@@ -544,12 +543,12 @@ public class ItemWandCasting extends Item implements IArchitect
 						((TileOwned) tile1).safeToRemove = true;
 					}
 
-					if (Config.wardedStone || !Config.wardedStone && (md & 8) == 0)
+					if (Config.wardedStone || !Config.wardedStone && (meta & 8) == 0)
 					{
 						world.spawnEntityInWorld(new EntityItem(world, (double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, new ItemStack(ConfigItems.itemArcaneDoor)));
 					}
 
-					world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(bi) + (md << 12));
+					world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
 					world.setBlockToAir(x, y, z);
 				}
 				else
@@ -660,11 +659,14 @@ public class ItemWandCasting extends Item implements IArchitect
 			int x = movingobjectposition.blockX;
 			int y = movingobjectposition.blockY;
 			int z = movingobjectposition.blockZ;
+
+			// TODO gamerforEA code start
+			if (FakePlayerUtils.cantBreak(x, y, z, player)) return super.onItemRightClick(itemstack, world, player);
+			// TODO gamerforEA code end
+
 			Block bi = world.getBlock(x, y, z);
 			int meta = world.getBlockMetadata(x, y, z);
-			// TODO gamerforEA code start
-			if (FakePlayerUtils.callBlockBreakEvent(x, y, z, player).isCancelled()) return super.onItemRightClick(itemstack, world, player);
-			// TODO gamerforEA code end
+
 			if (bi instanceof IWandable)
 			{
 				ItemStack stack = ((IWandable) bi).onWandRightClick(world, itemstack, player);

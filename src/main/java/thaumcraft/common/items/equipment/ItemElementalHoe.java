@@ -1,5 +1,9 @@
 package thaumcraft.common.items.equipment;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,11 +18,6 @@ import thaumcraft.common.blocks.BlockCustomPlant;
 import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.lib.utils.Utils;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemElementalHoe extends ItemHoe implements IRepairable
 {
@@ -67,21 +66,17 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 		{
 			boolean did = false;
 
-			int md;
-			for (int bi = -1; bi <= 1; ++bi)
+			for (int xOffset = -1; xOffset <= 1; ++xOffset)
 			{
-				for (md = -1; md <= 1; ++md)
+				for (int zOffset = -1; zOffset <= 1; ++zOffset)
 				{
 					// TODO gamerforEA code start
-					if (FakePlayerUtils.callBlockBreakEvent(x + bi, y, z + md, player).isCancelled()) continue;
+					if (FakePlayerUtils.cantBreak(x + xOffset, y, z + zOffset, player)) continue;
 					// TODO gamerforEA code end
-					if (super.onItemUse(stack, player, world, x + bi, y, z + md, par7, par8, par9, par10))
+					if (super.onItemUse(stack, player, world, x + xOffset, y, z + zOffset, par7, par8, par9, par10))
 					{
-						Thaumcraft.proxy.blockSparkle(world, x + bi, y, z + md, 8401408, 2);
-						if (!did)
-						{
-							did = true;
-						}
+						Thaumcraft.proxy.blockSparkle(world, x + xOffset, y, z + zOffset, 8401408, 2);
+						if (!did) did = true;
 					}
 				}
 			}
@@ -91,18 +86,18 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 				did = Utils.useBonemealAtLoc(world, player, x, y, z);
 				if (!did)
 				{
-					Block var14 = world.getBlock(x, y, z);
-					md = world.getBlockMetadata(x, y, z);
-					if (var14 == ConfigBlocks.blockCustomPlant && md == 0 && stack.getItemDamage() + 20 <= stack.getMaxDamage())
+					Block block = world.getBlock(x, y, z);
+					int meta = world.getBlockMetadata(x, y, z);
+					if (block == ConfigBlocks.blockCustomPlant && meta == 0 && stack.getItemDamage() + 20 <= stack.getMaxDamage())
 					{
-						((BlockCustomPlant) var14).growGreatTree(world, x, y, z, world.rand);
+						((BlockCustomPlant) block).growGreatTree(world, x, y, z, world.rand);
 						stack.damageItem(5, player);
 						Thaumcraft.proxy.blockSparkle(world, x, y, z, 0, 2);
 						did = true;
 					}
-					else if (var14 == ConfigBlocks.blockCustomPlant && md == 1 && stack.getItemDamage() + 150 <= stack.getMaxDamage())
+					else if (block == ConfigBlocks.blockCustomPlant && meta == 1 && stack.getItemDamage() + 150 <= stack.getMaxDamage())
 					{
-						((BlockCustomPlant) var14).growSilverTree(world, x, y, z, world.rand);
+						((BlockCustomPlant) block).growSilverTree(world, x, y, z, world.rand);
 						stack.damageItem(25, player);
 						Thaumcraft.proxy.blockSparkle(world, x, y, z, 0, 2);
 						did = true;

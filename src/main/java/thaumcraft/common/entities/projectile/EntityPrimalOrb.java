@@ -1,14 +1,17 @@
 package thaumcraft.common.entities.projectile;
 
-import io.netty.buffer.ByteBuf;
-
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
+import com.gamerforea.thaumcraft.ExplosionByPlayer;
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -19,7 +22,6 @@ import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.common.lib.utils.Utils;
 import thaumcraft.common.lib.world.ThaumcraftWorldGenerator;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 
 public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditionalSpawnData
 {
@@ -63,13 +65,6 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 
 	public void onUpdate()
 	{
-		// TODO gamerforEA code start
-		if (this.worldObj != null)
-		{
-			this.setDead();
-			return;
-		}
-		// TODO gamerforEA code end
 		++this.count;
 		if (this.isInsideOfMaterial(Material.portal))
 		{
@@ -86,49 +81,45 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 			Thaumcraft.proxy.wispFX2(this.worldObj, this.posX + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F), this.posY + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F), this.posZ + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F), 0.1F, this.rand.nextInt(6), true, true, 0.0F);
 		}
 
-		Random var14 = new Random((long) (this.getEntityId() + this.count));
+		Random rand = new Random((long) (this.getEntityId() + this.count));
 		if (this.ticksExisted > 20)
 		{
 			if (!this.seeker)
 			{
-				this.motionX += (double) ((var14.nextFloat() - var14.nextFloat()) * 0.01F);
-				this.motionY += (double) ((var14.nextFloat() - var14.nextFloat()) * 0.01F);
-				this.motionZ += (double) ((var14.nextFloat() - var14.nextFloat()) * 0.01F);
+				this.motionX += (double) ((rand.nextFloat() - rand.nextFloat()) * 0.01F);
+				this.motionY += (double) ((rand.nextFloat() - rand.nextFloat()) * 0.01F);
+				this.motionZ += (double) ((rand.nextFloat() - rand.nextFloat()) * 0.01F);
 			}
 			else
 			{
-				ArrayList l = EntityUtils.getEntitiesInRange(this.worldObj, this.posX, this.posY, this.posZ, this, EntityLivingBase.class, 16.0D);
-				double d = Double.MAX_VALUE;
-				Entity t = null;
-				Iterator dx = l.iterator();
+				List<Entity> entities = EntityUtils.getEntitiesInRange(this.worldObj, this.posX, this.posY, this.posZ, this, EntityLivingBase.class, 16.0D);
+				double distance = Double.MAX_VALUE;
+				Entity entity = null;
 
-				double dy;
-				while (dx.hasNext())
+				for (Entity e : entities)
 				{
-					Entity e = (Entity) dx.next();
 					if (e.getEntityId() != this.oi && !e.isDead)
 					{
-						dy = this.getDistanceSqToEntity(e);
-						if (dy < d)
+						double distanceSq = this.getDistanceSqToEntity(e);
+						if (distanceSq < distance)
 						{
-							d = dy;
-							t = e;
+							distance = distanceSq;
+							entity = e;
 						}
 					}
 				}
 
-				if (t != null)
+				if (entity != null)
 				{
-					double var15 = t.posX - this.posX;
-					dy = t.boundingBox.minY + (double) t.height * 0.9D - this.posY;
-					double dz = t.posZ - this.posZ;
-					double d13 = 0.2D;
-					var15 /= d;
-					dy /= d;
-					dz /= d;
-					this.motionX += var15 * d13;
-					this.motionY += dy * d13;
-					this.motionZ += dz * d13;
+					double dx = entity.posX - this.posX;
+					double dy = entity.boundingBox.minY + (double) entity.height * 0.9D - this.posY;
+					double dz = entity.posZ - this.posZ;
+					dx /= distance;
+					dy /= distance;
+					dz /= distance;
+					this.motionX += dx * 0.2D;
+					this.motionY += dy * 0.2D;
+					this.motionZ += dz * 0.2D;
 					this.motionX = (double) MathHelper.clamp_float((float) this.motionX, -0.2F, 0.2F);
 					this.motionY = (double) MathHelper.clamp_float((float) this.motionY, -0.2F, 0.2F);
 					this.motionZ = (double) MathHelper.clamp_float((float) this.motionZ, -0.2F, 0.2F);
@@ -141,7 +132,6 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 		{
 			this.setDead();
 		}
-
 	}
 
 	protected void onImpact(MovingObjectPosition mop)
@@ -162,16 +152,21 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 
 		if (!this.worldObj.isRemote)
 		{
-			float var7 = 1.0F;
-			float var8 = 2.0F;
+			float f1 = 1.0F;
+			float f2 = 2.0F;
+
 			if (mop.typeOfHit == MovingObjectType.BLOCK && this.isInsideOfMaterial(Material.portal))
 			{
-				var8 = 4.0F;
-				var7 = 10.0F;
+				f1 = 10.0F;
+				f2 = 4.0F;
 			}
 
-			this.worldObj.createExplosion((Entity) null, this.posX, this.posY, this.posZ, var8, true);
-			if (!this.seeker && (float) this.rand.nextInt(100) <= var7)
+			// TODO gamerforEA code replace, old code: this.worldObj.createExplosion(null, this.posX, this.posY, this.posZ, f2, true);
+			EntityPlayer player = this.getThrower() instanceof EntityPlayer ? (EntityPlayer) this.getThrower() : FakePlayerUtils.getModFake(this.worldObj);
+			ExplosionByPlayer.createExplosion(player, this.worldObj, null, this.posX, this.posY, this.posZ, f2, true);
+			// TODO gamerforEA code end
+
+			if (!this.seeker && (float) this.rand.nextInt(100) <= f1)
 			{
 				if (this.rand.nextBoolean())
 				{
@@ -194,21 +189,23 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 		int y = (int) this.posY;
 		int z = (int) this.posZ;
 
-		for (int a = 0; a < 10; ++a)
+		for (int i = 0; i < 10; ++i)
 		{
-			int xx = x + (int) (this.rand.nextFloat() - this.rand.nextFloat() * 6.0F);
-			int zz = z + (int) (this.rand.nextFloat() - this.rand.nextFloat() * 6.0F);
-			if (this.rand.nextBoolean() && this.worldObj.getBiomeGenForCoords(xx, zz) != ThaumcraftWorldGenerator.biomeTaint)
+			int chunkX = x + (int) (this.rand.nextFloat() - this.rand.nextFloat() * 6.0F);
+			int chunkZ = z + (int) (this.rand.nextFloat() - this.rand.nextFloat() * 6.0F);
+			if (this.rand.nextBoolean() && this.worldObj.getBiomeGenForCoords(chunkX, chunkZ) != ThaumcraftWorldGenerator.biomeTaint)
 			{
-				Utils.setBiomeAt(this.worldObj, xx, zz, ThaumcraftWorldGenerator.biomeTaint);
-				int yy = this.worldObj.getHeightValue(xx, zz);
-				if (!this.worldObj.isAirBlock(xx, yy - 1, zz))
-				{
-					this.worldObj.setBlock(xx, yy, zz, ConfigBlocks.blockTaintFibres, 0, 3);
-				}
+				int yy = this.worldObj.getHeightValue(chunkX, chunkZ);
+
+				// TODO gamerforEA code start
+				EntityPlayer player = this.getThrower() instanceof EntityPlayer ? (EntityPlayer) this.getThrower() : FakePlayerUtils.getModFake(this.worldObj);
+				if (FakePlayerUtils.cantBreak(chunkX, yy, chunkZ, player)) continue;
+				// TODO gamerforEA code end
+
+				Utils.setBiomeAt(this.worldObj, chunkX, chunkZ, ThaumcraftWorldGenerator.biomeTaint);
+				if (!this.worldObj.isAirBlock(chunkX, yy - 1, chunkZ)) this.worldObj.setBlock(chunkX, yy, chunkZ, ConfigBlocks.blockTaintFibres, 0, 3);
 			}
 		}
-
 	}
 
 	public float getShadowSize()

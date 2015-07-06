@@ -1,5 +1,10 @@
 package thaumcraft.common.entities.projectile;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
@@ -9,14 +14,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpawnData
 {
@@ -98,15 +95,7 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 			if (mop.entityHit != null)
 			{
 				// TODO gamerforEA code start
-				if (this.getThrower() != null)
-				{
-					if (FakePlayerUtils.callEntityDamageByEntityEvent(this.getThrower(), mop.entityHit, DamageCause.ENTITY_ATTACK, this.damage).isCancelled())
-					{
-						this.setDead();
-						return;
-					}
-				}
-				else
+				if (this.getThrower() == null || FakePlayerUtils.cantDamage(this.getThrower(), mop.entityHit))
 				{
 					this.setDead();
 					return;

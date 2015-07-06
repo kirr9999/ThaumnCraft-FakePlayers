@@ -2,6 +2,11 @@ package thaumcraft.common.items.equipment;
 
 import java.util.Set;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.google.common.collect.ImmutableSet;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -11,18 +16,9 @@ import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import thaumcraft.api.IRepairable;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.google.common.collect.ImmutableSet;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemElementalPickaxe extends ItemPickaxe implements IRepairable
 {
@@ -64,7 +60,7 @@ public class ItemElementalPickaxe extends ItemPickaxe implements IRepairable
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		// TODO gamerforEA code replace, old code: if (!player.worldObj.isRemote && (!(entity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled()))
-		if (!player.worldObj.isRemote && !FakePlayerUtils.callEntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1.0D).isCancelled())
+		if (!player.worldObj.isRemote && !FakePlayerUtils.cantDamage(player, entity))
 		{
 			entity.setFire(2);
 		}

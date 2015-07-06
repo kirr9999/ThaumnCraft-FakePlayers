@@ -1,5 +1,9 @@
 package thaumcraft.common.items.wands.foci;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -12,9 +16,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -24,11 +25,6 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.entities.monster.EntityFireBat;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.lib.utils.EntityUtils;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemFocusHellbat extends ItemFocusBasic
 {
@@ -99,7 +95,7 @@ public class ItemFocusHellbat extends ItemFocusBasic
 				}
 
 				// TODO gamerforEA code start
-				if (FakePlayerUtils.callEntityDamageByEntityEvent(player, pointedEntity, DamageCause.ENTITY_ATTACK, 1.0D).isCancelled()) return itemstack;
+				if (FakePlayerUtils.cantDamage(player, pointedEntity)) return itemstack;
 				// TODO gamerforEA code end
 
 				EntityFireBat firebat = new EntityFireBat(world);

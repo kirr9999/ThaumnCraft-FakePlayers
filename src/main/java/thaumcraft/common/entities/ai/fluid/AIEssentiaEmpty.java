@@ -1,6 +1,6 @@
 package thaumcraft.common.entities.ai.fluid;
 
-import java.util.Iterator;
+import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.tileentity.TileEntity;
@@ -12,8 +12,6 @@ import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.entities.golems.GolemHelper;
 import thaumcraft.common.tiles.TileEssentiaReservoir;
 import thaumcraft.common.tiles.TileJarFillable;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 public class AIEssentiaEmpty extends EntityAIBase
 {
@@ -68,15 +66,12 @@ public class AIEssentiaEmpty extends EntityAIBase
 	{
 		TileEntity tile = this.theWorld.getTileEntity(this.jarX, this.jarY, this.jarZ);
 		// TODO gamerforEA code start
-		if (tile != null)
-		{
-			if (FakePlayerUtils.callBlockBreakEvent(this.jarX, this.jarY, this.jarZ, this.theGolem.getFakePlayer()).isCancelled()) return;
-		}
+		if (tile != null && FakePlayerUtils.cantBreak(this.jarX, this.jarY, this.jarZ, this.theGolem.getFakePlayer())) return;
 		// TODO gamerforEA code end
-		if (tile != null && tile instanceof TileJarFillable)
+		if (tile instanceof TileJarFillable)
 		{
-			TileJarFillable i$2 = (TileJarFillable) tile;
-			this.theGolem.essentiaAmount = i$2.addToContainer(this.theGolem.essentia, this.theGolem.essentiaAmount);
+			TileJarFillable fillable = (TileJarFillable) tile;
+			this.theGolem.essentiaAmount = fillable.addToContainer(this.theGolem.essentia, this.theGolem.essentiaAmount);
 			if (this.theGolem.essentiaAmount == 0)
 			{
 				this.theGolem.essentia = null;
@@ -86,15 +81,15 @@ public class AIEssentiaEmpty extends EntityAIBase
 			this.theGolem.updateCarried();
 			this.theWorld.markBlockForUpdate(this.jarX, this.jarY, this.jarZ);
 		}
-		else if (tile != null && tile instanceof TileEssentiaReservoir)
+		else if (tile instanceof TileEssentiaReservoir)
 		{
-			TileEssentiaReservoir i$1 = (TileEssentiaReservoir) tile;
-			if (i$1.getSuctionAmount(i$1.facing) > 0 && (i$1.getSuctionType(i$1.facing) == null || i$1.getSuctionType(i$1.facing) == this.theGolem.essentia))
+			TileEssentiaReservoir reservoir = (TileEssentiaReservoir) tile;
+			if (reservoir.getSuctionAmount(reservoir.facing) > 0 && (reservoir.getSuctionType(reservoir.facing) == null || reservoir.getSuctionType(reservoir.facing) == this.theGolem.essentia))
 			{
-				int side1 = i$1.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, i$1.facing);
-				if (side1 > 0)
+				int amount = reservoir.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, reservoir.facing);
+				if (amount > 0)
 				{
-					this.theGolem.essentiaAmount -= side1;
+					this.theGolem.essentiaAmount -= amount;
 					if (this.theGolem.essentiaAmount == 0)
 					{
 						this.theGolem.essentia = null;
@@ -106,17 +101,15 @@ public class AIEssentiaEmpty extends EntityAIBase
 				}
 			}
 		}
-		else if (tile != null && tile instanceof IEssentiaTransport)
+		else if (tile instanceof IEssentiaTransport)
 		{
-			Iterator i$ = GolemHelper.getMarkedSides(this.theGolem, tile, (byte) -1).iterator();
-
-			while (i$.hasNext())
+			for (int side : GolemHelper.getMarkedSides(this.theGolem, tile, (byte) -1))
 			{
-				Integer side = (Integer) i$.next();
 				IEssentiaTransport trans = (IEssentiaTransport) tile;
-				if (trans.canInputFrom(ForgeDirection.getOrientation(side.intValue())) && trans.getSuctionAmount(ForgeDirection.getOrientation(side.intValue())) > 0 && (trans.getSuctionType(ForgeDirection.getOrientation(side.intValue())) == null || trans.getSuctionType(ForgeDirection.getOrientation(side.intValue())) == this.theGolem.essentia))
+				ForgeDirection direction = ForgeDirection.getOrientation(side);
+				if (trans.canInputFrom(direction) && trans.getSuctionAmount(direction) > 0 && (trans.getSuctionType(direction) == null || trans.getSuctionType(direction) == this.theGolem.essentia))
 				{
-					int added = trans.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, ForgeDirection.getOrientation(side.intValue()));
+					int added = trans.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, direction);
 					if (added > 0)
 					{
 						this.theGolem.essentiaAmount -= added;
@@ -133,6 +126,5 @@ public class AIEssentiaEmpty extends EntityAIBase
 				}
 			}
 		}
-
 	}
 }

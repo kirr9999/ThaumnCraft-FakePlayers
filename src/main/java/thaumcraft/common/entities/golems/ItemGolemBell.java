@@ -3,6 +3,8 @@ package thaumcraft.common.entities.golems;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -25,8 +27,6 @@ import thaumcraft.client.lib.PlayerNotifications;
 import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemGolemBell extends Item
 {
@@ -245,7 +245,7 @@ public class ItemGolemBell extends Item
 		{
 			// TODO gamerforEA code start
 			EntityGolemBase golem = (EntityGolemBase) target;
-			if (!(player.getGameProfile().getName().equals(golem.ownerName) && player.getGameProfile().getId().equals(golem.ownerUUID))) return false;
+			if (!(player.getGameProfile().getName().equals(golem.ownerProfile.getName()) && player.getGameProfile().getId().equals(golem.ownerProfile.getId()))) return false;
 			// TODO gamerforEA code end
 			if (stack.hasTagCompound())
 			{
@@ -364,7 +364,7 @@ public class ItemGolemBell extends Item
 			{
 				// TODO gamerforEA code start
 				EntityGolemBase golem = (EntityGolemBase) entity;
-				if (!(player.getGameProfile().getName().equals(golem.ownerName) && player.getGameProfile().getId().equals(golem.ownerUUID))) return false;
+				if (!(player.getGameProfile().getName().equals(golem.ownerProfile.getName()) && player.getGameProfile().getId().equals(golem.ownerProfile.getId()))) return false;
 				// TODO gamerforEA code end
 				int type = ((EntityGolemBase) entity).golemType.ordinal();
 				String deco = ((EntityGolemBase) entity).decoration;

@@ -3,6 +3,8 @@ package thaumcraft.common.blocks;
 import java.util.List;
 import java.util.Random;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -50,8 +52,6 @@ import thaumcraft.common.tiles.TileMagicWorkbenchCharger;
 import thaumcraft.common.tiles.TileThaumatorium;
 import thaumcraft.common.tiles.TileThaumatoriumTop;
 import thaumcraft.common.tiles.TileVisRelay;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockMetalDevice extends BlockContainer
 {
@@ -602,10 +602,10 @@ public class BlockMetalDevice extends BlockContainer
 					crucible.fill(ForgeDirection.UNKNOWN, fluid, true);
 					/* TODO gamerforEA fix dupe, old code:
 					ItemStack stack = null;
-
+					
 					for (FluidContainerData fluidData : FluidContainerRegistry.getRegisteredFluidContainerData())
 						if (fluidData.filledContainer.isItemEqual(player.inventory.getCurrentItem())) stack = fluidData.emptyContainer.copy();
-
+					
 					player.inventory.decrStackSize(player.inventory.currentItem, 1);
 					if (stack != null && !player.inventory.addItemStackToInventory(stack))
 					{

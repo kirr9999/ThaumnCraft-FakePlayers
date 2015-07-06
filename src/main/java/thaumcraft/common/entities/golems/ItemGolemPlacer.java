@@ -2,6 +2,8 @@ package thaumcraft.common.entities.golems;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,8 +18,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemGolemPlacer extends Item
 {
@@ -290,8 +290,7 @@ public class ItemGolemPlacer extends Item
 			}
 
 			// TODO gamerforEA code start
-			golem.ownerName = player.getGameProfile().getName();
-			golem.ownerUUID = player.getGameProfile().getId();
+			golem.ownerProfile = player.getGameProfile();
 			// TODO gamerforEA code end
 		}
 

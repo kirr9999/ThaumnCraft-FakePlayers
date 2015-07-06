@@ -3,6 +3,8 @@ package thaumcraft.common.entities.ai.fluid;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
@@ -12,8 +14,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.entities.golems.GolemHelper;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 public class AILiquidEmpty extends EntityAIBase
 {
@@ -82,7 +82,7 @@ public class AILiquidEmpty extends EntityAIBase
 		if (tile != null && tile instanceof IFluidHandler)
 		{
 			// TODO gamerforEA code start
-			if (FakePlayerUtils.callBlockBreakEvent(cX, cY, cZ, this.theGolem.getFakePlayer()).isCancelled()) return;
+			if (FakePlayerUtils.cantBreak(cX, cY, cZ, this.theGolem.getFakePlayer())) return;
 			// TODO gamerforEA code end
 			IFluidHandler fh = (IFluidHandler) tile;
 			int amt = fh.fill(ForgeDirection.getOrientation(this.theGolem.homeFacing), this.theGolem.fluidCarried, true);

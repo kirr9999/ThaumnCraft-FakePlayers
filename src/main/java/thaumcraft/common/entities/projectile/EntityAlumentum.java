@@ -1,7 +1,10 @@
 package thaumcraft.common.entities.projectile;
 
-import net.minecraft.entity.Entity;
+import com.gamerforea.thaumcraft.ExplosionByPlayer;
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -49,19 +52,15 @@ public class EntityAlumentum extends EntityThrowable
 	}
 
 	@Override
-	protected void onImpact(MovingObjectPosition par1MovingObjectPosition)
+	protected void onImpact(MovingObjectPosition mop)
 	{
-		// TODO gamerforEA code start
-		if (this.worldObj != null)
-		{
-			this.setDead();
-			return;
-		}
-		// TODO gamerforEA code end
 		if (!this.worldObj.isRemote)
 		{
-			boolean var2 = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-			this.worldObj.createExplosion((Entity) null, this.posX, this.posY, this.posZ, 1.66F, var2);
+			boolean grief = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
+			// TODO gamerforEA code replace, old code: this.worldObj.createExplosion(null, this.posX, this.posY, this.posZ, 1.66F, grief);
+			EntityPlayer player = this.getThrower() instanceof EntityPlayer ? (EntityPlayer) this.getThrower() : FakePlayerUtils.getModFake(this.worldObj);
+			ExplosionByPlayer.createExplosion(player, this.worldObj, null, this.posX, this.posY, this.posZ, 1.66F, grief);
+			// TODO gamerforEA code end
 			this.setDead();
 		}
 	}

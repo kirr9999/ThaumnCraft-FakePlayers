@@ -3,6 +3,11 @@ package thaumcraft.common.items.equipment;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.google.common.collect.ImmutableSet;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -29,12 +34,6 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.lib.utils.BlockUtils;
 import thaumcraft.common.lib.utils.InventoryUtils;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.google.common.collect.ImmutableSet;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemElementalShovel extends ItemSpade implements IRepairable, IArchitect
 {
@@ -81,9 +80,9 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 		int ym = ForgeDirection.getOrientation(side).offsetY;
 		int zm = ForgeDirection.getOrientation(side).offsetZ;
 		Block bi = world.getBlock(x, y, z);
-		int md = world.getBlockMetadata(x, y, z);
-		TileEntity te = world.getTileEntity(x, y, z);
-		if (te == null)
+		int meta = world.getBlockMetadata(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile == null)
 		{
 			for (int aa = -1; aa <= 1; ++aa)
 			{
@@ -155,15 +154,15 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 						yy = bb;
 					}
 
-					Block var24 = world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm);
-					if (world.isAirBlock(x + xx + xm, y + yy + ym, z + zz + zm) || var24 == Blocks.vine || var24 == Blocks.tallgrass || var24.getMaterial() == Material.water || var24 == Blocks.deadbush || var24.isReplaceable(world, x + xx + xm, y + yy + ym, z + zz + zm))
+					Block block = world.getBlock(x + xx + xm, y + yy + ym, z + zz + zm);
+					if (world.isAirBlock(x + xx + xm, y + yy + ym, z + zz + zm) || block == Blocks.vine || block == Blocks.tallgrass || block.getMaterial() == Material.water || block == Blocks.deadbush || block.isReplaceable(world, x + xx + xm, y + yy + ym, z + zz + zm))
 					{
-						if (!player.capabilities.isCreativeMode && !InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(bi), md))
+						if (!player.capabilities.isCreativeMode && !InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(bi), meta))
 						{
 							if (bi == Blocks.grass && (player.capabilities.isCreativeMode || InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(Blocks.dirt), 0)))
 							{
 								// TODO gamerforEA code start
-								if (FakePlayerUtils.callBlockBreakEvent(x + xx + xm, y + yy + ym, z + zz + zm, player).isCancelled()) continue;
+								if (FakePlayerUtils.cantBreak(x + xx + xm, y + yy + ym, z + zz + zm, player)) continue;
 								// TODO gamerforEA code end
 								world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
 								world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, Blocks.dirt, 0, 3);
@@ -175,10 +174,10 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 						else
 						{
 							// TODO gamerforEA code start
-							if (FakePlayerUtils.callBlockBreakEvent(x + xx + xm, y + yy + ym, z + zz + zm, player).isCancelled()) continue;
+							if (FakePlayerUtils.cantBreak(x + xx + xm, y + yy + ym, z + zz + zm, player)) continue;
 							// TODO gamerforEA code end
 							world.playSound((double) (x + xx + xm), (double) (y + yy + ym), (double) (z + zz + zm), bi.stepSound.func_150496_b(), 0.6F, 0.9F + world.rand.nextFloat() * 0.2F, false);
-							world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, bi, md, 3);
+							world.setBlock(x + xx + xm, y + yy + ym, z + zz + zm, bi, meta, 3);
 							itemstack.damageItem(1, player);
 							Thaumcraft.proxy.blockSparkle(world, x + xx + xm, y + yy + ym, z + zz + zm, 8401408, 4);
 							player.swingItem();
@@ -258,7 +257,8 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 								if (bl.getBlockHardness(world, x + xx, y + yy, z + zz) >= 0.0F && (ForgeHooks.isToolEffective(stack, bl, md) || this.isEffectiveAgainst(bl)))
 								{
 									// TODO gamerforEA code start
-									if (FakePlayerUtils.callBlockBreakEvent(x + xx, y + yy, z + zz, (EntityPlayer) ent).isCancelled()) continue;
+									EntityPlayer player = ent instanceof EntityPlayer ? (EntityPlayer) ent : FakePlayerUtils.getModFake(world);
+									if (FakePlayerUtils.cantBreak(x + xx, y + yy, z + zz, player)) continue;
 									// TODO gamerforEA code end
 									stack.damageItem(1, ent);
 									BlockUtils.harvestBlock(world, (EntityPlayer) ent, x + xx, y + yy, z + zz, true, 3);

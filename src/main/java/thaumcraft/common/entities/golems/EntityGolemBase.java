@@ -1,11 +1,20 @@
 package thaumcraft.common.entities.golems;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.apache.logging.log4j.Level;
+
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.google.common.base.Strings;
+import com.mojang.authlib.GameProfile;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,10 +45,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.FluidStack;
-
-import org.apache.logging.log4j.Level;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
@@ -84,14 +89,6 @@ import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.common.lib.utils.InventoryUtils;
 import thaumcraft.common.lib.utils.Utils;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.google.common.base.Strings;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpawnData
 {
 	public InventoryMob inventory;
@@ -119,20 +116,14 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	public int healing;
 
 	// TODO gamerforEA code start
-	public String ownerName;
-	public UUID ownerUUID;
-	private FakePlayer fakePlayer;
+	public GameProfile ownerProfile;
+	private FakePlayer ownerFake;
 
 	public FakePlayer getFakePlayer()
 	{
-		FakePlayer player;
-		if (!Strings.isNullOrEmpty(this.ownerName) && this.ownerUUID != null)
-		{
-			if (this.fakePlayer == null) this.fakePlayer = FakePlayerUtils.createNewPlayer(this.worldObj, this.ownerUUID, this.ownerName);
-			player = this.fakePlayer;
-		}
-		else player = FakePlayerUtils.getPlayer(this.worldObj);
-		return player;
+		if (this.ownerFake != null) return this.ownerFake;
+		else if (this.ownerProfile != null) return this.ownerFake = FakePlayerUtils.create(this.worldObj, this.ownerProfile);
+		else return FakePlayerUtils.getModFake(this.worldObj);
 	}
 	// TODO gamerforEA code end
 
@@ -781,8 +772,11 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		nbt.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
 
 		// TODO gamerforEA code start
-		if (this.ownerUUID != null) nbt.setString("ownerUUID", this.ownerUUID.toString());
-		if (!Strings.isNullOrEmpty(this.ownerName)) nbt.setString("ownerName", this.ownerName);
+		if (this.ownerProfile != null)
+		{
+			nbt.setString("ownerUUID", this.ownerProfile.getId().toString());
+			nbt.setString("ownerName", this.ownerProfile.getName());
+		}
 		// TODO gamerforEA code end
 	}
 
@@ -920,9 +914,11 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 
 		// TODO gamerforEA code start
 		String uuid = nbt.getString("ownerUUID");
-		if (!Strings.isNullOrEmpty(uuid)) this.ownerUUID = UUID.fromString(uuid);
-		String name = nbt.getString("ownerName");
-		if (!Strings.isNullOrEmpty(name)) this.ownerName = name;
+		if (!Strings.isNullOrEmpty(uuid))
+		{
+			String name = nbt.getString("ownerName");
+			if (!Strings.isNullOrEmpty(name)) this.ownerProfile = new GameProfile(UUID.fromString(uuid), name);
+		}
 		// TODO gamerforEA code end
 	}
 
@@ -1523,10 +1519,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	{
 		this.paused = false;
 		// TODO gamerforEA code start
-		if (ds.getEntity() != null)
-		{
-			if (FakePlayerUtils.callEntityDamageByEntityEvent(this.getFakePlayer(), ds.getEntity(), DamageCause.ENTITY_ATTACK, par2).isCancelled()) return false;
-		}
+		if (ds.getEntity() != null && FakePlayerUtils.cantDamage(this.getFakePlayer(), ds.getEntity())) return false;
 		// TODO gamerforEA code end
 		if (ds == DamageSource.cactus)
 		{

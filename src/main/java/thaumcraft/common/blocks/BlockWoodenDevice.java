@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -37,8 +39,6 @@ import thaumcraft.common.tiles.TileBanner;
 import thaumcraft.common.tiles.TileBellows;
 import thaumcraft.common.tiles.TileOwned;
 import thaumcraft.common.tiles.TileSensor;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockWoodenDevice extends BlockContainer
 {
@@ -558,26 +558,25 @@ public class BlockWoodenDevice extends BlockContainer
 	}
 
 	@Override
-	public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase p, ItemStack s)
+	public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase entity, ItemStack stack)
 	{
 		TileEntity tile = w.getTileEntity(x, y, z);
-		if (tile != null && tile instanceof TileOwned && p instanceof EntityPlayer)
+		if (tile instanceof TileOwned && entity instanceof EntityPlayer)
 		{
-			((TileOwned) tile).owner = ((EntityPlayer) p).getCommandSenderName();
+			((TileOwned) tile).owner = ((EntityPlayer) entity).getCommandSenderName();
 			tile.markDirty();
 		}
 
 		// TODO gamerforEA code start
-		if (tile != null && tile instanceof TileArcaneBore && p instanceof EntityPlayer)
+		if (tile instanceof TileArcaneBore && entity instanceof EntityPlayer)
 		{
-			EntityPlayer player = (EntityPlayer) p;
+			EntityPlayer player = (EntityPlayer) entity;
 			TileArcaneBore bore = (TileArcaneBore) tile;
-			bore.ownerName = player.getGameProfile().getName();
-			bore.ownerUUID = player.getGameProfile().getId();
+			bore.ownerProfile = player.getGameProfile();
 		}
 		// TODO gamerforEA code end
 
-		super.onBlockPlacedBy(w, x, y, z, p, s);
+		super.onBlockPlacedBy(w, x, y, z, entity, stack);
 	}
 
 	@Override

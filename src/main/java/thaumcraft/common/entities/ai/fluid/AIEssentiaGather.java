@@ -1,5 +1,7 @@
 package thaumcraft.common.entities.ai.fluid;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
@@ -11,8 +13,6 @@ import thaumcraft.common.entities.golems.EntityGolemBase;
 import thaumcraft.common.tiles.TileAlembic;
 import thaumcraft.common.tiles.TileEssentiaReservoir;
 import thaumcraft.common.tiles.TileJarFillable;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 public class AIEssentiaGather extends EntityAIBase
 {
@@ -99,49 +99,45 @@ public class AIEssentiaGather extends EntityAIBase
 	public void startExecuting()
 	{
 		ChunkCoordinates home = this.theGolem.getHomePosition();
-		ForgeDirection facing = ForgeDirection.getOrientation(this.theGolem.homeFacing);
-		int cX = home.posX - facing.offsetX;
-		int cY = home.posY - facing.offsetY;
-		int cZ = home.posZ - facing.offsetZ;
-		TileEntity te = this.theWorld.getTileEntity(cX, cY + this.start, cZ);
-		if (te != null && te instanceof IEssentiaTransport)
+		ForgeDirection direction = ForgeDirection.getOrientation(this.theGolem.homeFacing);
+		int cX = home.posX - direction.offsetX;
+		int cY = home.posY - direction.offsetY;
+		int cZ = home.posZ - direction.offsetZ;
+		TileEntity tile = this.theWorld.getTileEntity(cX, cY + this.start, cZ);
+		if (tile instanceof IEssentiaTransport)
 		{
 			// TODO gamerforEA code start
-			if (FakePlayerUtils.callBlockBreakEvent(cX, cY, cZ, this.theGolem.getFakePlayer()).isCancelled()) return;
+			if (FakePlayerUtils.cantBreak(cX, cY, cZ, this.theGolem.getFakePlayer())) return;
 			// TODO gamerforEA code end
-			if (te instanceof TileAlembic || te instanceof TileJarFillable)
+			if (tile instanceof TileAlembic || tile instanceof TileJarFillable)
 			{
-				facing = ForgeDirection.UP;
+				direction = ForgeDirection.UP;
 			}
 
-			if (te instanceof TileEssentiaReservoir)
+			if (tile instanceof TileEssentiaReservoir)
 			{
-				facing = ((TileEssentiaReservoir) te).facing;
+				direction = ((TileEssentiaReservoir) tile).facing;
 			}
 
-			IEssentiaTransport ta = (IEssentiaTransport) te;
-			if (ta.getEssentiaAmount(facing) == 0)
+			IEssentiaTransport ta = (IEssentiaTransport) tile;
+			if (ta.getEssentiaAmount(direction) == 0)
 			{
 				return;
 			}
 
-			if (ta.canOutputTo(facing) && ta.getEssentiaAmount(facing) > 0 && (this.theGolem.essentiaAmount == 0 || (this.theGolem.essentia == null || this.theGolem.essentia.equals(ta.getEssentiaType(facing)) || this.theGolem.essentia.equals(ta.getEssentiaType(ForgeDirection.UNKNOWN))) && this.theGolem.essentiaAmount < this.theGolem.getCarryLimit()))
+			if (ta.canOutputTo(direction) && ta.getEssentiaAmount(direction) > 0 && (this.theGolem.essentiaAmount == 0 || (this.theGolem.essentia == null || this.theGolem.essentia.equals(ta.getEssentiaType(direction)) || this.theGolem.essentia.equals(ta.getEssentiaType(ForgeDirection.UNKNOWN))) && this.theGolem.essentiaAmount < this.theGolem.getCarryLimit()))
 			{
-				Aspect a = ta.getEssentiaType(facing);
-				if (a == null)
+				Aspect aspect = ta.getEssentiaType(direction);
+				if (aspect == null)
 				{
-					a = ta.getEssentiaType(ForgeDirection.UNKNOWN);
+					aspect = ta.getEssentiaType(ForgeDirection.UNKNOWN);
 				}
 
-				int qq = ta.getEssentiaAmount(facing);
-				if (te instanceof TileEssentiaReservoir)
-				{
-					qq = ((TileEssentiaReservoir) te).containerContains(a);
-				}
+				int amount = tile instanceof TileEssentiaReservoir ? ((TileEssentiaReservoir) tile).containerContains(aspect) : ta.getEssentiaAmount(direction);
+				int am = Math.min(amount, this.theGolem.getCarryLimit() - this.theGolem.essentiaAmount);
+				this.theGolem.essentia = aspect;
+				int taken = ta.takeEssentia(aspect, am, direction);
 
-				int am = Math.min(qq, this.theGolem.getCarryLimit() - this.theGolem.essentiaAmount);
-				this.theGolem.essentia = a;
-				int taken = ta.takeEssentia(a, am, facing);
 				if (taken > 0)
 				{
 					this.theGolem.essentiaAmount += taken;

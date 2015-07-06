@@ -5,6 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.mojang.authlib.GameProfile;
+
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import joptsimple.internal.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -49,11 +53,6 @@ import thaumcraft.common.lib.utils.BlockUtils;
 import thaumcraft.common.lib.utils.InventoryUtils;
 import thaumcraft.common.lib.utils.TCVec3;
 import thaumcraft.common.lib.utils.Utils;
-
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.mojang.authlib.GameProfile;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class TileArcaneBore extends TileThaumcraft implements IInventory, IWandable
 {
@@ -109,20 +108,14 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 	private final int itemsPerVis;
 
 	// TODO gamerforEA code start
-	public UUID ownerUUID;
-	public String ownerName;
-	private FakePlayer fakePlayerOwner;
+	public GameProfile ownerProfile;
+	private FakePlayer ownerFake;
 
 	public FakePlayer getFakePlayer()
 	{
-		FakePlayer player = null;
-		if (!Strings.isNullOrEmpty(this.ownerName) && this.ownerUUID != null)
-		{
-			if (this.fakePlayerOwner == null) this.fakePlayerOwner = FakePlayerUtils.createNewPlayer(worldObj, this.ownerUUID, this.ownerName);
-			player = this.fakePlayerOwner;
-		}
-		else player = FakePlayerUtils.getPlayer(this.worldObj);
-		return player;
+		if (this.ownerFake != null) return this.ownerFake;
+		else if (this.ownerProfile != null) return this.ownerFake = FakePlayerUtils.create(this.worldObj, this.ownerProfile);
+		else return FakePlayerUtils.getModFake(this.worldObj);
 	}
 	// TODO gamerforEA code end
 
@@ -428,33 +421,36 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 				if (this.toDig)
 				{
 					this.toDig = false;
-					Block vz = this.worldObj.getBlock(this.digX, this.digY, this.digZ);
-					int var3 = this.worldObj.getBlockMetadata(this.digX, this.digY, this.digZ);
+
 					// TODO gamerforEA code start
-					if (FakePlayerUtils.callBlockBreakEvent(this.digX, this.digY, this.digZ, this.getFakePlayer()).isCancelled()) return;
+					if (FakePlayerUtils.cantBreak(this.digX, this.digY, this.digZ, this.getFakePlayer())) return;
 					// TODO gamerforEA code end
+
+					Block block = this.worldObj.getBlock(this.digX, this.digY, this.digZ);
+					int meta = this.worldObj.getBlockMetadata(this.digX, this.digY, this.digZ);
 					int dX;
-					if (!vz.isAir(this.worldObj, this.digX, this.digY, this.digZ))
+
+					if (!block.isAir(this.worldObj, this.digX, this.digY, this.digZ))
 					{
 						dX = this.fortune;
 						boolean dZ = false;
-						if (this.getStackInSlot(1) != null && EnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch.effectId, this.getStackInSlot(1)) > 0 && vz.canSilkHarvest(this.worldObj, null, this.digX, this.digY, this.digZ, var3))
+						if (this.getStackInSlot(1) != null && EnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch.effectId, this.getStackInSlot(1)) > 0 && block.canSilkHarvest(this.worldObj, null, this.digX, this.digY, this.digZ, meta))
 						{
 							dZ = true;
 							dX = 0;
 						}
 
-						if (!dZ && this.getStackInSlot(0) != null && ((ItemFocusExcavation) this.getStackInSlot(0).getItem()).isUpgradedWith(this.getStackInSlot(0), FocusUpgradeType.silktouch) && vz.canSilkHarvest(this.worldObj, null, this.digX, this.digY, this.digZ, var3))
+						if (!dZ && this.getStackInSlot(0) != null && ((ItemFocusExcavation) this.getStackInSlot(0).getItem()).isUpgradedWith(this.getStackInSlot(0), FocusUpgradeType.silktouch) && block.canSilkHarvest(this.worldObj, null, this.digX, this.digY, this.digZ, meta))
 						{
 							dZ = true;
 							dX = 0;
 						}
 
-						this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, ConfigBlocks.blockWoodenDevice, 99, Block.getIdFromBlock(vz) + (var3 << 12));
+						this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, ConfigBlocks.blockWoodenDevice, 99, Block.getIdFromBlock(block) + (meta << 12));
 						ArrayList dY = new ArrayList();
 						if (dZ)
 						{
-							ItemStack var13 = BlockUtils.createStackedBlock(vz, var3);
+							ItemStack var13 = BlockUtils.createStackedBlock(block, meta);
 							if (var13 != null)
 							{
 								dY.add(var13);
@@ -462,7 +458,7 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 						}
 						else
 						{
-							dY = vz.getDrops(this.worldObj, this.digX, this.digY, this.digZ, var3, dX);
+							dY = block.getDrops(this.worldObj, this.digX, this.digY, this.digZ, meta, dX);
 						}
 
 						List var37 = this.worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox((double) this.digX, (double) this.digY, (double) this.digZ, (double) (this.digX + 1), (double) (this.digY + 1), (double) (this.digZ + 1)).expand(1.0D, 1.0D, 1.0D));
@@ -908,9 +904,11 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 
 		// TODO gamerforEA code start
 		String uuid = nbttagcompound.getString("ownerUUID");
-		if (!Strings.isNullOrEmpty(uuid)) this.ownerUUID = UUID.fromString(uuid);
-		String name = nbttagcompound.getString("ownerName");
-		if (!Strings.isNullOrEmpty(name)) this.ownerName = name;
+		if (!Strings.isNullOrEmpty(uuid))
+		{
+			String name = nbttagcompound.getString("ownerName");
+			if (!Strings.isNullOrEmpty(name)) this.ownerProfile = new GameProfile(UUID.fromString(uuid), name);
+		}
 		// TODO gamerforEA code end
 	}
 
@@ -921,8 +919,11 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 		nbttagcompound.setShort("SpeedyTime", (short) ((int) this.speedyTime));
 
 		// TODO gamerforEA code start
-		if (this.ownerUUID != null) nbttagcompound.setString("ownerUUID", this.ownerUUID.toString());
-		if (!Strings.isNullOrEmpty(this.ownerName)) nbttagcompound.setString("ownerName", this.ownerName);
+		if (this.ownerProfile != null)
+		{
+			nbttagcompound.setString("ownerUUID", this.ownerProfile.getId().toString());
+			nbttagcompound.setString("ownerName", this.ownerProfile.getName());
+		}
 		// TODO gamerforEA code end
 	}
 
