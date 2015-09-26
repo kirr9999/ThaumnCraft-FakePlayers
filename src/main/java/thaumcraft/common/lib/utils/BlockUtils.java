@@ -35,7 +35,7 @@ public class BlockUtils
 	static int lastx = 0;
 	static int lasty = 0;
 	static int lastz = 0;
-	static double lastdistance = 0.0D;
+	static double lastdistance = 0D;
 
 	public static boolean harvestBlock(World world, EntityPlayer player, int x, int y, int z)
 	{
@@ -45,53 +45,32 @@ public class BlockUtils
 	public static boolean harvestBlock(World world, EntityPlayer player, int x, int y, int z, boolean followItem, int color)
 	{
 		Block block = world.getBlock(x, y, z);
-		int i1 = world.getBlockMetadata(x, y, z);
-		if (block.getBlockHardness(world, x, y, z) < 0.0F)
-		{
+		if (block.getBlockHardness(world, x, y, z) < 0F)
 			return false;
-		}
 		else
 		{
-			world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(block) + (i1 << 12));
-			boolean flag = false;
+			int meta = world.getBlockMetadata(x, y, z);
+			world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
+
 			if (player.capabilities.isCreativeMode)
-			{
 				removeBlock(world, x, y, z, player);
-			}
-			else
+			else if (block.canHarvestBlock(player, meta) && removeBlock(world, x, y, z, player))
 			{
-				boolean flag1 = false;
-				if (block != null)
+				block.harvestBlock(world, player, x, y, z, meta);
+				if (followItem)
 				{
-					flag1 = block.canHarvestBlock(player, i1);
-				}
-
-				flag = removeBlock(world, x, y, z, player);
-				if (flag && flag1)
-				{
-					block.harvestBlock(world, player, x, y, z, i1);
-					if (followItem)
-					{
-						ArrayList entities = EntityUtils.getEntitiesInRange(world, (double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, player, EntityItem.class, 2.0D);
-						if (entities != null && entities.size() > 0)
+					List<Entity> entities = EntityUtils.getEntitiesInRange(world, x + 0.5D, y + 0.5D, z + 0.5D, player, EntityItem.class, 2D);
+					for (Entity entity : entities)
+						if (!entity.isDead && entity instanceof EntityItem && entity.ticksExisted == 0 && !(entity instanceof EntityFollowingItem))
 						{
-							Iterator i$ = entities.iterator();
-
-							while (i$.hasNext())
-							{
-								Entity e = (Entity) i$.next();
-								if (!e.isDead && e instanceof EntityItem && e.ticksExisted == 0 && !(e instanceof EntityFollowingItem))
-								{
-									EntityFollowingItem fi = new EntityFollowingItem(world, e.posX, e.posY, e.posZ, ((EntityItem) e).getEntityItem().copy(), player, color);
-									fi.motionX = e.motionX;
-									fi.motionY = e.motionY;
-									fi.motionZ = e.motionZ;
-									world.spawnEntityInWorld(fi);
-									e.setDead();
-								}
-							}
+							EntityFollowingItem entityItem = new EntityFollowingItem(world, entity.posX, entity.posY, entity.posZ, ((EntityItem) entity).getEntityItem().copy(), player, color);
+							entityItem.motionX = entity.motionX;
+							entityItem.motionY = entity.motionY;
+							entityItem.motionZ = entity.motionZ;
+							world.spawnEntityInWorld(entityItem);
+							entity.setDead();
 						}
-					}
+
 				}
 			}
 
@@ -102,18 +81,16 @@ public class BlockUtils
 	public static ArrayList[] getBlockEventList(WorldServer world)
 	{
 		if (!blockEventCache.containsKey(Integer.valueOf(world.provider.dimensionId)))
-		{
 			try
 			{
-				blockEventCache.put(Integer.valueOf(world.provider.dimensionId), (ArrayList[]) ((ArrayList[]) ReflectionHelper.getPrivateValue(WorldServer.class, world, new String[] { "field_147490_S" })));
+				blockEventCache.put(Integer.valueOf(world.provider.dimensionId), (ArrayList[]) ReflectionHelper.getPrivateValue(WorldServer.class, world, new String[] { "field_147490_S" }));
 			}
 			catch (Exception var2)
 			{
 				return null;
 			}
-		}
 
-		return (ArrayList[]) blockEventCache.get(Integer.valueOf(world.provider.dimensionId));
+		return blockEventCache.get(Integer.valueOf(world.provider.dimensionId));
 	}
 
 	public static ItemStack createStackedBlock(Block block, int md)
@@ -159,9 +136,7 @@ public class BlockUtils
 			{
 				ItemStack item = (ItemStack) i$.next();
 				if (world.rand.nextFloat() <= dropchance)
-				{
 					dropBlockAsItem(world, x, y, z, item, block);
-				}
 			}
 		}
 
@@ -176,13 +151,11 @@ public class BlockUtils
 			EntityPlayerMP entityplayermp = (EntityPlayerMP) iterator.next();
 			if (entityplayermp != null && entityplayermp.worldObj == MinecraftServer.getServer().getEntityWorld() && entityplayermp.getEntityId() != par1)
 			{
-				double d0 = (double) par2 - entityplayermp.posX;
-				double d1 = (double) par3 - entityplayermp.posY;
-				double d2 = (double) par4 - entityplayermp.posZ;
-				if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D)
-				{
+				double d0 = par2 - entityplayermp.posX;
+				double d1 = par3 - entityplayermp.posY;
+				double d2 = par4 - entityplayermp.posZ;
+				if (d0 * d0 + d1 * d1 + d2 * d2 < 1024D)
 					entityplayermp.playerNetServerHandler.sendPacket(new S25PacketBlockBreakAnim(par1, par2, par3, par4, par5));
-				}
 			}
 		}
 
@@ -193,15 +166,11 @@ public class BlockUtils
 		Block block = world.getBlock(par1, par2, par3);
 		int l = world.getBlockMetadata(par1, par2, par3);
 		if (block != null)
-		{
 			block.onBlockHarvested(world, par1, par2, par3, l, player);
-		}
 
 		boolean flag = block != null && block.removedByPlayer(world, player, par1, par2, par3);
 		if (block != null && flag)
-		{
 			block.onBlockDestroyedByPlayer(world, par1, par2, par3, l);
-		}
 
 		return flag;
 	}
@@ -211,31 +180,23 @@ public class BlockUtils
 		boolean count = false;
 
 		for (int xx = -2; xx <= 2; ++xx)
-		{
 			for (int yy = 2; yy >= -2; --yy)
-			{
 				for (int zz = -2; zz <= 2; ++zz)
 				{
 					if (Math.abs(lastx + xx - x) > 24)
-					{
 						return;
-					}
 
 					if (Math.abs(lasty + yy - y) > 48)
-					{
 						return;
-					}
 
 					if (Math.abs(lastz + zz - z) > 24)
-					{
 						return;
-					}
 
-					if (world.getBlock(lastx + xx, lasty + yy, lastz + zz) == block && Utils.isWoodLog(world, lastx + xx, lasty + yy, lastz + zz) && block.getBlockHardness(world, lastx + xx, lasty + yy, lastz + zz) >= 0.0F)
+					if (world.getBlock(lastx + xx, lasty + yy, lastz + zz) == block && Utils.isWoodLog(world, lastx + xx, lasty + yy, lastz + zz) && block.getBlockHardness(world, lastx + xx, lasty + yy, lastz + zz) >= 0F)
 					{
-						double xd = (double) (lastx + xx - x);
-						double yd = (double) (lasty + yy - y);
-						double zd = (double) (lastz + zz - z);
+						double xd = lastx + xx - x;
+						double yd = lasty + yy - y;
+						double zd = lastz + zz - z;
 						double d = xd * xd + yd * yd + zd * zd;
 						if (d > lastdistance)
 						{
@@ -248,8 +209,6 @@ public class BlockUtils
 						}
 					}
 				}
-			}
-		}
 
 	}
 
@@ -263,12 +222,11 @@ public class BlockUtils
 		lastx = x;
 		lasty = y;
 		lastz = z;
-		lastdistance = 0.0D;
+		lastdistance = 0D;
 		findBlocks(world, x, y, z, block);
 
-		// TODO gamerforEA code replace, old code: boolean worked = harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
+		// TODO gamerforEA code add condition [1]
 		boolean worked = !FakePlayerUtils.cantBreak(lastx, lasty, lastz, player) && harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
-		// TODO gamerforEA code end
 
 		world.markBlockForUpdate(x, y, z);
 		if (worked)
@@ -276,15 +234,9 @@ public class BlockUtils
 			world.markBlockForUpdate(lastx, lasty, lastz);
 
 			for (int xx = -3; xx <= 3; ++xx)
-			{
 				for (int yy = -3; yy <= 3; ++yy)
-				{
 					for (int zz = -3; zz <= 3; ++zz)
-					{
 						world.scheduleBlockUpdate(lastx + xx, lasty + yy, lastz + zz, world.getBlock(lastx + xx, lasty + yy, lastz + zz), 150 + world.rand.nextInt(150));
-					}
-				}
-			}
 		}
 
 		return worked;
@@ -299,18 +251,18 @@ public class BlockUtils
 		float var17 = MathHelper.sin(-pitch * 0.017453292F);
 		float var18 = var15 * var16;
 		float var20 = var14 * var16;
-		Vec3 var23 = var13.addVector((double) var18 * range, (double) var17 * range, (double) var20 * range);
+		Vec3 var23 = var13.addVector(var18 * range, var17 * range, var20 * range);
 		return world.func_147447_a(var13, var23, par3, !par3, false);
 	}
 
 	public static MovingObjectPosition getTargetBlock(World world, Entity entity, boolean par3)
 	{
-		float var4 = 1.0F;
+		float var4 = 1F;
 		float var5 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * var4;
 		float var6 = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * var4;
-		double var7 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) var4;
-		double var9 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) var4 + 1.62D - (double) entity.yOffset;
-		double var11 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) var4;
+		double var7 = entity.prevPosX + (entity.posX - entity.prevPosX) * var4;
+		double var9 = entity.prevPosY + (entity.posY - entity.prevPosY) * var4 + 1.62D - entity.yOffset;
+		double var11 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * var4;
 		Vec3 var13 = Vec3.createVectorHelper(var7, var9, var11);
 		float var14 = MathHelper.cos(-var6 * 0.017453292F - 3.1415927F);
 		float var15 = MathHelper.sin(-var6 * 0.017453292F - 3.1415927F);
@@ -318,8 +270,8 @@ public class BlockUtils
 		float var17 = MathHelper.sin(-var5 * 0.017453292F);
 		float var18 = var15 * var16;
 		float var20 = var14 * var16;
-		double var21 = 10.0D;
-		Vec3 var23 = var13.addVector((double) var18 * var21, (double) var17 * var21, (double) var20 * var21);
+		double var21 = 10D;
+		Vec3 var23 = var13.addVector(var18 * var21, var17 * var21, var20 * var21);
 		return world.func_147447_a(var13, var23, par3, !par3, false);
 	}
 
@@ -333,33 +285,23 @@ public class BlockUtils
 		int count = 0;
 
 		for (int xx = -range; xx <= range; ++xx)
-		{
 			for (int yy = -range; yy <= range; ++yy)
-			{
 				for (int zz = -range; zz <= range; ++zz)
-				{
 					if (xx != 0 || yy != 0 || zz != 0)
 					{
 						if (world.getBlock(x + xx, y + yy, z + zz) == id && (md == 32767 || world.getBlockMetadata(x + xx, y + yy, z + zz) == md))
-						{
 							++count;
-						}
 
 						if (count >= amount)
-						{
 							return true;
-						}
 					}
-				}
-			}
-		}
 
 		return count >= amount;
 	}
 
 	public static List<EntityItem> getContentsOfBlock(World world, int x, int y, int z)
 	{
-		List list = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox((double) x, (double) y, (double) z, (double) x + 1.0D, (double) y + 1.0D, (double) z + 1.0D));
+		List list = world.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1D, y + 1D, z + 1D));
 		return list;
 	}
 
@@ -373,9 +315,7 @@ public class BlockUtils
 		{
 			ForgeDirection dir = arr$[i$];
 			if (world.isAirBlock(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ))
-			{
 				++count;
-			}
 		}
 
 		return count;
@@ -392,9 +332,7 @@ public class BlockUtils
 		{
 			ForgeDirection d = ForgeDirection.getOrientation(a);
 			if (world.isSideSolid(x + d.offsetX, y + d.offsetY, z + d.offsetZ, d.getOpposite()))
-			{
 				return true;
-			}
 		}
 
 		return false;
@@ -422,32 +360,22 @@ public class BlockUtils
 					{
 						case 0:
 							if (world.getBlock(x, y - 1, z) == id && world.getBlockMetadata(x, y - 1, z) == md)
-							{
 								return true;
-							}
 							break;
 						case 1:
 							if (world.getBlock(x, y + 1, z) == id && world.getBlockMetadata(x, y + 1, z) == md)
-							{
 								return true;
-							}
 					}
 
 					return false;
 				}
 				else
-				{
 					return true;
-				}
 			}
 			else
-			{
 				return true;
-			}
 		}
 		else
-		{
 			return true;
-		}
 	}
 }

@@ -31,16 +31,15 @@ public class AILiquidEmpty extends EntityAIBase
 		this.setMutexBits(3);
 	}
 
+	@Override
 	public boolean shouldExecute()
 	{
 		ChunkCoordinates home = this.theGolem.getHomePosition();
-		if (this.theGolem.getNavigator().noPath() && this.theGolem.fluidCarried != null && this.theGolem.fluidCarried.amount != 0 && this.theGolem.getDistanceSq((double) ((float) home.posX + 0.5F), (double) ((float) home.posY + 0.5F), (double) ((float) home.posZ + 0.5F)) <= 5.0D)
+		if (this.theGolem.getNavigator().noPath() && this.theGolem.fluidCarried != null && this.theGolem.fluidCarried.amount != 0 && this.theGolem.getDistanceSq(home.posX + 0.5F, home.posY + 0.5F, home.posZ + 0.5F) <= 5.0D)
 		{
 			ArrayList fluids = GolemHelper.getMissingLiquids(this.theGolem);
 			if (fluids == null)
-			{
 				return false;
-			}
 			else
 			{
 				Iterator i$ = fluids.iterator();
@@ -49,9 +48,7 @@ public class AILiquidEmpty extends EntityAIBase
 				do
 				{
 					if (!i$.hasNext())
-					{
 						return false;
-					}
 
 					fluid = (FluidStack) i$.next();
 				}
@@ -61,16 +58,16 @@ public class AILiquidEmpty extends EntityAIBase
 			}
 		}
 		else
-		{
 			return false;
-		}
 	}
 
+	@Override
 	public boolean continueExecuting()
 	{
 		return false;
 	}
 
+	@Override
 	public void startExecuting()
 	{
 		ForgeDirection facing = ForgeDirection.getOrientation(this.theGolem.homeFacing);
@@ -79,23 +76,21 @@ public class AILiquidEmpty extends EntityAIBase
 		int cY = home.posY - facing.offsetY;
 		int cZ = home.posZ - facing.offsetZ;
 		TileEntity tile = this.theWorld.getTileEntity(cX, cY, cZ);
-		if (tile != null && tile instanceof IFluidHandler)
+		if (tile instanceof IFluidHandler)
 		{
 			// TODO gamerforEA code start
-			if (FakePlayerUtils.cantBreak(cX, cY, cZ, this.theGolem.getFakePlayer())) return;
+			if (FakePlayerUtils.cantBreak(cX, cY, cZ, this.theGolem.getOwnerFake()))
+				return;
 			// TODO gamerforEA code end
+
 			IFluidHandler fh = (IFluidHandler) tile;
 			int amt = fh.fill(ForgeDirection.getOrientation(this.theGolem.homeFacing), this.theGolem.fluidCarried, true);
 			this.theGolem.fluidCarried.amount -= amt;
 			if (this.theGolem.fluidCarried.amount <= 0)
-			{
 				this.theGolem.fluidCarried = null;
-			}
 
 			if (amt > 200)
-			{
 				this.theWorld.playSoundAtEntity(this.theGolem, "game.neutral.swim", Math.min(0.2F, 0.2F * ((float) amt / (float) this.theGolem.getFluidCarryLimit())), 1.0F + (this.theWorld.rand.nextFloat() - this.theWorld.rand.nextFloat()) * 0.3F);
-			}
 
 			this.theGolem.updateCarried();
 			this.theWorld.markBlockForUpdate(cX, cY, cZ);

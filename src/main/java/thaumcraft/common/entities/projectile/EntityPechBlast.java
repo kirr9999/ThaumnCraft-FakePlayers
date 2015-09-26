@@ -3,6 +3,7 @@ package thaumcraft.common.entities.projectile;
 import java.util.List;
 
 import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.thaumcraft.FastUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -58,46 +59,40 @@ public class EntityPechBlast extends EntityThrowable
 	public void onUpdate()
 	{
 		if (this.worldObj.isRemote)
-		{
 			for (int a = 0; a < 3; ++a)
 			{
-				Thaumcraft.proxy.wispFX2(this.worldObj, this.posX + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F), this.posY + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F), this.posZ + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F), 0.3F, 3, true, true, 0.02F);
-				double x2 = (this.posX + this.prevPosX) / 2.0D + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F);
-				double y2 = (this.posY + this.prevPosY) / 2.0D + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F);
-				double z2 = (this.posZ + this.prevPosZ) / 2.0D + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F);
+				Thaumcraft.proxy.wispFX2(this.worldObj, this.posX + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F, this.posY + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F, this.posZ + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F, 0.3F, 3, true, true, 0.02F);
+				double x2 = (this.posX + this.prevPosX) / 2.0D + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F;
+				double y2 = (this.posY + this.prevPosY) / 2.0D + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F;
+				double z2 = (this.posZ + this.prevPosZ) / 2.0D + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F;
 				Thaumcraft.proxy.wispFX2(this.worldObj, x2, y2, z2, 0.3F, 2, true, true, 0.02F);
 				Thaumcraft.proxy.sparkle((float) this.posX + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.1F, (float) this.posY + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.1F, (float) this.posZ + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.1F, 5);
 			}
-		}
 
 		super.onUpdate();
 		if (this.ticksExisted > 500)
-		{
 			this.setDead();
-		}
 	}
 
 	@Override
 	protected void onImpact(MovingObjectPosition par1MovingObjectPosition)
 	{
 		if (this.worldObj.isRemote)
-		{
 			for (int list = 0; list < 9; ++list)
 			{
 				float i = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
 				float entity1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
 				float e = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) i, this.posY + (double) entity1, this.posZ + (double) e, this.posX + (double) (i * 8.0F), this.posY + (double) (entity1 * 8.0F), this.posZ + (double) (e * 8.0F), 0.3F, 3, true, 0.02F);
+				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + i, this.posY + entity1, this.posZ + e, this.posX + i * 8.0F, this.posY + entity1 * 8.0F, this.posZ + e * 8.0F, 0.3F, 3, true, 0.02F);
 				i = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
 				entity1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
 				e = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) i, this.posY + (double) entity1, this.posZ + (double) e, this.posX + (double) (i * 8.0F), this.posY + (double) (entity1 * 8.0F), this.posZ + (double) (e * 8.0F), 0.3F, 2, true, 0.02F);
+				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + i, this.posY + entity1, this.posZ + e, this.posX + i * 8.0F, this.posY + entity1 * 8.0F, this.posZ + e * 8.0F, 0.3F, 2, true, 0.02F);
 				i = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
 				entity1 = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
 				e = (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
-				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + (double) i, this.posY + (double) entity1, this.posZ + (double) e, this.posX + (double) (i * 8.0F), this.posY + (double) (entity1 * 8.0F), this.posZ + (double) (e * 8.0F), 0.3F, 0, true, 0.02F);
+				Thaumcraft.proxy.wispFX3(this.worldObj, this.posX + i, this.posY + entity1, this.posZ + e, this.posX + i * 8.0F, this.posY + entity1 * 8.0F, this.posZ + e * 8.0F, 0.3F, 0, true, 0.02F);
 			}
-		}
 
 		if (!this.worldObj.isRemote)
 		{
@@ -109,9 +104,11 @@ public class EntityPechBlast extends EntityThrowable
 				if (!(entity instanceof EntityPech) && entity instanceof EntityLivingBase)
 				{
 					// TODO gamerforEA code start
-					if (this.getThrower() != null && FakePlayerUtils.cantDamage(this.getThrower(), entity)) continue;
+					if (FakePlayerUtils.cantDamage(FastUtils.getThrower(this), entity))
+						continue;
 					// TODO gamerforEA code end
-					((EntityLivingBase) entity).attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float) (this.strength + 2));
+
+					((EntityLivingBase) entity).attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), this.strength + 2);
 
 					try
 					{
@@ -122,7 +119,6 @@ public class EntityPechBlast extends EntityThrowable
 							((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.weakness.id, 100 + this.duration * 40, this.strength));
 						}
 						else
-						{
 							switch (this.rand.nextInt(3))
 							{
 								case 0:
@@ -134,7 +130,6 @@ public class EntityPechBlast extends EntityThrowable
 								case 2:
 									((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.weakness.id, 100 + this.duration * 40, this.strength));
 							}
-						}
 					}
 					catch (Exception e)
 					{

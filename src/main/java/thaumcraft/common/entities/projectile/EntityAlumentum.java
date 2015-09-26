@@ -1,10 +1,9 @@
 package thaumcraft.common.entities.projectile;
 
 import com.gamerforea.thaumcraft.ExplosionByPlayer;
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.thaumcraft.FastUtils;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -38,17 +37,15 @@ public class EntityAlumentum extends EntityThrowable
 	{
 		super.onUpdate();
 		if (this.worldObj.isRemote)
-		{
 			for (int a = 0; a < 3; ++a)
 			{
-				Thaumcraft.proxy.wispFX2(this.worldObj, this.posX + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F), this.posY + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F), this.posZ + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F), 0.3F, 5, true, true, 0.02F);
-				double x2 = (this.posX + this.prevPosX) / 2.0D + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F);
-				double y2 = (this.posY + this.prevPosY) / 2.0D + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F);
-				double z2 = (this.posZ + this.prevPosZ) / 2.0D + (double) ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F);
+				Thaumcraft.proxy.wispFX2(this.worldObj, this.posX + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F, this.posY + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F, this.posZ + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F, 0.3F, 5, true, true, 0.02F);
+				double x2 = (this.posX + this.prevPosX) / 2.0D + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				double y2 = (this.posY + this.prevPosY) / 2.0D + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
+				double z2 = (this.posZ + this.prevPosZ) / 2.0D + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.3F;
 				Thaumcraft.proxy.wispFX2(this.worldObj, x2, y2, z2, 0.3F, 5, true, true, 0.02F);
 				Thaumcraft.proxy.sparkle((float) this.posX + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.1F, (float) this.posY + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.1F, (float) this.posZ + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.1F, 6);
 			}
-		}
 	}
 
 	@Override
@@ -57,10 +54,8 @@ public class EntityAlumentum extends EntityThrowable
 		if (!this.worldObj.isRemote)
 		{
 			boolean grief = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
-			// TODO gamerforEA code replace, old code: this.worldObj.createExplosion(null, this.posX, this.posY, this.posZ, 1.66F, grief);
-			EntityPlayer player = this.getThrower() instanceof EntityPlayer ? (EntityPlayer) this.getThrower() : FakePlayerUtils.getModFake(this.worldObj);
-			ExplosionByPlayer.createExplosion(player, this.worldObj, null, this.posX, this.posY, this.posZ, 1.66F, grief);
-			// TODO gamerforEA code end
+			// TODO gamerforEA use ExplosionByPlayer
+			ExplosionByPlayer.createExplosion(FastUtils.getThrowerPlayer(this), this.worldObj, null, this.posX, this.posY, this.posZ, 1.66F, grief);
 			this.setDead();
 		}
 	}

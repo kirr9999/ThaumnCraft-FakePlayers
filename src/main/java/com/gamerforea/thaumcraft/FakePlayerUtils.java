@@ -23,22 +23,25 @@ public final class FakePlayerUtils
 
 	public static final FakePlayer getModFake(World world)
 	{
-		if (player.get() == null)
+		FakePlayer fake = player.get();
+
+		if (fake == null)
 		{
 			GameProfile profile = new GameProfile(UUID.fromString("745dd166-13e9-41db-999d-6af5bacba7fd"), "[ThaumCraft]");
-			player = new WeakReference<FakePlayer>(create(world, profile));
+			player = new WeakReference<FakePlayer>(fake = create(world, profile));
 		}
-		else player.get().worldObj = world;
+		else
+			fake.worldObj = world;
 
-		return player.get();
+		return fake;
 	}
 
-	public static FakePlayer create(World world, GameProfile profile)
+	public static final FakePlayer create(World world, GameProfile profile)
 	{
 		return FakePlayerFactory.get((WorldServer) world, profile);
 	}
 
-	public static boolean cantBreak(int x, int y, int z, EntityPlayer player)
+	public static final boolean cantBreak(int x, int y, int z, EntityPlayer player)
 	{
 		try
 		{
@@ -46,7 +49,7 @@ public final class FakePlayerUtils
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			return event.getBukkitEvent().isCancelled();
 		}
-		catch (Exception e)
+		catch (Throwable throwable)
 		{
 			GameProfile profile = player.getGameProfile();
 			System.err.println(String.format("Failed call CauldronBlockBreakEvent [Name: %s, UUID: %s, X: %d, Y: %d, Z: %d]", profile.getName(), profile.getId().toString(), x, y, z));
@@ -54,7 +57,7 @@ public final class FakePlayerUtils
 		}
 	}
 
-	public static boolean cantDamage(Entity damager, Entity damagee)
+	public static final boolean cantDamage(Entity damager, Entity damagee)
 	{
 		try
 		{
@@ -62,7 +65,7 @@ public final class FakePlayerUtils
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			return event.getBukkitEvent().isCancelled();
 		}
-		catch (Exception e)
+		catch (Throwable throwable)
 		{
 			System.err.println(String.format("Failed call CauldronEntityDamageByEntityEvent [Damager UUID: %s, Damagee UUID: %s]", damager.getUniqueID().toString(), damagee.getUniqueID().toString()));
 			return true;

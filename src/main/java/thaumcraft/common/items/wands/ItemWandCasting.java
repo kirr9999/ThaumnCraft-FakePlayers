@@ -66,23 +66,27 @@ public class ItemWandCasting extends Item implements IArchitect
 		this.setCreativeTab(Thaumcraft.tabTC);
 	}
 
+	@Override
 	public boolean isDamageable()
 	{
 		return false;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister par1IconRegister)
 	{
 		this.icon = par1IconRegister.registerIcon("thaumcraft:blank");
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(ItemStack stack, int pass)
 	{
 		return this.icon;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean isFull3D()
 	{
@@ -94,11 +98,13 @@ public class ItemWandCasting extends Item implements IArchitect
 		return this.getRod(stack).getCapacity() * (this.isSceptre(stack) ? 150 : 100);
 	}
 
+	@Override
 	public EnumRarity getRarity(ItemStack itemstack)
 	{
 		return EnumRarity.uncommon;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{
@@ -130,21 +136,21 @@ public class ItemWandCasting extends Item implements IArchitect
 		par3List.add(sceptre);
 	}
 
+	@Override
 	public String getItemStackDisplayName(ItemStack is)
 	{
 		String name = StatCollector.translateToLocal("item.Wand.name");
 		name = name.replace("%CAP", StatCollector.translateToLocal("item.Wand." + this.getCap(is).getTag() + ".cap"));
 		String rod = this.getRod(is).getTag();
 		if (rod.indexOf("_staff") >= 0)
-		{
 			rod = rod.substring(0, this.getRod(is).getTag().indexOf("_staff"));
-		}
 
 		name = name.replace("%ROD", StatCollector.translateToLocal("item.Wand." + rod + ".rod"));
-		name = name.replace("%OBJ", this.isStaff(is) ? StatCollector.translateToLocal("item.Wand.staff.obj") : (this.isSceptre(is) ? StatCollector.translateToLocal("item.Wand.sceptre.obj") : StatCollector.translateToLocal("item.Wand.wand.obj")));
+		name = name.replace("%OBJ", this.isStaff(is) ? StatCollector.translateToLocal("item.Wand.staff.obj") : this.isSceptre(is) ? StatCollector.translateToLocal("item.Wand.sceptre.obj") : StatCollector.translateToLocal("item.Wand.wand.obj"));
 		return name;
 	}
 
+	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
 	{
 		int pos = list.size();
@@ -161,32 +167,26 @@ public class ItemWandCasting extends Item implements IArchitect
 				Aspect aspect = (Aspect) i$.next();
 				if (stack.stackTagCompound.hasKey(aspect.getTag()))
 				{
-					String amount = this.myFormatter.format((double) ((float) stack.stackTagCompound.getInteger(aspect.getTag()) / 100.0F));
+					String amount = this.myFormatter.format(stack.stackTagCompound.getInteger(aspect.getTag()) / 100.0F);
 					float mod = this.getConsumptionModifier(stack, player, aspect, false);
-					String consumption = this.myFormatter.format((double) (mod * 100.0F));
+					String consumption = this.myFormatter.format(mod * 100.0F);
 					++num;
-					tot = (int) ((float) tot + mod * 100.0F);
+					tot = (int) (tot + mod * 100.0F);
 					String text = "";
 					ItemStack focus = this.getFocusItem(stack);
 					if (focus != null)
 					{
 						int amt = ((ItemFocusBasic) focus.getItem()).getVisCost(focus).getAmount(aspect);
 						if (amt > 0)
-						{
-							text = "§r, " + this.myFormatter.format((double) ((float) amt * mod / 100.0F)) + " " + StatCollector.translateToLocal(((ItemFocusBasic) focus.getItem()).isVisCostPerTick(focus) ? "item.Focus.cost2" : "item.Focus.cost1");
-						}
+							text = "§r, " + this.myFormatter.format(amt * mod / 100.0F) + " " + StatCollector.translateToLocal(((ItemFocusBasic) focus.getItem()).isVisCostPerTick(focus) ? "item.Focus.cost2" : "item.Focus.cost1");
 					}
 
 					if (Thaumcraft.proxy.isShiftKeyDown())
-					{
 						list.add(" §" + aspect.getChatcolor() + aspect.getName() + "§r x " + amount + ", §o(" + consumption + "% " + StatCollector.translateToLocal("tc.vis.cost") + ")" + text);
-					}
 					else
 					{
 						if (tt.length() > 0)
-						{
 							tt = tt + " | ";
-						}
 
 						tt = tt + "§" + aspect.getChatcolor() + amount + "§r";
 					}
@@ -206,9 +206,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		{
 			list.add(EnumChatFormatting.BOLD + "" + EnumChatFormatting.ITALIC + "" + EnumChatFormatting.GREEN + this.getFocus(stack).getItemStackDisplayName(this.getFocusItem(stack)));
 			if (Thaumcraft.proxy.isShiftKeyDown())
-			{
 				this.getFocus(stack).addFocusInformation(this.getFocusItem(stack), player, list, par4);
-			}
 		}
 
 	}
@@ -222,13 +220,9 @@ public class ItemWandCasting extends Item implements IArchitect
 		{
 			Aspect aspect = (Aspect) i$.next();
 			if (is.hasTagCompound() && is.stackTagCompound.hasKey(aspect.getTag()))
-			{
 				out.merge(aspect, is.stackTagCompound.getInteger(aspect.getTag()));
-			}
 			else
-			{
 				out.merge(aspect, 0);
-			}
 		}
 
 		return out;
@@ -245,9 +239,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		{
 			Aspect aspect = arr$[i$];
 			if (cur.getAmount(aspect) < this.getMaxVis(wandstack))
-			{
 				out.add(aspect, 1);
-			}
 		}
 
 		return out;
@@ -270,9 +262,7 @@ public class ItemWandCasting extends Item implements IArchitect
 	{
 		int out = 0;
 		if (is != null && aspect != null && is.hasTagCompound() && is.stackTagCompound.hasKey(aspect.getTag()))
-		{
 			out = is.stackTagCompound.getInteger(aspect.getTag());
-		}
 
 		return out;
 	}
@@ -286,28 +276,18 @@ public class ItemWandCasting extends Item implements IArchitect
 	{
 		float consumptionModifier = 1.0F;
 		if (this.getCap(is).getSpecialCostModifierAspects() != null && this.getCap(is).getSpecialCostModifierAspects().contains(aspect))
-		{
 			consumptionModifier = this.getCap(is).getSpecialCostModifier();
-		}
 		else
-		{
 			consumptionModifier = this.getCap(is).getBaseCostModifier();
-		}
 
 		if (player != null)
-		{
 			consumptionModifier -= WandManager.getTotalVisDiscount(player, aspect);
-		}
 
 		if (this.getFocus(is) != null && !crafting)
-		{
-			consumptionModifier -= (float) this.getFocusFrugal(is) / 10.0F;
-		}
+			consumptionModifier -= this.getFocusFrugal(is) / 10.0F;
 
 		if (this.isSceptre(is))
-		{
 			consumptionModifier -= 0.1F;
-		}
 
 		return Math.max(consumptionModifier, 0.1F);
 	}
@@ -339,16 +319,14 @@ public class ItemWandCasting extends Item implements IArchitect
 
 	public boolean consumeVis(ItemStack is, EntityPlayer player, Aspect aspect, int amount, boolean crafting)
 	{
-		amount = (int) ((float) amount * this.getConsumptionModifier(is, player, aspect, crafting));
+		amount = (int) (amount * this.getConsumptionModifier(is, player, aspect, crafting));
 		if (this.getVis(is, aspect) >= amount)
 		{
 			this.storeVis(is, aspect, this.getVis(is, aspect) - amount);
 			return true;
 		}
 		else
-		{
 			return false;
-		}
 	}
 
 	public boolean consumeAllVisCrafting(ItemStack is, EntityPlayer player, AspectList aspects, boolean doit)
@@ -369,9 +347,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			return this.consumeAllVis(is, player, nl, doit, true);
 		}
 		else
-		{
 			return false;
-		}
 	}
 
 	public boolean consumeAllVis(ItemStack is, EntityPlayer player, AspectList aspects, boolean doit, boolean crafting)
@@ -388,7 +364,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			{
 				aspect = arr$[i$];
 				int cost = aspects.getAmount(aspect);
-				cost = (int) ((float) cost * this.getConsumptionModifier(is, player, aspect, crafting));
+				cost = (int) (cost * this.getConsumptionModifier(is, player, aspect, crafting));
 				nl.add(aspect, cost);
 			}
 
@@ -399,9 +375,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			{
 				aspect = arr$[i$];
 				if (this.getVis(is, aspect) < nl.getAmount(aspect))
-				{
 					return false;
-				}
 			}
 
 			if (doit && !player.worldObj.isRemote)
@@ -419,25 +393,19 @@ public class ItemWandCasting extends Item implements IArchitect
 			return true;
 		}
 		else
-		{
 			return false;
-		}
 	}
 
 	public int addVis(ItemStack is, Aspect aspect, int amount, boolean doit)
 	{
 		if (!aspect.isPrimal())
-		{
 			return 0;
-		}
 		else
 		{
 			int storeAmount = this.getVis(is, aspect) + amount * 100;
 			int leftover = Math.max(storeAmount - this.getMaxVis(is), 0);
 			if (doit)
-			{
 				this.storeVis(is, aspect, Math.min(storeAmount, this.getMaxVis(is)));
-			}
 
 			return leftover / 100;
 		}
@@ -446,38 +414,35 @@ public class ItemWandCasting extends Item implements IArchitect
 	public int addRealVis(ItemStack is, Aspect aspect, int amount, boolean doit)
 	{
 		if (!aspect.isPrimal())
-		{
 			return 0;
-		}
 		else
 		{
 			int storeAmount = this.getVis(is, aspect) + amount;
 			int leftover = Math.max(storeAmount - this.getMaxVis(is), 0);
 			if (doit)
-			{
 				this.storeVis(is, aspect, Math.min(storeAmount, this.getMaxVis(is)));
-			}
 
 			return leftover;
 		}
 	}
 
+	@Override
 	public void onUpdate(ItemStack is, World w, Entity e, int slot, boolean currentItem)
 	{
 		if (!w.isRemote)
 		{
 			EntityPlayer player = (EntityPlayer) e;
 			if (this.getRod(is).getOnUpdate() != null)
-			{
 				this.getRod(is).getOnUpdate().onUpdate(is, player);
-			}
 		}
 	}
 
+	@Override
 	public boolean onItemUseFirst(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
 	{
 		// TODO gamerforEA code start
-		if (FakePlayerUtils.cantBreak(x, y, z, player)) return super.onItemUseFirst(itemstack, player, world, x, y, z, side, hitX, hitY, hitZ);
+		if (FakePlayerUtils.cantBreak(x, y, z, player))
+			return super.onItemUseFirst(itemstack, player, world, x, y, z, side, hitX, hitY, hitZ);
 		// TODO gamerforEA code end
 
 		Block block = world.getBlock(x, y, z);
@@ -488,9 +453,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		{
 			int tile = ((IWandable) block).onWandRightClick(world, itemstack, player, x, y, z, side, meta);
 			if (tile >= 0)
-			{
 				return tile == 1;
-			}
 		}
 
 		TileEntity tile1 = world.getTileEntity(x, y, z);
@@ -498,64 +461,44 @@ public class ItemWandCasting extends Item implements IArchitect
 		{
 			int ret = ((IWandable) tile1).onWandRightClick(world, itemstack, player, x, y, z, side, meta);
 			if (ret >= 0)
-			{
 				return ret == 1;
-			}
 		}
 
 		if (WandTriggerRegistry.hasTrigger(block, meta))
-		{
 			return WandTriggerRegistry.performTrigger(world, itemstack, player, x, y, z, side, block, meta);
-		}
 		else
 		{
 			if ((block == ConfigBlocks.blockWoodenDevice && meta == 2 || block == ConfigBlocks.blockCosmeticOpaque && meta == 2) && (!Config.wardedStone || tile1 != null && tile1 instanceof TileOwned && player.getCommandSenderName().equals(((TileOwned) tile1).owner)))
-			{
 				if (!world.isRemote)
 				{
 					((TileOwned) tile1).safeToRemove = true;
-					world.spawnEntityInWorld(new EntityItem(world, (double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, new ItemStack(block, 1, meta)));
+					world.spawnEntityInWorld(new EntityItem(world, x + 0.5D, y + 0.5D, z + 0.5D, new ItemStack(block, 1, meta)));
 					world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
 					world.setBlockToAir(x, y, z);
 				}
 				else
-				{
 					player.swingItem();
-				}
-			}
 
 			if (block == ConfigBlocks.blockArcaneDoor && (!Config.wardedStone || tile1 != null && tile1 instanceof TileOwned && player.getCommandSenderName().equals(((TileOwned) tile1).owner)))
-			{
 				if (!world.isRemote)
 				{
 					((TileOwned) tile1).safeToRemove = true;
 					if ((meta & 8) == 0)
-					{
 						tile1 = world.getTileEntity(x, y + 1, z);
-					}
 					else
-					{
 						tile1 = world.getTileEntity(x, y - 1, z);
-					}
 
 					if (tile1 != null && tile1 instanceof TileOwned)
-					{
 						((TileOwned) tile1).safeToRemove = true;
-					}
 
 					if (Config.wardedStone || !Config.wardedStone && (meta & 8) == 0)
-					{
-						world.spawnEntityInWorld(new EntityItem(world, (double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, new ItemStack(ConfigItems.itemArcaneDoor)));
-					}
+						world.spawnEntityInWorld(new EntityItem(world, x + 0.5D, y + 0.5D, z + 0.5D, new ItemStack(ConfigItems.itemArcaneDoor)));
 
 					world.playAuxSFX(2001, x, y, z, Block.getIdFromBlock(block) + (meta << 12));
 					world.setBlockToAir(x, y, z);
 				}
 				else
-				{
 					player.swingItem();
-				}
-			}
 
 			return result;
 		}
@@ -569,9 +512,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			return (ItemFocusBasic) ItemStack.loadItemStackFromNBT(nbt).getItem();
 		}
 		else
-		{
 			return null;
-		}
 	}
 
 	public ItemStack getFocusItem(ItemStack stack)
@@ -582,21 +523,15 @@ public class ItemWandCasting extends Item implements IArchitect
 			return ItemStack.loadItemStackFromNBT(nbt);
 		}
 		else
-		{
 			return null;
-		}
 	}
 
 	public void setFocus(ItemStack stack, ItemStack focus)
 	{
 		if (focus == null)
-		{
 			stack.stackTagCompound.removeTag("focus");
-		}
 		else
-		{
 			stack.setTagInfo("focus", focus.writeToNBT(new NBTTagCompound()));
-		}
 	}
 
 	public WandRod getRod(ItemStack stack)
@@ -651,6 +586,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		stack.setTagInfo("cap", new NBTTagString(cap.getTag()));
 	}
 
+	@Override
 	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player)
 	{
 		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
@@ -661,7 +597,8 @@ public class ItemWandCasting extends Item implements IArchitect
 			int z = movingobjectposition.blockZ;
 
 			// TODO gamerforEA code start
-			if (FakePlayerUtils.cantBreak(x, y, z, player)) return super.onItemRightClick(itemstack, world, player);
+			if (FakePlayerUtils.cantBreak(x, y, z, player))
+				return super.onItemRightClick(itemstack, world, player);
 			// TODO gamerforEA code end
 
 			Block bi = world.getBlock(x, y, z);
@@ -671,9 +608,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			{
 				ItemStack stack = ((IWandable) bi).onWandRightClick(world, itemstack, player);
 				if (stack != null)
-				{
 					return stack;
-				}
 			}
 
 			TileEntity tile = world.getTileEntity(x, y, z);
@@ -681,9 +616,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			{
 				ItemStack stack = ((IWandable) tile).onWandRightClick(world, itemstack, player);
 				if (stack != null)
-				{
 					return stack;
-				}
 			}
 		}
 
@@ -693,9 +626,7 @@ public class ItemWandCasting extends Item implements IArchitect
 			WandManager.setCooldown(player, focus1.getActivationCooldown(this.getFocusItem(itemstack)));
 			ItemStack ret1 = focus1.onFocusRightClick(itemstack, world, player, movingobjectposition);
 			if (ret1 != null)
-			{
 				return ret1;
-			}
 		}
 
 		return super.onItemRightClick(itemstack, world, player);
@@ -704,9 +635,7 @@ public class ItemWandCasting extends Item implements IArchitect
 	public void setObjectInUse(ItemStack stack, int x, int y, int z)
 	{
 		if (stack.stackTagCompound == null)
-		{
 			stack.stackTagCompound = new NBTTagCompound();
-		}
 
 		stack.stackTagCompound.setInteger("IIUX", x);
 		stack.stackTagCompound.setInteger("IIUY", y);
@@ -716,9 +645,7 @@ public class ItemWandCasting extends Item implements IArchitect
 	public void clearObjectInUse(ItemStack stack)
 	{
 		if (stack.stackTagCompound == null)
-		{
 			stack.stackTagCompound = new NBTTagCompound();
-		}
 
 		stack.stackTagCompound.removeTag("IIUX");
 		stack.stackTagCompound.removeTag("IIUY");
@@ -731,14 +658,13 @@ public class ItemWandCasting extends Item implements IArchitect
 		{
 			TileEntity te = world.getTileEntity(stack.stackTagCompound.getInteger("IIUX"), stack.stackTagCompound.getInteger("IIUY"), stack.stackTagCompound.getInteger("IIUZ"));
 			if (te != null && te instanceof IWandable)
-			{
 				return (IWandable) te;
-			}
 		}
 
 		return null;
 	}
 
+	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count)
 	{
 		IWandable tv = this.getObjectInUse(stack, player.worldObj);
@@ -758,6 +684,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		}
 	}
 
+	@Override
 	public void onPlayerStoppedUsing(ItemStack stack, World world, EntityPlayer player, int count)
 	{
 		IWandable tv = this.getObjectInUse(stack, player.worldObj);
@@ -770,24 +697,25 @@ public class ItemWandCasting extends Item implements IArchitect
 		{
 			ItemFocusBasic focus = this.getFocus(stack);
 			if (focus != null)
-			{
 				focus.onPlayerStoppedUsingFocus(stack, world, player, count);
-			}
 		}
 
 		this.clearObjectInUse(stack);
 	}
 
+	@Override
 	public EnumAction getItemUseAction(ItemStack par1ItemStack)
 	{
 		return EnumAction.bow;
 	}
 
+	@Override
 	public int getMaxItemUseDuration(ItemStack itemstack)
 	{
 		return Integer.MAX_VALUE;
 	}
 
+	@Override
 	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack)
 	{
 		ItemStack focus = this.getFocusItem(stack);
@@ -797,11 +725,10 @@ public class ItemWandCasting extends Item implements IArchitect
 			return focus.getItem().onEntitySwing(entityLiving, stack);
 		}
 		else
-		{
 			return super.onEntitySwing(entityLiving, stack);
-		}
 	}
 
+	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer player)
 	{
 		ItemFocusBasic focus = this.getFocus(itemstack);
@@ -811,29 +738,31 @@ public class ItemWandCasting extends Item implements IArchitect
 			return focus.onFocusBlockStartBreak(itemstack, x, y, z, player);
 		}
 		else
-		{
 			return false;
-		}
 	}
 
+	@Override
 	public boolean canHarvestBlock(Block par1Block, ItemStack itemstack)
 	{
 		ItemFocusBasic focus = this.getFocus(itemstack);
 		return focus != null ? this.getFocusItem(itemstack).getItem().canHarvestBlock(par1Block, itemstack) : false;
 	}
 
+	@Override
 	public float func_150893_a(ItemStack itemstack, Block block)
 	{
 		ItemFocusBasic focus = this.getFocus(itemstack);
 		return focus != null ? this.getFocusItem(itemstack).getItem().func_150893_a(itemstack, (Block) null) : super.func_150893_a(itemstack, block);
 	}
 
+	@Override
 	public ArrayList<BlockCoordinates> getArchitectBlocks(ItemStack stack, World world, int x, int y, int z, int side, EntityPlayer player)
 	{
 		ItemFocusBasic focus = this.getFocus(stack);
 		return focus != null && focus instanceof IArchitect && focus.isUpgradedWith(this.getFocusItem(stack), FocusUpgradeType.architect) ? ((IArchitect) focus).getArchitectBlocks(stack, world, x, y, z, side, player) : null;
 	}
 
+	@Override
 	public boolean showAxis(ItemStack stack, World world, EntityPlayer player, int side, IArchitect.EnumAxis axis)
 	{
 		ItemFocusBasic focus = this.getFocus(stack);

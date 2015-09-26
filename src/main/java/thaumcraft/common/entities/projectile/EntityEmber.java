@@ -1,6 +1,7 @@
 package thaumcraft.common.entities.projectile;
 
 import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.thaumcraft.FastUtils;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
@@ -48,9 +49,7 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 	public void onUpdate()
 	{
 		if (this.ticksExisted > this.duration)
-		{
 			this.setDead();
-		}
 
 		if (this.duration <= 20)
 		{
@@ -91,22 +90,20 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 	protected void onImpact(MovingObjectPosition mop)
 	{
 		if (!this.worldObj.isRemote)
-		{
 			if (mop.entityHit != null)
 			{
 				// TODO gamerforEA code start
-				if (this.getThrower() == null || FakePlayerUtils.cantDamage(this.getThrower(), mop.entityHit))
+				if (FakePlayerUtils.cantDamage(FastUtils.getThrower(this), mop.entityHit))
 				{
 					this.setDead();
 					return;
 				}
 				// TODO gamerforeEA code end
-				if (!mop.entityHit.isImmuneToFire() && mop.entityHit.attackEntityFrom((new EntityDamageSourceIndirect("fireball", this, this.getThrower())).setFireDamage(), this.damage))
-				{
+
+				if (!mop.entityHit.isImmuneToFire() && mop.entityHit.attackEntityFrom(new EntityDamageSourceIndirect("fireball", this, this.getThrower()).setFireDamage(), this.damage))
 					mop.entityHit.setFire(3 + this.firey);
-				}
 			}
-			else if (this.rand.nextFloat() < 0.025F * (float) this.firey)
+			else if (this.rand.nextFloat() < 0.025F * this.firey)
 			{
 				int i = mop.blockX;
 				int j = mop.blockY;
@@ -133,11 +130,8 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 				}
 
 				if (this.worldObj.isAirBlock(i, j, k))
-				{
 					this.worldObj.setBlock(i, j, k, Blocks.fire);
-				}
 			}
-		}
 
 		this.setDead();
 	}

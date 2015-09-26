@@ -39,18 +39,21 @@ public class ItemGolemBell extends Item
 		this.setMaxStackSize(1);
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
 		this.icon = ir.registerIcon("thaumcraft:ironbell");
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1)
 	{
 		return this.icon;
 	}
 
+	@Override
 	public boolean getShareTag()
 	{
 		return true;
@@ -121,30 +124,22 @@ public class ItemGolemBell extends Item
 		{
 			golem = world.getEntityByID(gid);
 			if (golem != null && golem instanceof EntityGolemBase && ((EntityGolemBase) golem).getUpgradeAmount(4) > 0)
-			{
 				markMultipleColors = true;
-			}
 		}
 
 		int count = markers.size();
 		int index = -1;
 		int color = 0;
 		if (!markMultipleColors)
-		{
 			index = markers.indexOf(new Marker(par4, par5, par6, world.provider.dimensionId, (byte) side, (byte) -1));
-		}
 		else
-		{
 			for (int tl = -1; tl < 16; ++tl)
 			{
 				index = markers.indexOf(new Marker(par4, par5, par6, world.provider.dimensionId, (byte) side, (byte) tl));
 				color = tl;
 				if (index != -1)
-				{
 					break;
-				}
 			}
-		}
 
 		if (index >= 0)
 		{
@@ -160,13 +155,9 @@ public class ItemGolemBell extends Item
 					{
 						String var18 = StatCollector.translateToLocal("tc.markerchange");
 						if (color > -1)
-						{
 							var18 = var18.replaceAll("%n", UtilsFX.colorNames[color]);
-						}
 						else
-						{
 							var18 = StatCollector.translateToLocal("tc.markerchangeany");
-						}
 
 						PlayerNotifications.addNotification(var18);
 					}
@@ -174,9 +165,7 @@ public class ItemGolemBell extends Item
 			}
 		}
 		else
-		{
 			markers.add(new Marker(par4, par5, par6, world.provider.dimensionId, (byte) side, (byte) -1));
-		}
 
 		if (count != markers.size())
 		{
@@ -198,11 +187,8 @@ public class ItemGolemBell extends Item
 
 			stack.setTagInfo("markers", var19);
 			if (gid > -1)
-			{
 				if (golem != null && golem instanceof EntityGolemBase)
-				{
 					((EntityGolemBase) golem).setMarkers(markers);
-				}
 				else
 				{
 					stack.getTagCompound().removeTag("golemid");
@@ -212,19 +198,17 @@ public class ItemGolemBell extends Item
 					stack.getTagCompound().removeTag("golemhomez");
 					stack.getTagCompound().removeTag("golemhomeface");
 				}
-			}
 		}
 
-		world.playSoundEffect((double) par4, (double) par5, (double) par6, "random.orb", 0.7F, 1.0F + world.rand.nextFloat() * 0.1F);
+		world.playSoundEffect(par4, par5, par6, "random.orb", 0.7F, 1.0F + world.rand.nextFloat() * 0.1F);
 	}
 
+	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int par4, int par5, int par6, int side, float par8, float par9, float par10)
 	{
 		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
 		if (movingobjectposition == null)
-		{
 			return true;
-		}
 		else
 		{
 			if (movingobjectposition.typeOfHit == MovingObjectType.BLOCK)
@@ -239,14 +223,16 @@ public class ItemGolemBell extends Item
 		}
 	}
 
+	@Override
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target)
 	{
 		if (target instanceof EntityGolemBase)
 		{
 			// TODO gamerforEA code start
-			EntityGolemBase golem = (EntityGolemBase) target;
-			if (!(player.getGameProfile().getName().equals(golem.ownerProfile.getName()) && player.getGameProfile().getId().equals(golem.ownerProfile.getId()))) return false;
+			if (!player.getGameProfile().equals(((EntityGolemBase) target).ownerProfile))
+				return false;
 			// TODO gamerforEA code end
+
 			if (stack.hasTagCompound())
 			{
 				stack.getTagCompound().removeTag("golemid");
@@ -260,9 +246,7 @@ public class ItemGolemBell extends Item
 			if (target.worldObj.isRemote)
 			{
 				if (player != null)
-				{
 					player.swingItem();
-				}
 			}
 			else
 			{
@@ -291,28 +275,23 @@ public class ItemGolemBell extends Item
 				stack.getTagCompound().setInteger("golemhomeface", ((EntityGolemBase) target).homeFacing);
 				target.worldObj.playSoundAtEntity(target, "random.orb", 0.7F, 1.0F + target.worldObj.rand.nextFloat() * 0.1F);
 				if (player != null && player.capabilities.isCreativeMode)
-				{
 					player.setCurrentItemOrArmor(0, stack.copy());
-				}
 			}
 
 			return true;
 		}
 		else
-		{
 			return false;
-		}
 	}
 
+	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		if (entity instanceof EntityTravelingTrunk && !entity.isDead)
 		{
 			byte var15 = (byte) ((EntityTravelingTrunk) entity).getUpgrade();
 			if (var15 == 3 && !((EntityTravelingTrunk) entity).func_152113_b().equals(player.getCommandSenderName()))
-			{
 				return false;
-			}
 			else if (entity.worldObj.isRemote && entity instanceof EntityLiving)
 			{
 				((EntityLiving) entity).spawnExplosionParticle();
@@ -324,29 +303,21 @@ public class ItemGolemBell extends Item
 				if (player.isSneaking())
 				{
 					if (var15 > -1 && entity.worldObj.rand.nextBoolean())
-					{
 						((EntityTravelingTrunk) entity).entityDropItem(new ItemStack(ConfigItems.itemGolemUpgrade, 1, var15), 0.5F);
-					}
 				}
 				else
 				{
 					if (((EntityTravelingTrunk) entity).hasCustomNameTag())
-					{
 						var16.setStackDisplayName(((EntityTravelingTrunk) entity).getCustomNameTag());
-					}
 
 					var16.setTagInfo("upgrade", new NBTTagByte(var15));
 					if (var15 == 4)
-					{
 						var16.setTagInfo("inventory", ((EntityTravelingTrunk) entity).inventory.writeToNBT(new NBTTagList()));
-					}
 				}
 
 				((EntityTravelingTrunk) entity).entityDropItem(var16, 0.5F);
 				if (var15 != 4 || player.isSneaking())
-				{
 					((EntityTravelingTrunk) entity).inventory.dropAllItems();
-				}
 
 				entity.worldObj.playSoundAtEntity(entity, "thaumcraft:zap", 0.5F, 1.0F);
 				entity.setDead();
@@ -363,9 +334,10 @@ public class ItemGolemBell extends Item
 			else
 			{
 				// TODO gamerforEA code start
-				EntityGolemBase golem = (EntityGolemBase) entity;
-				if (!(player.getGameProfile().getName().equals(golem.ownerProfile.getName()) && player.getGameProfile().getId().equals(golem.ownerProfile.getId()))) return false;
+				if (!player.getGameProfile().equals(((EntityGolemBase) entity).ownerProfile))
+					return false;
 				// TODO gamerforEA code end
+
 				int type = ((EntityGolemBase) entity).golemType.ordinal();
 				String deco = ((EntityGolemBase) entity).decoration;
 				byte core = ((EntityGolemBase) entity).getCore();
@@ -373,16 +345,12 @@ public class ItemGolemBell extends Item
 				boolean advanced = ((EntityGolemBase) entity).advanced;
 				ItemStack dropped = new ItemStack(ConfigItems.itemGolemPlacer, 1, type);
 				if (advanced)
-				{
 					dropped.setTagInfo("advanced", new NBTTagByte((byte) 1));
-				}
 
 				if (player.isSneaking())
 				{
 					if (core > -1)
-					{
 						((EntityGolemBase) entity).entityDropItem(new ItemStack(ConfigItems.itemGolemCore, 1, core), 0.5F);
-					}
 
 					byte[] markers = upgrades;
 					int tl = upgrades.length;
@@ -391,27 +359,19 @@ public class ItemGolemBell extends Item
 					{
 						byte l = markers[i$];
 						if (l > -1 && entity.worldObj.rand.nextBoolean())
-						{
 							((EntityGolemBase) entity).entityDropItem(new ItemStack(ConfigItems.itemGolemUpgrade, 1, l), 0.5F);
-						}
 					}
 				}
 				else
 				{
 					if (((EntityGolemBase) entity).hasCustomNameTag())
-					{
 						dropped.setStackDisplayName(((EntityGolemBase) entity).getCustomNameTag());
-					}
 
 					if (deco.length() > 0)
-					{
 						dropped.setTagInfo("deco", new NBTTagString(deco));
-					}
 
 					if (core > -1)
-					{
 						dropped.setTagInfo("core", new NBTTagByte(core));
-					}
 
 					dropped.setTagInfo("upgrades", new NBTTagByteArray(upgrades));
 					ArrayList var17 = ((EntityGolemBase) entity).getMarkers();
@@ -443,8 +403,6 @@ public class ItemGolemBell extends Item
 			}
 		}
 		else
-		{
 			return false;
-		}
 	}
 }

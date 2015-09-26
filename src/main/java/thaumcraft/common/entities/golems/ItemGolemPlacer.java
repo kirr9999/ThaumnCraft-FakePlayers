@@ -33,6 +33,7 @@ public class ItemGolemPlacer extends Item
 		this.setMaxStackSize(1);
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
@@ -49,47 +50,49 @@ public class ItemGolemPlacer extends Item
 		this.iconBlank = ir.registerIcon("thaumcraft:blank");
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public int getRenderPasses(int metadata)
 	{
 		return 3;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1)
 	{
 		return this.iconGolem[par1];
 	}
 
+	@Override
 	public IIcon getIcon(ItemStack stack, int pass)
 	{
-		return pass == 0 ? super.getIcon(stack, pass) : (pass == 1 && stack.hasTagCompound() && stack.stackTagCompound.hasKey("advanced") ? this.iconAdvanced : (pass == 2 && stack.hasTagCompound() && stack.stackTagCompound.hasKey("core") ? this.iconCore : this.iconBlank));
+		return pass == 0 ? super.getIcon(stack, pass) : pass == 1 && stack.hasTagCompound() && stack.stackTagCompound.hasKey("advanced") ? this.iconAdvanced : pass == 2 && stack.hasTagCompound() && stack.stackTagCompound.hasKey("core") ? this.iconCore : this.iconBlank;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean requiresMultipleRenderPasses()
 	{
 		return true;
 	}
 
+	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack)
 	{
 		return super.getUnlocalizedName() + "." + par1ItemStack.getItemDamage();
 	}
 
+	@Override
 	public void addInformation(ItemStack stack, EntityPlayer par2EntityPlayer, List list, boolean par4)
 	{
 		if (stack.hasTagCompound())
 		{
 			if (stack.stackTagCompound.hasKey("core"))
-			{
 				list.add(StatCollector.translateToLocal("item.ItemGolemCore.name") + ": §6" + StatCollector.translateToLocal("item.ItemGolemCore." + stack.stackTagCompound.getByte("core") + ".name"));
-			}
 
 			if (stack.stackTagCompound.hasKey("advanced"))
-			{
 				list.add(StatCollector.translateToLocal("tc.adv"));
-			}
 
 			String deco;
 			if (stack.stackTagCompound.hasKey("upgrades"))
@@ -103,9 +106,7 @@ public class ItemGolemPlacer extends Item
 				{
 					byte b = arr$[i$];
 					if (b > -1)
-					{
 						deco = deco + StatCollector.translateToLocal("item.ItemGolemUpgrade." + b + ".name") + " ";
-					}
 				}
 
 				list.add(deco);
@@ -122,39 +123,25 @@ public class ItemGolemPlacer extends Item
 				String var12 = "§2";
 				deco = stack.stackTagCompound.getString("deco");
 				if (deco.contains("H"))
-				{
 					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.0.name") + " ";
-				}
 
 				if (deco.contains("G"))
-				{
 					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.1.name") + " ";
-				}
 
 				if (deco.contains("B"))
-				{
 					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.2.name") + " ";
-				}
 
 				if (deco.contains("F"))
-				{
 					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.3.name") + " ";
-				}
 
 				if (deco.contains("R"))
-				{
 					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.4.name") + " ";
-				}
 
 				if (deco.contains("V"))
-				{
 					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.5.name") + " ";
-				}
 
 				if (deco.contains("P"))
-				{
 					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.6.name") + " ";
-				}
 
 				list.add(var12);
 			}
@@ -162,16 +149,19 @@ public class ItemGolemPlacer extends Item
 
 	}
 
+	@Override
 	public boolean getShareTag()
 	{
 		return true;
 	}
 
+	@Override
 	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player)
 	{
 		return true;
 	}
 
+	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int par4, int par5, int par6, int side, float par8, float par9, float par10)
 	{
 		if (!world.isRemote && !player.isSneaking())
@@ -182,30 +172,23 @@ public class ItemGolemPlacer extends Item
 			par6 += Facing.offsetsZForSide[side];
 			double var12 = 0.0D;
 			if (side == 1 && var11 == Blocks.fence || var11 == Blocks.nether_brick_fence)
-			{
 				var12 = 0.5D;
-			}
 
-			if (this.spawnCreature(world, (double) par4 + 0.5D, (double) par5 + var12, (double) par6 + 0.5D, side, stack, player) && !player.capabilities.isCreativeMode)
-			{
+			if (this.spawnCreature(world, par4 + 0.5D, par5 + var12, par6 + 0.5D, side, stack, player) && !player.capabilities.isCreativeMode)
 				--stack.stackSize;
-			}
 
 			return true;
 		}
 		else
-		{
 			return false;
-		}
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{
 		for (int a = 0; a <= 7; ++a)
-		{
 			par3List.add(new ItemStack(this, 1, a));
-		}
 
 	}
 
@@ -213,9 +196,7 @@ public class ItemGolemPlacer extends Item
 	{
 		boolean adv = false;
 		if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("advanced"))
-		{
 			adv = true;
-		}
 
 		EntityGolemBase golem = new EntityGolemBase(par0World, EnumGolemType.getType(stack.getItemDamage()), adv);
 		if (golem != null)
@@ -224,9 +205,7 @@ public class ItemGolemPlacer extends Item
 			golem.playLivingSound();
 			golem.setHomeArea(MathHelper.floor_double(par2), MathHelper.floor_double(par4), MathHelper.floor_double(par6), 32);
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("core"))
-			{
 				golem.setCore(stack.stackTagCompound.getByte("core"));
-			}
 
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("upgrades"))
 			{
@@ -238,17 +217,11 @@ public class ItemGolemPlacer extends Item
 
 					int nbttaglist2;
 					for (nbttaglist2 = 0; nbttaglist2 < deco; ++nbttaglist2)
-					{
 						a[nbttaglist2] = -1;
-					}
 
 					for (nbttaglist2 = 0; nbttaglist2 < golem.upgrades.length; ++nbttaglist2)
-					{
 						if (nbttaglist2 < deco)
-						{
 							a[nbttaglist2] = golem.upgrades[nbttaglist2];
-						}
-					}
 
 					golem.upgrades = a;
 				}

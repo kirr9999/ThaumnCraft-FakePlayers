@@ -29,57 +29,62 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 		this.setCreativeTab(Thaumcraft.tabTC);
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir)
 	{
 		this.icon = ir.registerIcon("thaumcraft:elementalhoe");
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int par1)
 	{
 		return this.icon;
 	}
 
+	@Override
 	public int getItemEnchantability()
 	{
 		return 5;
 	}
 
+	@Override
 	public EnumRarity getRarity(ItemStack itemstack)
 	{
 		return EnumRarity.rare;
 	}
 
+	@Override
 	public boolean getIsRepairable(ItemStack par1ItemStack, ItemStack par2ItemStack)
 	{
 		return par2ItemStack.isItemEqual(new ItemStack(ConfigItems.itemResource, 1, 2)) ? true : super.getIsRepairable(par1ItemStack, par2ItemStack);
 	}
 
+	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int par7, float par8, float par9, float par10)
 	{
 		if (player.isSneaking())
-		{
 			return super.onItemUse(stack, player, world, x, y, z, par7, par8, par9, par10);
-		}
 		else
 		{
 			boolean did = false;
 
 			for (int xOffset = -1; xOffset <= 1; ++xOffset)
-			{
 				for (int zOffset = -1; zOffset <= 1; ++zOffset)
 				{
 					// TODO gamerforEA code start
-					if (FakePlayerUtils.cantBreak(x + xOffset, y, z + zOffset, player)) continue;
+					if (FakePlayerUtils.cantBreak(x + xOffset, y, z + zOffset, player))
+						continue;
 					// TODO gamerforEA code end
+
 					if (super.onItemUse(stack, player, world, x + xOffset, y, z + zOffset, par7, par8, par9, par10))
 					{
 						Thaumcraft.proxy.blockSparkle(world, x + xOffset, y, z + zOffset, 8401408, 2);
-						if (!did) did = true;
+						if (!did)
+							did = true;
 					}
 				}
-			}
 
 			if (!did)
 			{
@@ -110,9 +115,7 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 				}
 
 				if (did)
-				{
-					world.playSoundEffect((double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, "thaumcraft:wand", 0.75F, 0.9F + world.rand.nextFloat() * 0.2F);
-				}
+					world.playSoundEffect(x + 0.5D, y + 0.5D, z + 0.5D, "thaumcraft:wand", 0.75F, 0.9F + world.rand.nextFloat() * 0.2F);
 			}
 
 			return did;

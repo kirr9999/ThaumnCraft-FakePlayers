@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.logging.log4j.Level;
 
 import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.thaumcraft.FastUtils;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -50,7 +51,8 @@ public class ServerTickEventsFML
 		{
 			this.tickChunkRegeneration(event);
 			this.tickBlockSwap(event.world);
-			if (TileSensor.noteBlockEvents.get(event.world) != null) TileSensor.noteBlockEvents.get(event.world).clear();
+			if (TileSensor.noteBlockEvents.get(event.world) != null)
+				TileSensor.noteBlockEvents.get(event.world).clear();
 		}
 	}
 
@@ -58,16 +60,13 @@ public class ServerTickEventsFML
 	{
 		int dim = event.world.provider.dimensionId;
 		int count = 0;
-		ArrayList<ChunkLoc> chunks = (ArrayList) chunksToGenerate.get(dim);
+		ArrayList<ChunkLoc> chunks = chunksToGenerate.get(dim);
 		if (chunks != null && chunks.size() > 0)
-		{
 			for (int a = 0; a < 10; ++a)
 			{
 				chunks = chunksToGenerate.get(dim);
 				if (chunks == null || chunks.size() <= 0)
-				{
 					break;
-				}
 
 				++count;
 				ChunkLoc loc = chunks.get(0);
@@ -75,17 +74,14 @@ public class ServerTickEventsFML
 				Random fmlRandom = new Random(worldSeed);
 				long xSeed = fmlRandom.nextLong() >> 3;
 				long zSeed = fmlRandom.nextLong() >> 3;
-				fmlRandom.setSeed(xSeed * (long) loc.chunkXPos + zSeed * (long) loc.chunkZPos ^ worldSeed);
+				fmlRandom.setSeed(xSeed * loc.chunkXPos + zSeed * loc.chunkZPos ^ worldSeed);
 				Thaumcraft.instance.worldGen.worldGeneration(fmlRandom, loc.chunkXPos, loc.chunkZPos, event.world, false);
 				chunks.remove(0);
 				chunksToGenerate.put(dim, chunks);
 			}
-		}
 
 		if (count > 0)
-		{
 			FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, "[Thaumcraft] Regenerated " + count + " chunks. " + Math.max(0, chunks.size()) + " chunks left");
-		}
 	}
 
 	private void tickBlockSwap(World world)
@@ -102,8 +98,13 @@ public class ServerTickEventsFML
 				if (vs != null)
 				{
 					// TODO gamerforEA code start
-					if (Block.getBlockFromItem(vs.target.getItem()).getClass().getName().contains("BlockArmorStand") || FakePlayerUtils.cantBreak(vs.x, vs.y, vs.z, vs.player)) continue;
+					if (Block.getBlockFromItem(vs.target.getItem()).getClass().getName().contains("BlockArmorStand"))
+						continue;
+
+					if (!FastUtils.isOnline(vs.player) || FakePlayerUtils.cantBreak(vs.x, vs.y, vs.z, vs.player))
+						continue;
 					// TODO gamerforEA code end
+
 					Block block = world.getBlock(vs.x, vs.y, vs.z);
 					int meta = world.getBlockMetadata(vs.x, vs.y, vs.z);
 					ItemWandCasting wand = null;
@@ -120,9 +121,7 @@ public class ServerTickEventsFML
 					{
 						int slot = InventoryUtils.isPlayerCarrying(vs.player, vs.target);
 						if (vs.player.capabilities.isCreativeMode)
-						{
 							slot = 1;
-						}
 
 						if (vs.bSource == block && vs.mSource == meta && slot >= 0)
 						{
@@ -136,54 +135,35 @@ public class ServerTickEventsFML
 								if (silktouch && block.canSilkHarvest(world, vs.player, vs.x, vs.y, vs.z, meta))
 								{
 									ItemStack stack = BlockUtils.createStackedBlock(block, meta);
-									if (stack != null) drops.add(stack);
+									if (stack != null)
+										drops.add(stack);
 								}
 								else
-								{
 									drops = block.getDrops(world, vs.x, vs.y, vs.z, meta, furtune);
-								}
 
 								if (drops.size() > 0)
-								{
 									for (ItemStack stack : drops)
-									{
 										if (!vs.player.inventory.addItemStackToInventory(stack))
-										{
-											world.spawnEntityInWorld(new EntityItem(world, (double) vs.x + 0.5D, (double) vs.y + 0.5D, (double) vs.z + 0.5D, stack));
-										}
-									}
-								}
+											world.spawnEntityInWorld(new EntityItem(world, vs.x + 0.5D, vs.y + 0.5D, vs.z + 0.5D, stack));
 
 								wand.consumeAllVis(vs.player.inventory.getStackInSlot(vs.wand), vs.player, focus.getVisCost(focusStack), true, false);
 							}
 
 							world.setBlock(vs.x, vs.y, vs.z, Block.getBlockFromItem(vs.target.getItem()), vs.target.getItemDamage(), 3);
 							Block.getBlockFromItem(vs.target.getItem()).onBlockPlacedBy(world, vs.x, vs.y, vs.z, vs.player, vs.target);
-							PacketHandler.INSTANCE.sendToAllAround(new PacketFXBlockSparkle(vs.x, vs.y, vs.z, 12632319), new TargetPoint(world.provider.dimensionId, (double) vs.x, (double) vs.y, (double) vs.z, 32.0D));
+							PacketHandler.INSTANCE.sendToAllAround(new PacketFXBlockSparkle(vs.x, vs.y, vs.z, 12632319), new TargetPoint(world.provider.dimensionId, vs.x, vs.y, vs.z, 32.0D));
 							world.playAuxSFX(2001, vs.x, vs.y, vs.z, Block.getIdFromBlock(vs.bSource) + (vs.mSource << 12));
 							if (vs.lifespan > 0)
-							{
 								for (int x = -1; x <= 1; ++x)
-								{
 									for (int y = -1; y <= 1; ++y)
-									{
 										for (int z = -1; z <= 1; ++z)
-										{
 											if ((x != 0 || y != 0 || z != 0) && world.getBlock(vs.x + x, vs.y + y, vs.z + z) == vs.bSource && world.getBlockMetadata(vs.x + x, vs.y + y, vs.z + z) == vs.mSource && BlockUtils.isBlockExposed(world, vs.x + x, vs.y + y, vs.z + z))
-											{
 												queue.offer(new VirtualSwapper(vs.x + x, vs.y + y, vs.z + z, vs.bSource, vs.mSource, vs.target, vs.lifespan - 1, vs.player, vs.wand));
-											}
-										}
-									}
-								}
-							}
 						}
 					}
 				}
 				else
-				{
 					didSomething = true;
-				}
 			}
 
 			swapList.put(dim, queue);
