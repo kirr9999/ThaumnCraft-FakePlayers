@@ -1,6 +1,6 @@
 package thaumcraft.common.entities.ai.fluid;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.tileentity.TileEntity;
@@ -64,7 +64,7 @@ public class AIEssentiaEmpty extends EntityAIBase
 		TileEntity tile = this.theWorld.getTileEntity(this.jarX, this.jarY, this.jarZ);
 
 		// TODO gamerforEA code start
-		if (tile != null && FakePlayerUtils.cantBreak(this.jarX, this.jarY, this.jarZ, this.theGolem.getOwnerFake()))
+		if (tile != null && EventUtils.cantBreak(this.theGolem.fake.getPlayer(), this.jarX, this.jarY, this.jarZ))
 			return;
 		// TODO gamerforEA code end
 

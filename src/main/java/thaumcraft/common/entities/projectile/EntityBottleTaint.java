@@ -2,8 +2,9 @@ package thaumcraft.common.entities.projectile;
 
 import java.util.List;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.gamerforea.thaumcraft.FastUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.eventhelper.util.FastUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,7 +56,7 @@ public class EntityBottleTaint extends EntityThrowable
 		if (!this.worldObj.isRemote)
 		{
 			// TODO gamerforEA code start
-			EntityPlayer player = FastUtils.getThrowerPlayer(this);
+			EntityPlayer player = FastUtils.getThrowerPlayer(this, ModUtils.profile);
 			// TODO gamerforEA cod end
 
 			List<EntityLivingBase> entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(this.posX, this.posY, this.posZ, this.posX, this.posY, this.posZ).expand(5.0D, 5.0D, 5.0D));
@@ -64,7 +65,7 @@ public class EntityBottleTaint extends EntityThrowable
 					if (!(entity instanceof ITaintedMob) && !entity.isEntityUndead())
 					{
 						// TODO gamerforEA code start
-						if (FakePlayerUtils.cantDamage(player, entity))
+						if (EventUtils.cantDamage(player, entity))
 							continue;
 						// TODO gamerforEA cod end
 
@@ -81,7 +82,7 @@ public class EntityBottleTaint extends EntityThrowable
 				int chunkZ = z + (int) ((this.rand.nextFloat() - this.rand.nextFloat()) * 5.0F);
 
 				// TODO gamerforEA code start
-				if (FakePlayerUtils.cantBreak(chunkX, y, chunkZ, player))
+				if (EventUtils.cantBreak(player, chunkX, y, chunkZ))
 					continue;
 				// TODO gamerforEA code end
 

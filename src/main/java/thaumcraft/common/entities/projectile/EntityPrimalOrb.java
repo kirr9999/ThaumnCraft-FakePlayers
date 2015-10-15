@@ -3,8 +3,10 @@ package thaumcraft.common.entities.projectile;
 import java.util.List;
 import java.util.Random;
 
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.eventhelper.util.FastUtils;
 import com.gamerforea.thaumcraft.ExplosionByPlayer;
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
@@ -153,7 +155,7 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 			}
 
 			// TODO gamerforEA use ExplosionByPlayer
-			ExplosionByPlayer.createExplosion(com.gamerforea.thaumcraft.FastUtils.getThrowerPlayer(this), this.worldObj, null, this.posX, this.posY, this.posZ, f2, true);
+			ExplosionByPlayer.createExplosion(FastUtils.getThrowerPlayer(this, ModUtils.profile), this.worldObj, null, this.posX, this.posY, this.posZ, f2, true);
 
 			if (!this.seeker && this.rand.nextInt(100) <= f1)
 				if (this.rand.nextBoolean())
@@ -181,7 +183,7 @@ public class EntityPrimalOrb extends EntityThrowable implements IEntityAdditiona
 				int yy = this.worldObj.getHeightValue(chunkX, chunkZ);
 
 				// TODO gamerforEA code start
-				if (FakePlayerUtils.cantBreak(chunkX, yy, chunkZ, com.gamerforea.thaumcraft.FastUtils.getThrowerPlayer(this)))
+				if (EventUtils.cantBreak(FastUtils.getThrowerPlayer(this, ModUtils.profile), chunkX, yy, chunkZ))
 					continue;
 				// TODO gamerforEA code end
 

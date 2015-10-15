@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.block.Block;
@@ -612,7 +613,7 @@ public class TileNode extends TileThaumcraft implements INode, IWandable
 						if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.disableDamage)
 						{
 							// TODO gamerforEA code start
-							if (FakePlayerUtils.cantDamage(FakePlayerUtils.getModFake(this.worldObj), entity))
+							if (EventUtils.cantDamage(ModUtils.getModFake(this.worldObj), entity))
 								continue;
 							// TODO gamerforEA code end
 
@@ -1019,7 +1020,7 @@ public class TileNode extends TileThaumcraft implements INode, IWandable
 				{
 					float hardness = block.getBlockHardness(this.worldObj, x, y, z);
 					// TODO gamerforEA add condition [3]
-					if (hardness >= 0.0F && hardness < 5.0F && !FakePlayerUtils.cantBreak(x, y, z, FakePlayerUtils.getModFake(this.worldObj)))
+					if (hardness >= 0.0F && hardness < 5.0F && !EventUtils.cantBreak(ModUtils.getModFake(this.worldObj), x, y, z))
 						this.worldObj.func_147480_a(x, y, z, true);
 				}
 			}

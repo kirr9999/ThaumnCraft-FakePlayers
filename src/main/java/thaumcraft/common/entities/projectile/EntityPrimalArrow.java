@@ -2,7 +2,8 @@ package thaumcraft.common.entities.projectile;
 
 import java.util.List;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
@@ -230,8 +231,8 @@ public class EntityPrimalArrow extends EntityArrow implements IProjectile, IEnti
 				if (mop.entityHit != null)
 				{
 					// TODO gamerforEA code start
-					Entity attacker = this.shootingEntity == null ? FakePlayerUtils.getModFake(this.worldObj) : this.shootingEntity;
-					if (FakePlayerUtils.cantDamage(attacker, mop.entityHit))
+					Entity attacker = this.shootingEntity == null ? ModUtils.getModFake(this.worldObj) : this.shootingEntity;
+					if (EventUtils.cantDamage(attacker, mop.entityHit))
 					{
 						this.setDead();
 						return;

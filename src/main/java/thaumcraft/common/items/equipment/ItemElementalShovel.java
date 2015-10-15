@@ -3,7 +3,8 @@ package thaumcraft.common.items.equipment;
 import java.util.ArrayList;
 import java.util.Set;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 import com.google.common.collect.ImmutableSet;
 
 import cpw.mods.fml.relauncher.Side;
@@ -153,7 +154,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 							if (bi == Blocks.grass && (player.capabilities.isCreativeMode || InventoryUtils.consumeInventoryItem(player, Item.getItemFromBlock(Blocks.dirt), 0)))
 							{
 								// TODO gamerforEA code start
-								if (FakePlayerUtils.cantBreak(x + xx + xm, y + yy + ym, z + zz + zm, player))
+								if (EventUtils.cantBreak(player, x + xx + xm, y + yy + ym, z + zz + zm))
 									continue;
 								// TODO gamerforEA code end
 
@@ -167,7 +168,7 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 						else
 						{
 							// TODO gamerforEA code start
-							if (FakePlayerUtils.cantBreak(x + xx + xm, y + yy + ym, z + zz + zm, player))
+							if (EventUtils.cantBreak(player, x + xx + xm, y + yy + ym, z + zz + zm))
 								continue;
 							// TODO gamerforEA code end
 
@@ -241,8 +242,8 @@ public class ItemElementalShovel extends ItemSpade implements IRepairable, IArch
 								if (bl.getBlockHardness(world, x + xx, y + yy, z + zz) >= 0.0F && (ForgeHooks.isToolEffective(stack, bl, md) || this.isEffectiveAgainst(bl)))
 								{
 									// TODO gamerforEA code start
-									EntityPlayer player = ent instanceof EntityPlayer ? (EntityPlayer) ent : FakePlayerUtils.getModFake(world);
-									if (FakePlayerUtils.cantBreak(x + xx, y + yy, z + zz, player))
+									EntityPlayer player = ent instanceof EntityPlayer ? (EntityPlayer) ent : ModUtils.getModFake(world);
+									if (EventUtils.cantBreak(player, x + xx, y + yy, z + zz))
 										continue;
 									// TODO gamerforEA code end
 

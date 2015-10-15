@@ -263,7 +263,7 @@ public class ItemGolemPlacer extends Item
 			}
 
 			// TODO gamerforEA code start
-			golem.ownerProfile = player.getGameProfile();
+			golem.fake.profile = player.getGameProfile();
 			// TODO gamerforEA code end
 		}
 

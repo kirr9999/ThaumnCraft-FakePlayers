@@ -1,6 +1,6 @@
 package thaumcraft.common.entities.ai.fluid;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.tileentity.TileEntity;
@@ -101,7 +101,7 @@ public class AIEssentiaGather extends EntityAIBase
 		if (tile instanceof IEssentiaTransport)
 		{
 			// TODO gamerforEA code start
-			if (FakePlayerUtils.cantBreak(cX, cY, cZ, this.theGolem.getOwnerFake()))
+			if (EventUtils.cantBreak(this.theGolem.fake.getPlayer(), cX, cY, cZ))
 				return;
 			// TODO gamerforEA code end
 

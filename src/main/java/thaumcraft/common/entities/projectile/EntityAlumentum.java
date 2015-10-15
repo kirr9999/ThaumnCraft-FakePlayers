@@ -1,7 +1,8 @@
 package thaumcraft.common.entities.projectile;
 
+import com.gamerforea.eventhelper.util.FastUtils;
 import com.gamerforea.thaumcraft.ExplosionByPlayer;
-import com.gamerforea.thaumcraft.FastUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
@@ -55,7 +56,7 @@ public class EntityAlumentum extends EntityThrowable
 		{
 			boolean grief = this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
 			// TODO gamerforEA use ExplosionByPlayer
-			ExplosionByPlayer.createExplosion(FastUtils.getThrowerPlayer(this), this.worldObj, null, this.posX, this.posY, this.posZ, 1.66F, grief);
+			ExplosionByPlayer.createExplosion(FastUtils.getThrowerPlayer(this, ModUtils.profile), this.worldObj, null, this.posX, this.posY, this.posZ, 1.66F, grief);
 			this.setDead();
 		}
 	}

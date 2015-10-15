@@ -1,6 +1,6 @@
 package thaumcraft.common.items.wands.foci;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -76,9 +76,9 @@ public class ItemFocusHellbat extends ItemFocusBasic
 	}
 
 	@Override
-	public ItemStack onFocusRightClick(ItemStack itemstack, World world, EntityPlayer player, MovingObjectPosition movingobjectposition)
+	public ItemStack onFocusRightClick(ItemStack stack, World world, EntityPlayer player, MovingObjectPosition mop)
 	{
-		ItemWandCasting wand = (ItemWandCasting) itemstack.getItem();
+		ItemWandCasting wand = (ItemWandCasting) stack.getItem();
 		Entity pointedEntity = EntityUtils.getPointedEntity(player.worldObj, player, 32.0D, EntityFireBat.class);
 		double px = player.posX;
 		double py = player.posY;
@@ -96,32 +96,32 @@ public class ItemFocusHellbat extends ItemFocusBasic
 			if (!world.isRemote)
 			{
 				if (pointedEntity instanceof EntityPlayer && !MinecraftServer.getServer().isPVPEnabled())
-					return itemstack;
+					return stack;
 
 				// TODO gamerforEA code start
-				if (FakePlayerUtils.cantDamage(player, pointedEntity))
-					return itemstack;
+				if (EventUtils.cantDamage(player, pointedEntity))
+					return stack;
 				// TODO gamerforEA code end
 
 				EntityFireBat firebat = new EntityFireBat(world);
 				firebat.setLocationAndAngles(px, py + firebat.height, pz, player.rotationYaw, 0.0F);
 				firebat.setTarget(pointedEntity);
-				firebat.damBonus = wand.getFocusPotency(itemstack);
+				firebat.damBonus = wand.getFocusPotency(stack);
 				firebat.setIsSummoned(true);
 				firebat.setIsBatHanging(false);
-				if (this.isUpgradedWith(wand.getFocusItem(itemstack), devilbats))
+				if (this.isUpgradedWith(wand.getFocusItem(stack), devilbats))
 					firebat.setIsDevil(true);
 
-				if (this.isUpgradedWith(wand.getFocusItem(itemstack), batbombs))
+				if (this.isUpgradedWith(wand.getFocusItem(stack), batbombs))
 					firebat.setIsExplosive(true);
 
-				if (this.isUpgradedWith(wand.getFocusItem(itemstack), vampirebats))
+				if (this.isUpgradedWith(wand.getFocusItem(stack), vampirebats))
 				{
 					firebat.owner = player;
 					firebat.setIsVampire(true);
 				}
 
-				if (wand.consumeAllVis(itemstack, player, this.getVisCost(itemstack), true, false) && world.spawnEntityInWorld(firebat))
+				if (wand.consumeAllVis(stack, player, this.getVisCost(stack), true, false) && world.spawnEntityInWorld(firebat))
 				{
 					world.playAuxSFX(2004, (int) px, (int) py, (int) pz, 0);
 					world.playSoundAtEntity(firebat, "thaumcraft:ice", 0.2F, 0.95F + world.rand.nextFloat() * 0.1F);
@@ -133,7 +133,7 @@ public class ItemFocusHellbat extends ItemFocusBasic
 			player.swingItem();
 		}
 
-		return itemstack;
+		return stack;
 	}
 
 	@Override

@@ -1,10 +1,12 @@
 package com.gamerforea.thaumcraft;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.google.common.collect.Maps;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -23,13 +25,13 @@ public final class ExplosionByPlayer extends Explosion
 {
 	private final EntityPlayer player;
 	private final World worldObj;
-	private final Map field_77288_k = new HashMap();
+	private final Map field_77288_k = Maps.newHashMap();
 
-	public ExplosionByPlayer(EntityPlayer player, World p_i1948_1_, Entity p_i1948_2_, double p_i1948_3_, double p_i1948_5_, double p_i1948_7_, float p_i1948_9_)
+	public ExplosionByPlayer(EntityPlayer player, World world, Entity exploder, double x, double y, double z, float explosionSize)
 	{
-		super(p_i1948_1_, p_i1948_2_, p_i1948_3_, p_i1948_5_, p_i1948_7_, p_i1948_9_);
-		this.worldObj = p_i1948_1_;
-		this.player = player == null ? FakePlayerUtils.getModFake(p_i1948_1_) : player;
+		super(world, exploder, x, y, z, explosionSize);
+		this.worldObj = world;
+		this.player = player == null ? ModUtils.getModFake(world) : player;
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public final class ExplosionByPlayer extends Explosion
 
 				if (d3 != 0D)
 				{
-					if (FakePlayerUtils.cantDamage(this.player, entity))
+					if (EventUtils.cantDamage(this.player, entity))
 						continue;
 
 					d0 /= d3;
@@ -118,7 +120,7 @@ public final class ExplosionByPlayer extends Explosion
 							}
 
 							if (size > 0F && (this.exploder == null || this.exploder.func_145774_a(this, this.worldObj, x, y, z, block, size)))
-								if (!FakePlayerUtils.cantBreak(x, y, z, this.player))
+								if (!EventUtils.cantBreak(this.player, x, y, z))
 									set.add(new ChunkPosition(x, y, z));
 
 							dX += d0 * f;

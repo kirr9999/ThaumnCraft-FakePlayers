@@ -50,7 +50,7 @@ public class AIUseItem extends EntityAIBase
 		this.distance = MathHelper.ceiling_float_int(this.theGolem.getRange() / 3.0F);
 		if (this.theWorld instanceof WorldServer)
 			// TODO gamerforEA code replace, old code: this.player = FakePlayerFactory.get((WorldServer) this.theWorld, new GameProfile(null, "FakeThaumcraftGolem"));
-			this.player = this.theGolem.getOwnerFake();
+			this.player = this.theGolem.fake.getPlayer();
 		// TODO gamerforEA code end
 
 		try

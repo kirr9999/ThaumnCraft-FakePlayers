@@ -2,13 +2,13 @@ package thaumcraft.common.entities.golems;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.UUID;
 
 import org.apache.logging.log4j.Level;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.google.common.base.Strings;
-import com.mojang.authlib.GameProfile;
+import com.gamerforea.eventhelper.fake.FakePlayerContainer;
+import com.gamerforea.eventhelper.fake.FakePlayerContainerEntity;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
@@ -42,7 +42,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.FluidStack;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -115,18 +114,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	public int healing;
 
 	// TODO gamerforEA code start
-	public GameProfile ownerProfile;
-	private FakePlayer ownerFake;
-
-	public final FakePlayer getOwnerFake()
-	{
-		if (this.ownerFake != null)
-			return this.ownerFake;
-		else if (this.ownerProfile != null)
-			return this.ownerFake = FakePlayerUtils.create(this.worldObj, this.ownerProfile);
-		else
-			return FakePlayerUtils.getModFake(this.worldObj);
-	}
+	public final FakePlayerContainer fake = new FakePlayerContainerEntity(ModUtils.profile, this);
 	// TODO gamerforEA code end
 
 	public EntityGolemBase(World par1World)
@@ -699,11 +687,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		nbt.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
 
 		// TODO gamerforEA code start
-		if (this.ownerProfile != null)
-		{
-			nbt.setString("ownerUUID", this.ownerProfile.getId().toString());
-			nbt.setString("ownerName", this.ownerProfile.getName());
-		}
+		this.fake.writeToNBT(nbt);
 		// TODO gamerforEA code end
 	}
 
@@ -823,13 +807,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		this.dataWatcher.updateObject(22, String.valueOf(var18));
 
 		// TODO gamerforEA code start
-		String uuid = nbt.getString("ownerUUID");
-		if (!Strings.isNullOrEmpty(uuid))
-		{
-			String name = nbt.getString("ownerName");
-			if (!Strings.isNullOrEmpty(name))
-				this.ownerProfile = new GameProfile(UUID.fromString(uuid), name);
-		}
+		this.fake.readFromNBT(nbt);
 		// TODO gamerforEA code end
 	}
 
@@ -1378,7 +1356,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		else
 		{
 			// TODO gamerforEA code start
-			if (ds.getSourceOfDamage() != null && FakePlayerUtils.cantDamage(this.getOwnerFake(), ds.getSourceOfDamage()))
+			if (ds.getSourceOfDamage() != null && EventUtils.cantDamage(this.fake.getPlayer(), ds.getSourceOfDamage()))
 				return false;
 			// TODO gamerforEA code end
 

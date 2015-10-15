@@ -2,7 +2,8 @@ package thaumcraft.common.items.equipment;
 
 import java.util.Set;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
@@ -143,8 +144,8 @@ public class ItemPrimalCrusher extends ItemTool implements IRepairable, IWarping
 								if (block1.getBlockHardness(world, x + xOffset, y + yOffset, z + zOffset) >= 0.0F && (ForgeHooks.isToolEffective(stack, block1, meta) || this.isEffectiveAgainst(block1)))
 								{
 									// TODO gamerforEA code start
-									EntityPlayer player = entity instanceof EntityPlayer ? (EntityPlayer) entity : FakePlayerUtils.getModFake(world);
-									if (FakePlayerUtils.cantBreak(x + xOffset, y + yOffset, z + zOffset, player))
+									EntityPlayer player = entity instanceof EntityPlayer ? (EntityPlayer) entity : ModUtils.getModFake(world);
+									if (EventUtils.cantBreak(player, x + xOffset, y + yOffset, z + zOffset))
 										return false;
 									// TODO gamerforEA code end
 

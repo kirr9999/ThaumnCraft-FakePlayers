@@ -1,6 +1,6 @@
 package thaumcraft.common.items.equipment;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -74,7 +74,7 @@ public class ItemElementalHoe extends ItemHoe implements IRepairable
 				for (int zOffset = -1; zOffset <= 1; ++zOffset)
 				{
 					// TODO gamerforEA code start
-					if (FakePlayerUtils.cantBreak(x + xOffset, y, z + zOffset, player))
+					if (EventUtils.cantBreak(player, x + xOffset, y, z + zOffset))
 						continue;
 					// TODO gamerforEA code end
 

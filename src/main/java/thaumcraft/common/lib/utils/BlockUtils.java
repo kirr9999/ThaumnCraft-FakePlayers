@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.block.Block;
@@ -226,7 +226,7 @@ public class BlockUtils
 		findBlocks(world, x, y, z, block);
 
 		// TODO gamerforEA code add condition [1]
-		boolean worked = !FakePlayerUtils.cantBreak(lastx, lasty, lastz, player) && harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
+		boolean worked = !EventUtils.cantBreak(player, lastx, lasty, lastz) && harvestBlock(world, player, lastx, lasty, lastz, followitem, color);
 
 		world.markBlockForUpdate(x, y, z);
 		if (worked)

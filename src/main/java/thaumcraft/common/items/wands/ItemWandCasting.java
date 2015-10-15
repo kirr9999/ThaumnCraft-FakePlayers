@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -438,11 +438,11 @@ public class ItemWandCasting extends Item implements IArchitect
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack itemstack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
+	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
 	{
 		// TODO gamerforEA code start
-		if (FakePlayerUtils.cantBreak(x, y, z, player))
-			return super.onItemUseFirst(itemstack, player, world, x, y, z, side, hitX, hitY, hitZ);
+		if (EventUtils.cantBreak(player, x, y, z))
+			return super.onItemUseFirst(stack, player, world, x, y, z, side, hitX, hitY, hitZ);
 		// TODO gamerforEA code end
 
 		Block block = world.getBlock(x, y, z);
@@ -451,7 +451,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		ForgeDirection direction = ForgeDirection.getOrientation(side);
 		if (block instanceof IWandable)
 		{
-			int tile = ((IWandable) block).onWandRightClick(world, itemstack, player, x, y, z, side, meta);
+			int tile = ((IWandable) block).onWandRightClick(world, stack, player, x, y, z, side, meta);
 			if (tile >= 0)
 				return tile == 1;
 		}
@@ -459,13 +459,13 @@ public class ItemWandCasting extends Item implements IArchitect
 		TileEntity tile1 = world.getTileEntity(x, y, z);
 		if (tile1 != null && tile1 instanceof IWandable)
 		{
-			int ret = ((IWandable) tile1).onWandRightClick(world, itemstack, player, x, y, z, side, meta);
+			int ret = ((IWandable) tile1).onWandRightClick(world, stack, player, x, y, z, side, meta);
 			if (ret >= 0)
 				return ret == 1;
 		}
 
 		if (WandTriggerRegistry.hasTrigger(block, meta))
-			return WandTriggerRegistry.performTrigger(world, itemstack, player, x, y, z, side, block, meta);
+			return WandTriggerRegistry.performTrigger(world, stack, player, x, y, z, side, block, meta);
 		else
 		{
 			if ((block == ConfigBlocks.blockWoodenDevice && meta == 2 || block == ConfigBlocks.blockCosmeticOpaque && meta == 2) && (!Config.wardedStone || tile1 != null && tile1 instanceof TileOwned && player.getCommandSenderName().equals(((TileOwned) tile1).owner)))
@@ -589,15 +589,15 @@ public class ItemWandCasting extends Item implements IArchitect
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player)
 	{
-		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
-		if (movingobjectposition != null && movingobjectposition.typeOfHit == MovingObjectType.BLOCK)
+		MovingObjectPosition mop = this.getMovingObjectPositionFromPlayer(world, player, true);
+		if (mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
 		{
-			int x = movingobjectposition.blockX;
-			int y = movingobjectposition.blockY;
-			int z = movingobjectposition.blockZ;
+			int x = mop.blockX;
+			int y = mop.blockY;
+			int z = mop.blockZ;
 
 			// TODO gamerforEA code start
-			if (FakePlayerUtils.cantBreak(x, y, z, player))
+			if (EventUtils.cantBreak(player, x, y, z))
 				return super.onItemRightClick(itemstack, world, player);
 			// TODO gamerforEA code end
 
@@ -624,7 +624,7 @@ public class ItemWandCasting extends Item implements IArchitect
 		if (focus1 != null && !WandManager.isOnCooldown(player))
 		{
 			WandManager.setCooldown(player, focus1.getActivationCooldown(this.getFocusItem(itemstack)));
-			ItemStack ret1 = focus1.onFocusRightClick(itemstack, world, player, movingobjectposition);
+			ItemStack ret1 = focus1.onFocusRightClick(itemstack, world, player, mop);
 			if (ret1 != null)
 				return ret1;
 		}

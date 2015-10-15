@@ -3,8 +3,8 @@ package thaumcraft.common.items;
 import java.util.Iterator;
 import java.util.List;
 
+import com.gamerforea.eventhelper.util.EventUtils;
 import com.gamerforea.thaumcraft.ExplosionByPlayer;
-import com.gamerforea.thaumcraft.FakePlayerUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -162,7 +162,7 @@ public class ItemEldritchObject extends Item
 			{
 				player.swingItem();
 				// TODO gamerforEA add condition [2]
-				if (!world.isRemote && !FakePlayerUtils.cantBreak(x, y, z, player))
+				if (!world.isRemote && !EventUtils.cantBreak(player, x, y, z))
 				{
 					--itemstack.stackSize;
 					TileNode node = (TileNode) tile;
@@ -218,7 +218,7 @@ public class ItemEldritchObject extends Item
 						int yy = y + world.rand.nextInt(6) - world.rand.nextInt(6);
 						zz = z + world.rand.nextInt(6) - world.rand.nextInt(6);
 						// TODO gamerforEA add condition [2]
-						if (world.isAirBlock(xx, yy, zz) && !FakePlayerUtils.cantBreak(xx, yy, zz, player))
+						if (world.isAirBlock(xx, yy, zz) && !EventUtils.cantBreak(player, xx, yy, zz))
 							if (yy < y)
 								world.setBlock(xx, yy, zz, ConfigBlocks.blockFluxGoo, 8, 3);
 							else

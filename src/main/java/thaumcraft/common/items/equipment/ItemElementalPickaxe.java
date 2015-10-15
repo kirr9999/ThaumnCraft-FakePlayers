@@ -2,7 +2,7 @@ package thaumcraft.common.items.equipment;
 
 import java.util.Set;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 import com.google.common.collect.ImmutableSet;
 
 import cpw.mods.fml.relauncher.Side;
@@ -66,7 +66,7 @@ public class ItemElementalPickaxe extends ItemPickaxe implements IRepairable
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		// TODO gamerforEA code replace, old code: if (!player.worldObj.isRemote && (!(entity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled()))
-		if (!player.worldObj.isRemote && !FakePlayerUtils.cantDamage(player, entity))
+		if (!player.worldObj.isRemote && !EventUtils.cantDamage(player, entity))
 			entity.setFire(2);
 
 		return super.onLeftClickEntity(stack, player, entity);

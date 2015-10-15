@@ -1,7 +1,8 @@
 package thaumcraft.common.entities.projectile;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.gamerforea.thaumcraft.FastUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.eventhelper.util.FastUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
@@ -93,7 +94,7 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 			if (mop.entityHit != null)
 			{
 				// TODO gamerforEA code start
-				if (FakePlayerUtils.cantDamage(FastUtils.getThrower(this), mop.entityHit))
+				if (EventUtils.cantDamage(FastUtils.getThrower(this, ModUtils.profile), mop.entityHit))
 				{
 					this.setDead();
 					return;

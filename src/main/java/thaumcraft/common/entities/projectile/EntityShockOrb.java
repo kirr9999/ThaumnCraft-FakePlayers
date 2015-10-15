@@ -3,8 +3,9 @@ package thaumcraft.common.entities.projectile;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.gamerforea.thaumcraft.FastUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.eventhelper.util.FastUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -51,7 +52,7 @@ public class EntityShockOrb extends EntityThrowable
 			{
 				Entity entity = (Entity) iter.next();
 				// TODO gamerforEA add condition [2]
-				if (EntityUtils.canEntityBeSeen(this, entity) && !FakePlayerUtils.cantDamage(FastUtils.getThrower(this), entity))
+				if (EntityUtils.canEntityBeSeen(this, entity) && !EventUtils.cantDamage(FastUtils.getThrower(this, ModUtils.profile), entity))
 					entity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, this.getThrower()), this.damage);
 			}
 
@@ -65,7 +66,7 @@ public class EntityShockOrb extends EntityThrowable
 					;
 
 				// TODO gamerforEA add condition [5]
-				if (this.worldObj.isAirBlock(x, y + 1, z) && !this.worldObj.isAirBlock(x, y, z) && this.worldObj.getBlock(x, y + 1, z) != ConfigBlocks.blockAiry && EntityUtils.canEntityBeSeen(this, x + 0.5D, y + 1.5D, z + 0.5D) && !FakePlayerUtils.cantBreak(x, y + 1, z, FastUtils.getThrowerPlayer(this)))
+				if (this.worldObj.isAirBlock(x, y + 1, z) && !this.worldObj.isAirBlock(x, y, z) && this.worldObj.getBlock(x, y + 1, z) != ConfigBlocks.blockAiry && EntityUtils.canEntityBeSeen(this, x + 0.5D, y + 1.5D, z + 0.5D) && !EventUtils.cantBreak(FastUtils.getThrowerPlayer(this, ModUtils.profile), x, y + 1, z))
 					this.worldObj.setBlock(x, y + 1, z, ConfigBlocks.blockAiry, 10, 3);
 			}
 		}

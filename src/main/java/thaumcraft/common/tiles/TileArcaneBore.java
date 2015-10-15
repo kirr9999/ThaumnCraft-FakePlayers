@@ -3,13 +3,14 @@ package thaumcraft.common.tiles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.fake.FakePlayerContainer;
+import com.gamerforea.eventhelper.fake.FakePlayerContainerTileEntity;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import joptsimple.internal.Strings;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -108,18 +109,7 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 	private final int itemsPerVis;
 
 	// TODO gamerforEA code start
-	public GameProfile ownerProfile;
-	private FakePlayer ownerFake;
-
-	public final FakePlayer getOwnerFake()
-	{
-		if (this.ownerFake != null)
-			return this.ownerFake;
-		else if (this.ownerProfile != null)
-			return this.ownerFake = FakePlayerUtils.create(this.worldObj, this.ownerProfile);
-		else
-			return FakePlayerUtils.getModFake(this.worldObj);
-	}
+	public final FakePlayerContainer fake = new FakePlayerContainerTileEntity(ModUtils.profile, this);
 	// TODO gamerforEA code end
 
 	public TileArcaneBore()
@@ -371,7 +361,7 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 					this.toDig = false;
 
 					// TODO gamerforEA code start
-					if (FakePlayerUtils.cantBreak(this.digX, this.digY, this.digZ, this.getOwnerFake()))
+					if (EventUtils.cantBreak(this.fake.getPlayer(), this.digX, this.digY, this.digZ))
 						return;
 					// TODO gamerforEA code end
 
@@ -777,13 +767,7 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 		this.setOrientation(this.orientation, true);
 
 		// TODO gamerforEA code start
-		String uuid = nbttagcompound.getString("ownerUUID");
-		if (!Strings.isNullOrEmpty(uuid))
-		{
-			String name = nbttagcompound.getString("ownerName");
-			if (!Strings.isNullOrEmpty(name))
-				this.ownerProfile = new GameProfile(UUID.fromString(uuid), name);
-		}
+		this.fake.readFromNBT(nbttagcompound);
 		// TODO gamerforEA code end
 	}
 
@@ -794,11 +778,7 @@ public class TileArcaneBore extends TileThaumcraft implements IInventory, IWanda
 		nbttagcompound.setShort("SpeedyTime", (short) (int) this.speedyTime);
 
 		// TODO gamerforEA code start
-		if (this.ownerProfile != null)
-		{
-			nbttagcompound.setString("ownerUUID", this.ownerProfile.getId().toString());
-			nbttagcompound.setString("ownerName", this.ownerProfile.getName());
-		}
+		this.fake.writeToNBT(nbttagcompound);
 		// TODO gamerforEA code end
 	}
 

@@ -229,7 +229,7 @@ public class ItemGolemBell extends Item
 		if (target instanceof EntityGolemBase)
 		{
 			// TODO gamerforEA code start
-			if (!player.getGameProfile().equals(((EntityGolemBase) target).ownerProfile))
+			if (!player.getGameProfile().equals(((EntityGolemBase) target).fake.profile))
 				return false;
 			// TODO gamerforEA code end
 
@@ -334,7 +334,7 @@ public class ItemGolemBell extends Item
 			else
 			{
 				// TODO gamerforEA code start
-				if (!player.getGameProfile().equals(((EntityGolemBase) entity).ownerProfile))
+				if (!player.getGameProfile().equals(((EntityGolemBase) entity).fake.profile))
 					return false;
 				// TODO gamerforEA code end
 

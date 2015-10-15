@@ -560,10 +560,10 @@ public class BlockMetalDevice extends BlockContainer
 					crucible.fill(ForgeDirection.UNKNOWN, fluid, true);
 					/* TODO gamerforEA fix dupe, old code:
 					ItemStack stack = null;
-
+					
 					for (FluidContainerData fluidData : FluidContainerRegistry.getRegisteredFluidContainerData())
 						if (fluidData.filledContainer.isItemEqual(player.inventory.getCurrentItem())) stack = fluidData.emptyContainer.copy();
-
+					
 					player.inventory.decrStackSize(player.inventory.currentItem, 1);
 					if (stack != null && !player.inventory.addItemStackToInventory(stack))
 					{

@@ -496,18 +496,21 @@ public class BlockWoodenDevice extends BlockContainer
 	@Override
 	public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase entity, ItemStack stack)
 	{
-		TileEntity tile = w.getTileEntity(x, y, z);
-		if (tile instanceof TileOwned && entity instanceof EntityPlayer)
+		if (entity instanceof EntityPlayer)
 		{
-			((TileOwned) tile).owner = ((EntityPlayer) entity).getCommandSenderName();
-			tile.markDirty();
-		}
+			TileEntity tile = w.getTileEntity(x, y, z);
 
-		// TODO gamerforEA code start
-		if (tile instanceof TileArcaneBore && entity instanceof EntityPlayer)
-			((TileArcaneBore) tile).ownerProfile = ((EntityPlayer) entity).getGameProfile();
-		// TODO gamerforEA code end
-		;
+			if (tile instanceof TileOwned)
+			{
+				((TileOwned) tile).owner = ((EntityPlayer) entity).getCommandSenderName();
+				tile.markDirty();
+			}
+
+			// TODO gamerforEA code start
+			if (tile instanceof TileArcaneBore)
+				((TileArcaneBore) tile).fake.profile = ((EntityPlayer) entity).getGameProfile();
+			// TODO gamerforEA code end
+		}
 
 		super.onBlockPlacedBy(w, x, y, z, entity, stack);
 	}

@@ -9,8 +9,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.Level;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.gamerforea.thaumcraft.FastUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.eventhelper.util.FastUtils;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -101,7 +101,7 @@ public class ServerTickEventsFML
 					if (Block.getBlockFromItem(vs.target.getItem()).getClass().getName().contains("BlockArmorStand"))
 						continue;
 
-					if (!FastUtils.isOnline(vs.player) || FakePlayerUtils.cantBreak(vs.x, vs.y, vs.z, vs.player))
+					if (!FastUtils.isOnline(vs.player) || EventUtils.cantBreak(vs.player, vs.x, vs.y, vs.z))
 						continue;
 					// TODO gamerforEA code end
 

@@ -2,8 +2,9 @@ package thaumcraft.common.entities.projectile;
 
 import java.util.List;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
-import com.gamerforea.thaumcraft.FastUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
+import com.gamerforea.eventhelper.util.FastUtils;
+import com.gamerforea.thaumcraft.ModUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -104,7 +105,7 @@ public class EntityPechBlast extends EntityThrowable
 				if (!(entity instanceof EntityPech) && entity instanceof EntityLivingBase)
 				{
 					// TODO gamerforEA code start
-					if (FakePlayerUtils.cantDamage(FastUtils.getThrower(this), entity))
+					if (EventUtils.cantDamage(FastUtils.getThrower(this, ModUtils.profile), entity))
 						continue;
 					// TODO gamerforEA code end
 

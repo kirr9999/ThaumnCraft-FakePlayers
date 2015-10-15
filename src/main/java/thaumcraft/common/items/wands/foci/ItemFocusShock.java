@@ -3,7 +3,7 @@ package thaumcraft.common.items.wands.foci;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.gamerforea.thaumcraft.FakePlayerUtils;
+import com.gamerforea.eventhelper.util.EventUtils;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -189,7 +189,7 @@ public class ItemFocusShock extends ItemFocusBasic
 			{
 				p.worldObj.playSoundEffect(p.posX, p.posY, p.posZ, "thaumcraft:shock", 0.25F, 1.0F);
 				// TODO gamerforEA code replace, old code: if (pointedEntity != null && pointedEntity instanceof EntityLivingBase && (!(pointedEntity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled()))
-				if (pointedEntity instanceof EntityLivingBase && !FakePlayerUtils.cantDamage(p, pointedEntity))
+				if (pointedEntity instanceof EntityLivingBase && !EventUtils.cantDamage(p, pointedEntity))
 				{
 					int var18 = this.getUpgradeLevel(wand.getFocusItem(stack), chainlightning) * 2;
 					pointedEntity.attackEntityFrom(DamageSource.causePlayerDamage(p), (var18 > 0 ? 6 : 4) + potency);
@@ -222,7 +222,8 @@ public class ItemFocusShock extends ItemFocusBasic
 								}
 							}
 
-							if (var21 != null)
+							// TODO gamerforEA add condition [2]
+							if (var21 != null && !EventUtils.cantDamage(p, var21))
 							{
 								PacketHandler.INSTANCE.sendToAllAround(new PacketFXZap(var19.getEntityId(), var21.getEntityId()), new TargetPoint(p.worldObj.provider.dimensionId, var19.posX, var19.posY, var19.posZ, 64.0D));
 								var20.add(Integer.valueOf(var21.getEntityId()));
