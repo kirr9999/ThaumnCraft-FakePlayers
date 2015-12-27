@@ -229,7 +229,7 @@ public class ItemGolemBell extends Item
 		if (target instanceof EntityGolemBase)
 		{
 			// TODO gamerforEA code start
-			if (!player.getGameProfile().equals(((EntityGolemBase) target).fake.profile))
+			if (player != null && !player.getGameProfile().equals(((EntityGolemBase) target).fake.profile))
 				return false;
 			// TODO gamerforEA code end
 

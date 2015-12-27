@@ -24,7 +24,7 @@ group= "thaumcraft"
 archivesBaseName = "Thaumcraft"
 
 minecraft {
-	version = "1.7.10-10.13.4.1492-1.7.10"
+	version = "1.7.10-10.13.4.1541-1.7.10"
 	runDir = "eclipse"
 }
 

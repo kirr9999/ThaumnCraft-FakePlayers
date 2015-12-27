@@ -93,9 +93,9 @@ public class ItemFocusShock extends ItemFocusBasic
 		if (entityplayer.getEntityId() != FMLClientHandler.instance().getClient().thePlayer.getEntityId())
 			py = entityplayer.boundingBox.minY + entityplayer.height / 2.0F + 0.25D;
 
-		px += -MathHelper.cos(entityplayer.rotationYaw / 180.0F * 3.141593F) * 0.06F;
+		px += -MathHelper.cos(entityplayer.rotationYaw / 180.0F * (float) Math.PI) * 0.06F;
 		py += -0.05999999865889549D;
-		pz += -MathHelper.sin(entityplayer.rotationYaw / 180.0F * 3.141593F) * 0.06F;
+		pz += -MathHelper.sin(entityplayer.rotationYaw / 180.0F * (float) Math.PI) * 0.06F;
 		if (entityplayer.getEntityId() != FMLClientHandler.instance().getClient().thePlayer.getEntityId())
 			py = entityplayer.boundingBox.minY + entityplayer.height / 2.0F + 0.25D;
 
