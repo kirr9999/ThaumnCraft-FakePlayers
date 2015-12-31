@@ -560,11 +560,11 @@ public class BlockMetalDevice extends BlockContainer
 					/* TODO gamerforEA fix dupe, old code:
 					ItemStack emptyContainer = null;
 					FluidContainerData[] fcs = FluidContainerRegistry.getRegisteredFluidContainerData();
-
+					
 					for (FluidContainerData fcd : fcs)
 						if (fcd.filledContainer.isItemEqual(player.inventory.getCurrentItem()))
 							emptyContainer = fcd.emptyContainer.copy();
-
+					
 					player.inventory.decrStackSize(player.inventory.currentItem, 1);
 					if (emptyContainer != null && !player.inventory.addItemStackToInventory(emptyContainer))
 						player.dropPlayerItemWithRandomChoice(emptyContainer, false); */
