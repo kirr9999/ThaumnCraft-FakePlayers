@@ -1,7 +1,6 @@
 package thaumcraft.common.entities.ai.fluid;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.gamerforea.eventhelper.util.EventUtils;
 
@@ -37,24 +36,16 @@ public class AILiquidEmpty extends EntityAIBase
 		ChunkCoordinates home = this.theGolem.getHomePosition();
 		if (this.theGolem.getNavigator().noPath() && this.theGolem.fluidCarried != null && this.theGolem.fluidCarried.amount != 0 && this.theGolem.getDistanceSq(home.posX + 0.5F, home.posY + 0.5F, home.posZ + 0.5F) <= 5.0D)
 		{
-			ArrayList fluids = GolemHelper.getMissingLiquids(this.theGolem);
+			ArrayList<FluidStack> fluids = GolemHelper.getMissingLiquids(this.theGolem);
 			if (fluids == null)
 				return false;
 			else
 			{
-				Iterator i$ = fluids.iterator();
+				for (FluidStack fluid : fluids)
+					if (fluid.isFluidEqual(this.theGolem.fluidCarried))
+						return true;
 
-				FluidStack fluid;
-				do
-				{
-					if (!i$.hasNext())
-						return false;
-
-					fluid = (FluidStack) i$.next();
-				}
-				while (!fluid.isFluidEqual(this.theGolem.fluidCarried));
-
-				return true;
+				return false;
 			}
 		}
 		else
@@ -76,7 +67,7 @@ public class AILiquidEmpty extends EntityAIBase
 		int cY = home.posY - facing.offsetY;
 		int cZ = home.posZ - facing.offsetZ;
 		TileEntity tile = this.theWorld.getTileEntity(cX, cY, cZ);
-		if (tile instanceof IFluidHandler)
+		if (tile != null && tile instanceof IFluidHandler)
 		{
 			// TODO gamerforEA code start
 			if (EventUtils.cantBreak(this.theGolem.fake.getPlayer(), cX, cY, cZ))

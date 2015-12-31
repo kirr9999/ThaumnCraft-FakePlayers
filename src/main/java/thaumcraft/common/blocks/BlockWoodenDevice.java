@@ -25,6 +25,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.Config;
@@ -97,13 +98,14 @@ public class BlockWoodenDevice extends BlockContainer
 		par3List.add(new ItemStack(par1, 1, 7));
 		par3List.add(new ItemStack(par1, 1, 8));
 
-		for (int i = 0; i < 16; ++i)
+		for (int a = 0; a < 16; ++a)
 		{
 			ItemStack banner = new ItemStack(par1, 1, 8);
 			banner.setTagCompound(new NBTTagCompound());
-			banner.stackTagCompound.setByte("color", (byte) i);
+			banner.stackTagCompound.setByte("color", (byte) a);
 			par3List.add(banner);
 		}
+
 	}
 
 	@Override
@@ -173,7 +175,7 @@ public class BlockWoodenDevice extends BlockContainer
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3)
 	{
-		return Config.wardedStone && (par1 == 2 || par1 == 3) ? Item.getItemById(0) : par1 == 8 ? Item.getItemById(0) : super.getItemDropped(par1, par2Random, par3);
+		return !Config.wardedStone || par1 != 2 && par1 != 3 ? par1 == 8 ? Item.getItemById(0) : super.getItemDropped(par1, par2Random, par3) : Item.getItemById(0);
 	}
 
 	@Override
@@ -211,6 +213,7 @@ public class BlockWoodenDevice extends BlockContainer
 		}
 		else
 			super.onBlockExploded(world, x, y, z, explosion);
+
 	}
 
 	@Override
@@ -247,57 +250,53 @@ public class BlockWoodenDevice extends BlockContainer
 			int meta = par1iBlockAccess.getBlockMetadata(par2, par3, par4);
 			if (meta == 0)
 				this.setBlockBounds(0.1F, 0.0F, 0.1F, 0.9F, 1.0F, 0.9F);
-			else
+			else if (meta == 2)
 			{
-				float tile;
-				if (meta == 2)
-				{
-					tile = 0.0625F;
-					this.setBlockBounds(tile, 0.0F, tile, 1.0F - tile, 0.0625F, 1.0F - tile);
-				}
-				else if (meta == 3)
-				{
-					tile = 0.0625F;
-					this.setBlockBounds(tile, 0.0F, tile, 1.0F - tile, 0.03125F, 1.0F - tile);
-				}
-				else if (meta == 5)
-				{
-					ForgeDirection tile2 = ForgeDirection.UNKNOWN;
-					TileEntity tile1 = par1iBlockAccess.getTileEntity(par2, par3, par4);
-					if (tile1 != null && tile1 instanceof TileArcaneBore)
-						tile2 = ((TileArcaneBore) tile1).orientation;
+				float var6 = 0.0625F;
+				this.setBlockBounds(var6, 0.0F, var6, 1.0F - var6, 0.0625F, 1.0F - var6);
+			}
+			else if (meta == 3)
+			{
+				float var6 = 0.0625F;
+				this.setBlockBounds(var6, 0.0F, var6, 1.0F - var6, 0.03125F, 1.0F - var6);
+			}
+			else if (meta == 5)
+			{
+				ForgeDirection dir = ForgeDirection.UNKNOWN;
+				TileEntity tile = par1iBlockAccess.getTileEntity(par2, par3, par4);
+				if (tile != null && tile instanceof TileArcaneBore)
+					dir = ((TileArcaneBore) tile).orientation;
 
-					this.setBlockBounds(0 + (tile2.offsetX < 0 ? -1 : 0), 0 + (tile2.offsetY < 0 ? -1 : 0), 0 + (tile2.offsetZ < 0 ? -1 : 0), 1 + (tile2.offsetX > 0 ? 1 : 0), 1 + (tile2.offsetY > 0 ? 1 : 0), 1 + (tile2.offsetZ > 0 ? 1 : 0));
-				}
-				else if (meta == 8)
+				this.setBlockBounds(0 + (dir.offsetX < 0 ? -1 : 0), 0 + (dir.offsetY < 0 ? -1 : 0), 0 + (dir.offsetZ < 0 ? -1 : 0), 1 + (dir.offsetX > 0 ? 1 : 0), 1 + (dir.offsetY > 0 ? 1 : 0), 1 + (dir.offsetZ > 0 ? 1 : 0));
+			}
+			else if (meta == 8)
+			{
+				TileEntity tile = par1iBlockAccess.getTileEntity(par2, par3, par4);
+				if (tile != null && tile instanceof TileBanner)
 				{
-					TileEntity tile3 = par1iBlockAccess.getTileEntity(par2, par3, par4);
-					if (tile3 != null && tile3 instanceof TileBanner)
-					{
-						if (((TileBanner) tile3).getWall())
-							switch (((TileBanner) tile3).getFacing())
-							{
-								case 0:
-									this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 0.25F);
-									break;
-								case 4:
-									this.setBlockBounds(0.75F, 0.0F, 0.0F, 1.0F, 2.0F, 1.0F);
-									break;
-								case 8:
-									this.setBlockBounds(0.0F, 0.0F, 0.75F, 1.0F, 2.0F, 1.0F);
-									break;
-								case 12:
-									this.setBlockBounds(0.0F, 0.0F, 0.0F, 0.25F, 2.0F, 1.0F);
-							}
-						else
-							this.setBlockBounds(0.33F, 0.0F, 0.33F, 0.66F, 2.0F, 0.66F);
-					}
+					if (((TileBanner) tile).getWall())
+						switch (((TileBanner) tile).getFacing())
+						{
+							case 0:
+								this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 0.25F);
+								break;
+							case 4:
+								this.setBlockBounds(0.75F, 0.0F, 0.0F, 1.0F, 2.0F, 1.0F);
+								break;
+							case 8:
+								this.setBlockBounds(0.0F, 0.0F, 0.75F, 1.0F, 2.0F, 1.0F);
+								break;
+							case 12:
+								this.setBlockBounds(0.0F, 0.0F, 0.0F, 0.25F, 2.0F, 1.0F);
+						}
 					else
-						this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+						this.setBlockBounds(0.33F, 0.0F, 0.33F, 0.66F, 2.0F, 0.66F);
 				}
 				else
 					this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 			}
+			else
+				this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
 			super.setBlockBoundsBasedOnState(par1iBlockAccess, par2, par3, par4);
 		}
@@ -346,12 +345,12 @@ public class BlockWoodenDevice extends BlockContainer
 		}
 		else if (meta == 5)
 		{
-			TileArcaneBore tile1 = (TileArcaneBore) world.getTileEntity(x, y, z);
-			if (tile1 != null && tile1 instanceof TileArcaneBore)
+			TileArcaneBore tile = (TileArcaneBore) world.getTileEntity(x, y, z);
+			if (tile != null && tile instanceof TileArcaneBore)
 			{
-				ForgeDirection d = tile1.baseOrientation.getOpposite();
+				ForgeDirection d = tile.baseOrientation.getOpposite();
 				Block block = world.getBlock(x + d.offsetX, y + d.offsetY, z + d.offsetZ);
-				if (block != ConfigBlocks.blockWoodenDevice || !block.isSideSolid(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, tile1.baseOrientation))
+				if (block != ConfigBlocks.blockWoodenDevice || !block.isSideSolid(world, x + d.offsetX, y + d.offsetY, z + d.offsetZ, tile.baseOrientation))
 				{
 					InventoryUtils.dropItems(world, x, y, z);
 					this.dropBlockAsItem(world, x, y, z, 5, 0);
@@ -382,53 +381,48 @@ public class BlockWoodenDevice extends BlockContainer
 			{
 				if (w.isRemote)
 					return true;
-				else if (meta == 5 && (p.inventory.getCurrentItem() == null || p.inventory.getCurrentItem() == null || !(p.inventory.getCurrentItem().getItem() instanceof ItemWandCasting)))
-				{
-					p.openGui(Thaumcraft.instance, 15, w, x, y, z);
-					return true;
-				}
-				else
+				else if (meta != 5 || p.inventory.getCurrentItem() != null && p.inventory.getCurrentItem() != null && p.inventory.getCurrentItem().getItem() instanceof ItemWandCasting)
 				{
 					if (meta == 1)
 					{
-						TileSensor te = (TileSensor) w.getTileEntity(x, y, z);
-						if (te != null)
+						TileSensor var6 = (TileSensor) w.getTileEntity(x, y, z);
+						if (var6 != null)
 						{
-							te.changePitch();
-							te.triggerNote(w, x, y, z, true);
+							var6.changePitch();
+							var6.triggerNote(w, x, y, z, true);
 						}
 					}
 					else if (meta != 2 && meta != 3)
 					{
 						if (meta == 8 && (p.isSneaking() || p.inventory.getCurrentItem() != null && p.inventory.getCurrentItem().getItem() instanceof ItemEssence))
 						{
-							TileBanner tile = (TileBanner) w.getTileEntity(x, y, z);
-							if (tile != null && tile.getColor() >= 0)
+							TileBanner te = (TileBanner) w.getTileEntity(x, y, z);
+							if (te != null && te.getColor() >= 0)
 							{
 								if (p.isSneaking())
-									tile.setAspect(null);
+									te.setAspect((Aspect) null);
 								else if (((IEssentiaContainerItem) p.getHeldItem().getItem()).getAspects(p.getHeldItem()) != null)
 								{
-									tile.setAspect(((IEssentiaContainerItem) p.getHeldItem().getItem()).getAspects(p.getHeldItem()).getAspects()[0]);
+									te.setAspect(((IEssentiaContainerItem) p.getHeldItem().getItem()).getAspects(p.getHeldItem()).getAspects()[0]);
 									--p.getHeldItem().stackSize;
 								}
 
 								w.markBlockForUpdate(x, y, z);
-								tile.markDirty();
+								te.markDirty();
 								w.playSoundEffect(x, y, z, "step.cloth", 1.0F, 1.0F);
 							}
 						}
 					}
 					else
 					{
-						TileArcanePressurePlate tile = (TileArcanePressurePlate) w.getTileEntity(x, y, z);
-						if (tile != null && (tile.owner.equals(p.getCommandSenderName()) || tile.accessList.contains("1" + p.getCommandSenderName())))
+						TileArcanePressurePlate var6 = (TileArcanePressurePlate) w.getTileEntity(x, y, z);
+						if (var6 != null && (var6.owner.equals(p.getCommandSenderName()) || var6.accessList.contains("1" + p.getCommandSenderName())))
 						{
-							++tile.setting;
-							if (tile.setting > 2)
-								tile.setting = 0;
+							++var6.setting;
+							if (var6.setting > 2)
+								var6.setting = 0;
 
-							switch (tile.setting)
+							switch (var6.setting)
 							{
 								case 0:
 									p.addChatMessage(new ChatComponentTranslation("It will now trigger on everything.", new Object[0]));
@@ -442,10 +436,15 @@ public class BlockWoodenDevice extends BlockContainer
 
 							w.playSoundEffect(x + 0.5D, y + 0.1D, z + 0.5D, "random.click", 0.1F, 0.9F);
 							w.markBlockForUpdate(x, y, z);
-							tile.markDirty();
+							var6.markDirty();
 						}
 					}
 
+					return true;
+				}
+				else
+				{
+					p.openGui(Thaumcraft.instance, 15, w, x, y, z);
 					return true;
 				}
 			}
@@ -494,25 +493,22 @@ public class BlockWoodenDevice extends BlockContainer
 	}
 
 	@Override
-	public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase entity, ItemStack stack)
+	public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase p, ItemStack s)
 	{
-		if (entity instanceof EntityPlayer)
+		TileEntity tile = w.getTileEntity(x, y, z);
+		if (tile != null && p instanceof EntityPlayer)
 		{
-			TileEntity tile = w.getTileEntity(x, y, z);
-
-			if (tile instanceof TileOwned)
-			{
-				((TileOwned) tile).owner = ((EntityPlayer) entity).getCommandSenderName();
-				tile.markDirty();
-			}
-
 			// TODO gamerforEA code start
 			if (tile instanceof TileArcaneBore)
-				((TileArcaneBore) tile).fake.profile = ((EntityPlayer) entity).getGameProfile();
+				((TileArcaneBore) tile).fake.profile = ((EntityPlayer) p).getGameProfile();
 			// TODO gamerforEA code end
+
+			if (tile instanceof TileOwned)
+				((TileOwned) tile).owner = ((EntityPlayer) p).getCommandSenderName();
+			tile.markDirty();
 		}
 
-		super.onBlockPlacedBy(w, x, y, z, entity, stack);
+		super.onBlockPlacedBy(w, x, y, z, p, s);
 	}
 
 	@Override
@@ -531,6 +527,7 @@ public class BlockWoodenDevice extends BlockContainer
 					tile.markDirty();
 				}
 			}
+
 		}
 	}
 
@@ -556,25 +553,25 @@ public class BlockWoodenDevice extends BlockContainer
 	@Override
 	public boolean onBlockEventReceived(World par1World, int par2, int par3, int par4, int par5, int par6)
 	{
-		final float f = (float) Math.pow(2.0D, (par6 - 12) / 12.0D);
+		float var7 = (float) Math.pow(2.0D, (par6 - 12) / 12.0D);
 		if (par5 <= 4)
 		{
 			if (par5 >= 0)
 			{
-				String effect = "harp";
+				String var8 = "harp";
 				if (par5 == 1)
-					effect = "bd";
+					var8 = "bd";
 
 				if (par5 == 2)
-					effect = "snare";
+					var8 = "snare";
 
 				if (par5 == 3)
-					effect = "hat";
+					var8 = "hat";
 
 				if (par5 == 4)
-					effect = "bassattack";
+					var8 = "bassattack";
 
-				par1World.playSoundEffect(par2 + 0.5D, par3 + 0.5D, par4 + 0.5D, "note." + effect, 3.0F, f);
+				par1World.playSoundEffect(par2 + 0.5D, par3 + 0.5D, par4 + 0.5D, "note." + var8, 3.0F, var7);
 			}
 
 			par1World.spawnParticle("note", par2 + 0.5D, par3 + 1.2D, par4 + 0.5D, par6 / 24.0D, 0.0D, 0.0D);
@@ -602,13 +599,13 @@ public class BlockWoodenDevice extends BlockContainer
 
 	private void setStateIfMobInteractsWithPlate(World world, int x, int y, int z)
 	{
-		boolean b1 = world.getBlockMetadata(x, y, z) == 3;
-		boolean b2 = false;
-		float f = 0.125F;
-		List<Entity> list = new ArrayList();
+		boolean var5 = world.getBlockMetadata(x, y, z) == 3;
+		boolean var6 = false;
+		float var7 = 0.125F;
+		List<Entity> var8 = null;
 		String username = "";
 		byte setting = 0;
-		List<String> accessList = new ArrayList();
+		ArrayList<String> accessList = new ArrayList();
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile != null && tile instanceof TileArcanePressurePlate)
 		{
@@ -618,22 +615,23 @@ public class BlockWoodenDevice extends BlockContainer
 		}
 
 		if (setting == 0)
-			list = world.getEntitiesWithinAABBExcludingEntity(null, AxisAlignedBB.getBoundingBox(x + f, y, z + f, x + 1 - f, y + 0.25D, z + 1 - f));
+			var8 = world.getEntitiesWithinAABBExcludingEntity((Entity) null, AxisAlignedBB.getBoundingBox(x + var7, y, z + var7, x + 1 - var7, y + 0.25D, z + 1 - var7));
 
 		if (setting == 1)
-			list = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(x + f, y, z + f, x + 1 - f, y + 0.25D, z + 1 - f));
+			var8 = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(x + var7, y, z + var7, x + 1 - var7, y + 0.25D, z + 1 - var7));
 
 		if (setting == 2)
-			list = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x + f, y, z + f, x + 1 - f, y + 0.25D, z + 1 - f));
+			var8 = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x + var7, y, z + var7, x + 1 - var7, y + 0.25D, z + 1 - var7));
 
-		for (Entity entity : list)
-			if (!entity.doesEntityNotTriggerPressurePlate() && (setting != 1 || !(entity instanceof EntityPlayer) || !((EntityPlayer) entity).getCommandSenderName().equals(username) && !accessList.contains("0" + ((EntityPlayer) entity).getCommandSenderName()) && !accessList.contains("1" + ((EntityPlayer) entity).getCommandSenderName())) && (setting != 2 || !(entity instanceof EntityPlayer) || ((EntityPlayer) entity).getCommandSenderName().equals(username) || accessList.contains("0" + ((EntityPlayer) entity).getCommandSenderName()) || accessList.contains("1" + ((EntityPlayer) entity).getCommandSenderName())))
-			{
-				b2 = true;
-				break;
-			}
+		if (!var8.isEmpty())
+			for (Entity var10 : var8)
+				if (!var10.doesEntityNotTriggerPressurePlate() && (setting != 1 || !(var10 instanceof EntityPlayer) || !((EntityPlayer) var10).getCommandSenderName().equals(username) && !accessList.contains("0" + ((EntityPlayer) var10).getCommandSenderName()) && !accessList.contains("1" + ((EntityPlayer) var10).getCommandSenderName())) && (setting != 2 || !(var10 instanceof EntityPlayer) || ((EntityPlayer) var10).getCommandSenderName().equals(username) || accessList.contains("0" + ((EntityPlayer) var10).getCommandSenderName()) || accessList.contains("1" + ((EntityPlayer) var10).getCommandSenderName())))
+				{
+					var6 = true;
+					break;
+				}
 
-		if (b2 && !b1)
+		if (var6 && !var5)
 		{
 			world.setBlockMetadataWithNotify(x, y, z, 3, 2);
 			world.notifyBlocksOfNeighborChange(x, y, z, this);
@@ -642,7 +640,7 @@ public class BlockWoodenDevice extends BlockContainer
 			world.playSoundEffect(x + 0.5D, y + 0.1D, z + 0.5D, "random.click", 0.2F, 0.6F);
 		}
 
-		if (!b2 && b1)
+		if (!var6 && var5)
 		{
 			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
 			world.notifyBlocksOfNeighborChange(x, y, z, this);
@@ -651,8 +649,9 @@ public class BlockWoodenDevice extends BlockContainer
 			world.playSoundEffect(x + 0.5D, y + 0.1D, z + 0.5D, "random.click", 0.2F, 0.5F);
 		}
 
-		if (b2)
+		if (var6)
 			world.scheduleBlockUpdate(x, y, z, this, this.tickRate());
+
 	}
 
 	@Override

@@ -99,7 +99,7 @@ public class EntityEmber extends EntityThrowable implements IEntityAdditionalSpa
 					this.setDead();
 					return;
 				}
-				// TODO gamerforeEA code end
+				// TODO gamerforEA code end
 
 				if (!mop.entityHit.isImmuneToFire() && mop.entityHit.attackEntityFrom(new EntityDamageSourceIndirect("fireball", this, this.getThrower()).setFireDamage(), this.damage))
 					mop.entityHit.setFire(3 + this.firey);

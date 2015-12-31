@@ -1,6 +1,5 @@
 package thaumcraft.common.entities.ai.interact;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -29,21 +28,16 @@ public class AIUseItem extends EntityAIBase
 	private float movementSpeed;
 	private float distance;
 	private World theWorld;
-	private Block block;
-	private int blockMd;
+	private Block block = Blocks.air;
+	private int blockMd = 0;
 	FakePlayer player;
-	private int count;
-	private int color;
+	private int count = 0;
+	private int color = -1;
 	ItemInWorldManager im;
-	int nextTick;
+	int nextTick = 0;
 
 	public AIUseItem(EntityGolemBase par1EntityCreature)
 	{
-		this.block = Blocks.air;
-		this.blockMd = 0;
-		this.count = 0;
-		this.color = -1;
-		this.nextTick = 0;
 		this.theGolem = par1EntityCreature;
 		this.theWorld = par1EntityCreature.worldObj;
 		this.setMutexBits(3);
@@ -57,7 +51,7 @@ public class AIUseItem extends EntityAIBase
 		{
 			this.nextTick = this.theGolem.ticksExisted + this.theWorld.rand.nextInt(6);
 		}
-		catch (Exception e)
+		catch (Exception var3)
 		{
 		}
 	}
@@ -167,15 +161,15 @@ public class AIUseItem extends EntityAIBase
 					if (this.theGolem.itemCarried.stackSize <= 0)
 						this.theGolem.itemCarried = null;
 
-					for (int e = 1; e < this.player.inventory.mainInventory.length; ++e)
-						if (this.player.inventory.getStackInSlot(e) != null)
+					for (int a = 1; a < this.player.inventory.mainInventory.length; ++a)
+						if (this.player.inventory.getStackInSlot(a) != null)
 						{
 							if (this.theGolem.itemCarried == null)
-								this.theGolem.itemCarried = this.player.inventory.getStackInSlot(e).copy();
+								this.theGolem.itemCarried = this.player.inventory.getStackInSlot(a).copy();
 							else
-								this.player.dropPlayerItemWithRandomChoice(this.player.inventory.getStackInSlot(e), false);
+								this.player.dropPlayerItemWithRandomChoice(this.player.inventory.getStackInSlot(a), false);
 
-							this.player.inventory.setInventorySlotContents(e, (ItemStack) null);
+							this.player.inventory.setInventorySlotContents(a, (ItemStack) null);
 						}
 
 					this.theGolem.updateCarried();
@@ -190,18 +184,8 @@ public class AIUseItem extends EntityAIBase
 
 	boolean findSomething()
 	{
-		ArrayList matchingColors = this.theGolem.getColorsMatching(this.theGolem.itemCarried);
-		Iterator i$ = matchingColors.iterator();
-
-		while (i$.hasNext())
-		{
-			byte col = ((Byte) i$.next()).byteValue();
-			ArrayList markers = this.theGolem.getMarkers();
-			Iterator i$1 = markers.iterator();
-
-			while (i$1.hasNext())
-			{
-				Marker marker = (Marker) i$1.next();
+		for (byte col : this.theGolem.getColorsMatching(this.theGolem.itemCarried))
+			for (Marker marker : this.theGolem.getMarkers())
 				if ((marker.color == col || col == -1) && (!this.theGolem.getToggles()[0] || this.theGolem.worldObj.isAirBlock(marker.x, marker.y, marker.z)) && (this.theGolem.getToggles()[0] || !this.theGolem.worldObj.isAirBlock(marker.x, marker.y, marker.z)))
 				{
 					ForgeDirection opp = ForgeDirection.getOrientation(marker.side);
@@ -216,8 +200,6 @@ public class AIUseItem extends EntityAIBase
 						return true;
 					}
 				}
-			}
-		}
 
 		return false;
 	}

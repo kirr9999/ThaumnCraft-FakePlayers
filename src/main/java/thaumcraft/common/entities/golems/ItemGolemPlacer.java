@@ -94,56 +94,50 @@ public class ItemGolemPlacer extends Item
 			if (stack.stackTagCompound.hasKey("advanced"))
 				list.add(StatCollector.translateToLocal("tc.adv"));
 
-			String deco;
 			if (stack.stackTagCompound.hasKey("upgrades"))
 			{
-				byte[] decoDesc = stack.stackTagCompound.getByteArray("upgrades");
-				deco = "§9";
-				byte[] arr$ = decoDesc;
-				int len$ = decoDesc.length;
+				byte[] ba = stack.stackTagCompound.getByteArray("upgrades");
+				String text = "§9";
 
-				for (int i$ = 0; i$ < len$; ++i$)
-				{
-					byte b = arr$[i$];
+				for (byte b : ba)
 					if (b > -1)
-						deco = deco + StatCollector.translateToLocal("item.ItemGolemUpgrade." + b + ".name") + " ";
-				}
+						text = text + StatCollector.translateToLocal("item.ItemGolemUpgrade." + b + ".name") + " ";
 
-				list.add(deco);
+				list.add(text);
 			}
 
 			if (stack.stackTagCompound.hasKey("markers"))
 			{
-				NBTTagList var11 = stack.stackTagCompound.getTagList("markers", 10);
-				list.add("§5" + var11.tagCount() + " " + StatCollector.translateToLocal("tc.markedloc"));
+				NBTTagList tl = stack.stackTagCompound.getTagList("markers", 10);
+				list.add("§5" + tl.tagCount() + " " + StatCollector.translateToLocal("tc.markedloc"));
 			}
 
 			if (stack.stackTagCompound.hasKey("deco"))
 			{
-				String var12 = "§2";
-				deco = stack.stackTagCompound.getString("deco");
+				String decoDesc = "§2";
+				String deco = stack.stackTagCompound.getString("deco");
 				if (deco.contains("H"))
-					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.0.name") + " ";
+					decoDesc = decoDesc + StatCollector.translateToLocal("item.ItemGolemDecoration.0.name") + " ";
 
 				if (deco.contains("G"))
-					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.1.name") + " ";
+					decoDesc = decoDesc + StatCollector.translateToLocal("item.ItemGolemDecoration.1.name") + " ";
 
 				if (deco.contains("B"))
-					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.2.name") + " ";
+					decoDesc = decoDesc + StatCollector.translateToLocal("item.ItemGolemDecoration.2.name") + " ";
 
 				if (deco.contains("F"))
-					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.3.name") + " ";
+					decoDesc = decoDesc + StatCollector.translateToLocal("item.ItemGolemDecoration.3.name") + " ";
 
 				if (deco.contains("R"))
-					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.4.name") + " ";
+					decoDesc = decoDesc + StatCollector.translateToLocal("item.ItemGolemDecoration.4.name") + " ";
 
 				if (deco.contains("V"))
-					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.5.name") + " ";
+					decoDesc = decoDesc + StatCollector.translateToLocal("item.ItemGolemDecoration.5.name") + " ";
 
 				if (deco.contains("P"))
-					var12 = var12 + StatCollector.translateToLocal("item.ItemGolemDecoration.6.name") + " ";
+					decoDesc = decoDesc + StatCollector.translateToLocal("item.ItemGolemDecoration.6.name") + " ";
 
-				list.add(var12);
+				list.add(decoDesc);
 			}
 		}
 
@@ -167,9 +161,9 @@ public class ItemGolemPlacer extends Item
 		if (!world.isRemote && !player.isSneaking())
 		{
 			Block var11 = world.getBlock(par4, par5, par6);
-			par4 += Facing.offsetsXForSide[side];
-			par5 += Facing.offsetsYForSide[side];
-			par6 += Facing.offsetsZForSide[side];
+			par4 = par4 + Facing.offsetsXForSide[side];
+			par5 = par5 + Facing.offsetsYForSide[side];
+			par6 = par6 + Facing.offsetsZForSide[side];
 			double var12 = 0.0D;
 			if (side == 1 && var11 == Blocks.fence || var11 == Blocks.nether_brick_fence)
 				var12 = 0.5D;
@@ -209,45 +203,41 @@ public class ItemGolemPlacer extends Item
 
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("upgrades"))
 			{
-				int deco = golem.upgrades.length;
+				int ul = golem.upgrades.length;
 				golem.upgrades = stack.stackTagCompound.getByteArray("upgrades");
-				if (deco != golem.upgrades.length)
+				if (ul != golem.upgrades.length)
 				{
-					byte[] a = new byte[deco];
+					byte[] tt = new byte[ul];
 
-					int nbttaglist2;
-					for (nbttaglist2 = 0; nbttaglist2 < deco; ++nbttaglist2)
-						a[nbttaglist2] = -1;
+					for (int a = 0; a < ul; ++a)
+						tt[a] = -1;
 
-					for (nbttaglist2 = 0; nbttaglist2 < golem.upgrades.length; ++nbttaglist2)
-						if (nbttaglist2 < deco)
-							a[nbttaglist2] = golem.upgrades[nbttaglist2];
+					for (int a = 0; a < golem.upgrades.length; ++a)
+						if (a < ul)
+							tt[a] = golem.upgrades[a];
 
-					golem.upgrades = a;
+					golem.upgrades = tt;
 				}
 			}
 
-			String var19 = "";
+			String deco = "";
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("deco"))
 			{
-				var19 = stack.stackTagCompound.getString("deco");
-				golem.decoration = var19;
+				deco = stack.stackTagCompound.getString("deco");
+				golem.decoration = deco;
 			}
 
 			golem.setup(side);
 			par0World.spawnEntityInWorld(golem);
-			golem.setGolemDecoration(var19);
+			golem.setGolemDecoration(deco);
 			golem.setOwner(player.getCommandSenderName());
 			golem.setMarkers(ItemGolemBell.getMarkers(stack));
-			int var20 = 0;
-			byte[] var21 = golem.upgrades;
-			int len$ = var21.length;
+			int a = 0;
 
-			for (int i$ = 0; i$ < len$; ++i$)
+			for (byte b : golem.upgrades)
 			{
-				byte b = var21[i$];
-				golem.setUpgrade(var20, b);
-				++var20;
+				golem.setUpgrade(a, b);
+				++a;
 			}
 
 			if (stack.hasDisplayName())
@@ -258,8 +248,8 @@ public class ItemGolemPlacer extends Item
 
 			if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("Inventory"))
 			{
-				NBTTagList var22 = stack.stackTagCompound.getTagList("Inventory", 10);
-				golem.inventory.readFromNBT(var22);
+				NBTTagList nbttaglist2 = stack.stackTagCompound.getTagList("Inventory", 10);
+				golem.inventory.readFromNBT(nbttaglist2);
 			}
 
 			// TODO gamerforEA code start

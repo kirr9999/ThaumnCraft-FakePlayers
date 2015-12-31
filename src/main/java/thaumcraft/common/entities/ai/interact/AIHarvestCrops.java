@@ -2,7 +2,6 @@ package thaumcraft.common.entities.ai.interact;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -40,23 +39,16 @@ public class AIHarvestCrops extends EntityAIBase
 	private float movementSpeed;
 	private float distance;
 	private World theWorld;
-	private Block block;
-	private int blockMd;
-	private int delay;
-	private int maxDelay;
-	private int mod;
-	private int count;
-	ArrayList<BlockCoordinates> checklist;
+	private Block block = Blocks.air;
+	private int blockMd = 0;
+	private int delay = -1;
+	private int maxDelay = 1;
+	private int mod = 1;
+	private int count = 0;
+	ArrayList<BlockCoordinates> checklist = new ArrayList();
 
 	public AIHarvestCrops(EntityGolemBase par1EntityCreature)
 	{
-		this.block = Blocks.air;
-		this.blockMd = 0;
-		this.delay = -1;
-		this.maxDelay = 1;
-		this.mod = 1;
-		this.count = 0;
-		this.checklist = new ArrayList();
 		this.theGolem = par1EntityCreature;
 		this.theWorld = par1EntityCreature.worldObj;
 		this.setMutexBits(3);
@@ -169,19 +161,17 @@ public class AIHarvestCrops extends EntityAIBase
 	private Vec3 findGrownCrop()
 	{
 		Random rand = this.theGolem.getRNG();
-		int x;
-		int z;
 		if (this.checklist.size() == 0)
 		{
-			for (x = (int) -this.distance; x <= this.distance; ++x)
-				for (z = (int) -this.distance; z <= this.distance; ++z)
-					this.checklist.add(new BlockCoordinates(this.theGolem.getHomePosition().posX + x, 0, this.theGolem.getHomePosition().posZ + z));
+			for (int a = (int) -this.distance; a <= this.distance; ++a)
+				for (int b = (int) -this.distance; b <= this.distance; ++b)
+					this.checklist.add(new BlockCoordinates(this.theGolem.getHomePosition().posX + a, 0, this.theGolem.getHomePosition().posZ + b));
 
 			Collections.shuffle(this.checklist, rand);
 		}
 
-		x = this.checklist.get(0).x;
-		z = this.checklist.get(0).z;
+		int x = this.checklist.get(0).x;
+		int z = this.checklist.get(0).z;
 		this.checklist.remove(0);
 
 		for (int y = this.theGolem.getHomePosition().posY - 3; y <= this.theGolem.getHomePosition().posY + 3; ++y)
@@ -209,42 +199,36 @@ public class AIHarvestCrops extends EntityAIBase
 			if (this.theGolem.getUpgradeAmount(4) > 0)
 			{
 				new ArrayList();
-				ArrayList drops = EntityUtils.getEntitiesInRange(this.theWorld, this.theGolem.posX, this.theGolem.posY, this.theGolem.posZ, this.theGolem, EntityItem.class, 6.0D);
+				ArrayList<Entity> drops = EntityUtils.getEntitiesInRange(this.theWorld, this.theGolem.posX, this.theGolem.posY, this.theGolem.posZ, this.theGolem, EntityItem.class, 6.0D);
 				if (drops.size() > 0)
-				{
-					Iterator i$ = drops.iterator();
-
-					while (i$.hasNext())
-					{
-						Entity e = (Entity) i$.next();
+					for (Entity e : drops)
 						if (e instanceof EntityItem)
 						{
 							if (e.ticksExisted < 2)
 							{
-								Vec3 done = Vec3.createVectorHelper(e.posX - this.theGolem.posX, e.posY - this.theGolem.posY, e.posZ - this.theGolem.posZ);
-								done = done.normalize();
-								e.motionX = -done.xCoord / 4.0D;
+								Vec3 v = Vec3.createVectorHelper(e.posX - this.theGolem.posX, e.posY - this.theGolem.posY, e.posZ - this.theGolem.posZ);
+								v = v.normalize();
+								e.motionX = -v.xCoord / 4.0D;
 								e.motionY = 0.075D;
-								e.motionZ = -done.zCoord / 4.0D;
+								e.motionZ = -v.zCoord / 4.0D;
 							}
 
-							boolean var14 = false;
+							boolean done = false;
 							EntityItem item = (EntityItem) e;
 							ItemStack st = item.getEntityItem();
-							int count;
 							if (st.getItem() != null && st.getItem() == Items.dye && st.getItemDamage() == 3)
 							{
-								int var15 = BlockDirectional.getDirection(this.blockMd);
-								int var16 = this.xx + Direction.offsetX[var15];
-								count = this.zz + Direction.offsetZ[var15];
-								Block var6 = this.theWorld.getBlock(var16, this.yy, count);
-								if (var6 == Blocks.log && BlockLog.func_150165_c(this.theWorld.getBlockMetadata(var16, this.yy, count)) == 3)
+								int var5 = BlockDirectional.getDirection(this.blockMd);
+								int par2 = this.xx + Direction.offsetX[var5];
+								int par4 = this.zz + Direction.offsetZ[var5];
+								Block var6 = this.theWorld.getBlock(par2, this.yy, par4);
+								if (var6 == Blocks.log && BlockLog.func_150165_c(this.theWorld.getBlockMetadata(par2, this.yy, par4)) == 3)
 								{
 									--st.stackSize;
 									this.theWorld.setBlock(this.xx, this.yy, this.zz, Blocks.cocoa, BlockDirectional.getDirection(this.blockMd), 3);
 								}
 
-								var14 = true;
+								done = true;
 							}
 							else if (st.getItem() != null && st.getItem() == ConfigItems.itemManaBean)
 							{
@@ -255,14 +239,14 @@ public class AIHarvestCrops extends EntityAIBase
 										this.theWorld.setBlock(this.xx, this.yy, this.zz, ConfigBlocks.blockManaPod, 0, 3);
 								}
 
-								var14 = true;
+								done = true;
 							}
 							else
 							{
 								int[] xm = new int[] { 0, 0, 1, 1, -1, 0, -1, -1, 1 };
 								int[] zm = new int[] { 0, 1, 0, 1, 0, -1, -1, 1, -1 };
 
-								for (count = 0; st != null && st.stackSize > 0 && count < 9; ++count)
+								for (int count = 0; st != null && st.stackSize > 0 && count < 9; ++count)
 									if (st.getItem() != null && (st.getItem() instanceof IPlantable || st.getItem() instanceof ItemSeedFood) && st.getItem().onItemUse(st.copy(), fp, this.theWorld, this.xx + xm[count], this.yy - 1, this.zz + zm[count], ForgeDirection.UP.ordinal(), 0.5F, 0.5F, 0.5F))
 										--st.stackSize;
 							}
@@ -272,11 +256,9 @@ public class AIHarvestCrops extends EntityAIBase
 							else
 								item.setEntityItemStack(st);
 
-							if (var14)
+							if (done)
 								break;
 						}
-					}
-				}
 			}
 		}
 

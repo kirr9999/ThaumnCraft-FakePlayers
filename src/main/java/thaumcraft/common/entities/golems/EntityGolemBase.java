@@ -1,7 +1,6 @@
 package thaumcraft.common.entities.golems;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.apache.logging.log4j.Level;
 
@@ -175,15 +174,14 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 
 	public boolean setupGolemInventory()
 	{
-		Object core = null;
+		ItemStack core = null;
 		if (!ItemGolemCore.hasInventory(this.getCore()))
 			return false;
 		else
 		{
 			if (this.getCore() > -1)
 			{
-				int oldcolors = 0;
-				byte var5;
+				int invSize = 0;
 				switch (this.getCore())
 				{
 					case 3:
@@ -191,30 +189,30 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 					case 6:
 						break;
 					case 5:
-						var5 = 1;
-						oldcolors = var5 + this.getUpgradeAmount(2);
+						invSize = 1;
+						invSize = invSize + this.getUpgradeAmount(2);
 						break;
 					default:
-						var5 = 6;
-						oldcolors = var5 + this.getUpgradeAmount(2) * 6;
+						invSize = 6;
+						invSize = invSize + this.getUpgradeAmount(2) * 6;
 				}
 
-				InventoryMob a = new InventoryMob(this, oldcolors);
+				InventoryMob inventory2 = new InventoryMob(this, invSize);
 
-				for (int a1 = 0; a1 < this.inventory.inventory.length; ++a1)
-					a.inventory[a1] = this.inventory.inventory[a1];
+				for (int a = 0; a < this.inventory.inventory.length; ++a)
+					inventory2.inventory[a] = this.inventory.inventory[a];
 
-				this.inventory = a;
+				this.inventory = inventory2;
 			}
 
-			byte[] var7 = this.colors;
+			byte[] oldcolors = this.colors;
 			this.colors = new byte[this.inventory.slotCount];
 
-			for (int var6 = 0; var6 < this.inventory.slotCount; ++var6)
+			for (int a = 0; a < this.inventory.slotCount; ++a)
 			{
-				this.colors[var6] = -1;
-				if (var6 < var7.length)
-					this.colors[var6] = var7[var6];
+				this.colors[a] = -1;
+				if (a < oldcolors.length)
+					this.colors[a] = oldcolors[a];
 			}
 
 			return true;
@@ -347,7 +345,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		if (this.worldObj.isRemote)
 			base = this.getGolemType().carry;
 
-		base += Math.min(16, Math.max(4, base)) * this.getUpgradeAmount(1);
+		base = base + Math.min(16, Math.max(4, base)) * this.getUpgradeAmount(1);
 		return base;
 	}
 
@@ -365,7 +363,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			if (this.decoration.contains("P"))
 				speed *= 0.88F;
 
-			speed *= 1.0F + this.getUpgradeAmount(0) * 0.15F;
+			speed = speed * (1.0F + this.getUpgradeAmount(0) * 0.15F);
 			if (this.advanced)
 				speed *= 1.1F;
 
@@ -549,17 +547,12 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	{
 		this.colors[slot] = (byte) color;
 		String s = "";
-		byte[] arr$ = this.colors;
-		int len$ = arr$.length;
 
-		for (int i$ = 0; i$ < len$; ++i$)
-		{
-			byte c = arr$[i$];
+		for (byte c : this.colors)
 			if (c == -1)
 				s = s + "h";
 			else
 				s = s + Integer.toHexString(c);
-		}
 
 		this.dataWatcher.updateObject(22, String.valueOf(s));
 	}
@@ -579,15 +572,10 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	public int getUpgradeAmount(int type)
 	{
 		int a = 0;
-		byte[] arr$ = this.upgrades;
-		int len$ = arr$.length;
 
-		for (int i$ = 0; i$ < len$; ++i$)
-		{
-			byte b = arr$[i$];
+		for (byte b : this.upgrades)
 			if (type == b)
 				++a;
-		}
 
 		return a;
 	}
@@ -596,27 +584,21 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	{
 		this.upgrades[slot] = upgrade;
 		String s = "";
-		byte[] arr$ = this.upgrades;
-		int len$ = arr$.length;
 
-		for (int i$ = 0; i$ < len$; ++i$)
-		{
-			byte c = arr$[i$];
+		for (byte c : this.upgrades)
 			s = s + Integer.toHexString(c);
-		}
 
 		this.dataWatcher.updateObject(23, String.valueOf(s));
 	}
 
 	public ArrayList<Byte> getColorsMatching(ItemStack match)
 	{
-		ArrayList l = new ArrayList();
+		ArrayList<Byte> l = new ArrayList();
 		if (this.inventory.inventory != null && this.inventory.inventory.length > 0)
 		{
 			boolean allNull = true;
 
-			int a;
-			for (a = 0; a < this.inventory.inventory.length; ++a)
+			for (int a = 0; a < this.inventory.inventory.length; ++a)
 			{
 				if (this.inventory.getStackInSlot(a) != null)
 					allNull = false;
@@ -626,7 +608,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			}
 
 			if (allNull)
-				for (a = 0; a < this.inventory.inventory.length; ++a)
+				for (int a = 0; a < this.inventory.inventory.length; ++a)
 					l.add(Byte.valueOf(this.colors[a]));
 		}
 
@@ -668,11 +650,9 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			nbt.setString("Owner", this.getOwnerName());
 
 		NBTTagList tl = new NBTTagList();
-		Iterator i$ = this.markers.iterator();
 
-		while (i$.hasNext())
+		for (Marker l : this.markers)
 		{
-			Marker l = (Marker) i$.next();
 			NBTTagCompound nbtc = new NBTTagCompound();
 			nbtc.setInteger("x", l.x);
 			nbtc.setInteger("y", l.y);
@@ -708,18 +688,18 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 
 		if (this.getCore() == 6)
 		{
-			String var4 = nbt.getString("essentia");
-			if (var4 != null)
+			String s = nbt.getString("essentia");
+			if (s != null)
 			{
-				this.essentia = Aspect.getAspect(var4);
+				this.essentia = Aspect.getAspect(s);
 				if (this.essentia != null)
 					this.essentiaAmount = nbt.getByte("essentiaAmount");
 			}
 		}
 
 		this.setTogglesValue(nbt.getByte("toggles"));
-		NBTTagCompound var16 = nbt.getCompoundTag("ItemCarried");
-		this.itemCarried = ItemStack.loadItemStackFromNBT(var16);
+		NBTTagCompound var4 = nbt.getCompoundTag("ItemCarried");
+		this.itemCarried = ItemStack.loadItemStackFromNBT(var4);
 		this.updateCarried();
 		this.decoration = nbt.getString("Decoration");
 		this.setGolemDecoration(this.decoration);
@@ -730,81 +710,65 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		this.dataWatcher.updateObject(30, Byte.valueOf((byte) (int) this.getHealth()));
 		NBTTagList nbttaglist = nbt.getTagList("Markers", 10);
 
-		int ul;
-		int nbttaglist2;
-		int oldcolors;
-		int arr$;
-		int len$;
-		byte c;
-		for (ul = 0; ul < nbttaglist.tagCount(); ++ul)
+		for (int i = 0; i < nbttaglist.tagCount(); ++i)
 		{
-			NBTTagCompound st = nbttaglist.getCompoundTagAt(ul);
-			nbttaglist2 = st.getInteger("x");
-			oldcolors = st.getInteger("y");
-			arr$ = st.getInteger("z");
-			len$ = st.getInteger("dim");
-			byte i$ = st.getByte("side");
-			c = st.getByte("color");
-			this.markers.add(new Marker(nbttaglist2, oldcolors, arr$, (byte) len$, i$, c));
+			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
+			int x = nbttagcompound1.getInteger("x");
+			int y = nbttagcompound1.getInteger("y");
+			int z = nbttagcompound1.getInteger("z");
+			int dim = nbttagcompound1.getInteger("dim");
+			byte s = nbttagcompound1.getByte("side");
+			byte c = nbttagcompound1.getByte("color");
+			this.markers.add(new Marker(x, y, z, (byte) dim, s, c));
 		}
 
 		this.upgrades = new byte[this.golemType.upgrades + (this.advanced ? 1 : 0)];
-		ul = this.upgrades.length;
+		int ul = this.upgrades.length;
 		this.upgrades = nbt.getByteArray("upgrades");
 		if (ul != this.upgrades.length)
 		{
-			byte[] var17 = new byte[ul];
+			byte[] tt = new byte[ul];
 
-			for (nbttaglist2 = 0; nbttaglist2 < ul; ++nbttaglist2)
-				var17[nbttaglist2] = -1;
+			for (int a = 0; a < ul; ++a)
+				tt[a] = -1;
 
-			for (nbttaglist2 = 0; nbttaglist2 < this.upgrades.length; ++nbttaglist2)
-				if (nbttaglist2 < ul)
-					var17[nbttaglist2] = this.upgrades[nbttaglist2];
+			for (int a = 0; a < this.upgrades.length; ++a)
+				if (a < ul)
+					tt[a] = this.upgrades[a];
 
-			this.upgrades = var17;
+			this.upgrades = tt;
 		}
 
-		String var18 = "";
-		byte[] var19 = this.upgrades;
-		oldcolors = var19.length;
+		String st = "";
 
-		for (arr$ = 0; arr$ < oldcolors; ++arr$)
-		{
-			byte var22 = var19[arr$];
-			var18 = var18 + Integer.toHexString(var22);
-		}
+		for (byte c : this.upgrades)
+			st = st + Integer.toHexString(c);
 
-		this.dataWatcher.updateObject(23, String.valueOf(var18));
+		this.dataWatcher.updateObject(23, String.valueOf(st));
 		this.setupGolem();
 		this.setupGolemInventory();
-		NBTTagList var21 = nbt.getTagList("Inventory", 10);
-		this.inventory.readFromNBT(var21);
+		NBTTagList nbttaglist2 = nbt.getTagList("Inventory", 10);
+		this.inventory.readFromNBT(nbttaglist2);
 		this.colors = nbt.getByteArray("colors");
-		byte[] var20 = this.colors;
+		byte[] oldcolors = this.colors;
 		this.colors = new byte[this.inventory.slotCount];
 
-		for (arr$ = 0; arr$ < this.inventory.slotCount; ++arr$)
+		for (int a = 0; a < this.inventory.slotCount; ++a)
 		{
-			this.colors[arr$] = -1;
-			if (arr$ < var20.length)
-				this.colors[arr$] = var20[arr$];
+			this.colors[a] = -1;
+			if (a < oldcolors.length)
+				this.colors[a] = oldcolors[a];
 		}
 
-		var18 = "";
-		byte[] var23 = this.colors;
-		len$ = var23.length;
+		st = "";
 
-		for (int var24 = 0; var24 < len$; ++var24)
-		{
-			c = var23[var24];
+		for (byte c : this.colors)
 			if (c == -1)
-				var18 = var18 + "h";
+				st = st + "h";
 			else
-				var18 = var18 + Integer.toHexString(c);
-		}
+				st = st + Integer.toHexString(c);
 
-		this.dataWatcher.updateObject(22, String.valueOf(var18));
+		this.dataWatcher.updateObject(22, String.valueOf(st));
 
 		// TODO gamerforEA code start
 		this.fake.readFromNBT(nbt);
@@ -834,15 +798,11 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 
 	protected void validateMarkers()
 	{
-		ArrayList newMarkers = new ArrayList();
-		Iterator i$ = this.markers.iterator();
+		ArrayList<Marker> newMarkers = new ArrayList();
 
-		while (i$.hasNext())
-		{
-			Marker marker = (Marker) i$.next();
+		for (Marker marker : this.markers)
 			if (marker.dim == this.worldObj.provider.dimensionId)
 				newMarkers.add(marker);
-		}
 
 		this.markers = newMarkers;
 	}
@@ -1031,8 +991,10 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		}
 		else if (this.getCore() == 5 && this.fluidCarried != null)
 		{
-			// TODO gamerforEA replace Item.getItemById(this.fluidCarried.fluidID) to this.fluidCarried.getFluid().getBlock()
+			// TODO gamerforEA replace this.getDataWatcher().updateObject(16, new ItemStack(Item.getItemById(this.fluidCarried.fluidID), 1, this.fluidCarried.amount));
 			this.getDataWatcher().updateObject(16, new ItemStack(this.fluidCarried.getFluid().getBlock(), 1, this.fluidCarried.amount));
+			// TODO gamerforEA code end
+
 			this.getDataWatcher().setObjectWatched(16);
 		}
 		else if (this.getCore() == 6)
@@ -1076,25 +1038,31 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	{
 		if (this.decoration.contains(type))
 			return false;
-		else if ((type.equals("F") || type.equals("H")) && (this.decoration.contains("F") || this.decoration.contains("H")))
-			return false;
-		else if ((type.equals("G") || type.equals("V")) && (this.decoration.contains("G") || this.decoration.contains("V")))
-			return false;
-		else if ((type.equals("B") || type.equals("P")) && (this.decoration.contains("P") || this.decoration.contains("B")))
-			return false;
-		else
+		else if (!type.equals("F") && !type.equals("H") || !this.decoration.contains("F") && !this.decoration.contains("H"))
 		{
-			this.decoration = this.decoration + type;
-			if (!this.worldObj.isRemote)
+			if (!type.equals("G") && !type.equals("V") || !this.decoration.contains("G") && !this.decoration.contains("V"))
 			{
-				this.setGolemDecoration(this.decoration);
-				--itemStack.stackSize;
-				this.worldObj.playSoundAtEntity(this, "thaumcraft:cameraclack", 1.0F, 1.0F);
-			}
+				if (!type.equals("B") && !type.equals("P") || !this.decoration.contains("P") && !this.decoration.contains("B"))
+				{
+					this.decoration = this.decoration + type;
+					if (!this.worldObj.isRemote)
+					{
+						this.setGolemDecoration(this.decoration);
+						--itemStack.stackSize;
+						this.worldObj.playSoundAtEntity(this, "thaumcraft:cameraclack", 1.0F, 1.0F);
+					}
 
-			this.setupGolem();
-			return true;
+					this.setupGolem();
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+				return false;
 		}
+		else
+			return false;
 	}
 
 	public boolean customInteraction(EntityPlayer player)
@@ -1350,7 +1318,6 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	public boolean attackEntityFrom(DamageSource ds, float par2)
 	{
 		this.paused = false;
-
 		if (ds == DamageSource.cactus)
 			return false;
 		else
@@ -1458,14 +1425,9 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		data.writeBoolean(this.advanced);
 		data.writeByte(this.inventory.slotCount);
 		data.writeByte(this.upgrades.length);
-		byte[] arr$ = this.upgrades;
-		int len$ = arr$.length;
 
-		for (int i$ = 0; i$ < len$; ++i$)
-		{
-			byte b = arr$[i$];
+		for (byte b : this.upgrades)
 			data.writeByte(b);
-		}
 
 	}
 
@@ -1482,27 +1444,26 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 			this.inventory = new InventoryMob(this, data.readByte());
 			this.colors = new byte[this.inventory.slotCount];
 
-			int e;
-			for (e = 0; e < this.inventory.slotCount; ++e)
-				this.colors[e] = -1;
+			for (int a = 0; a < this.inventory.slotCount; ++a)
+				this.colors[a] = -1;
 
 			this.upgrades = new byte[data.readByte()];
 
-			for (e = 0; e < this.upgrades.length; ++e)
-				this.upgrades[e] = data.readByte();
+			for (int a = 0; a < this.upgrades.length; ++a)
+				this.upgrades[a] = data.readByte();
 
-			e = 0;
+			int bonus = 0;
 
 			try
 			{
-				e = this.getGolemDecoration().contains("H") ? 5 : 0;
+				bonus = this.getGolemDecoration().contains("H") ? 5 : 0;
 			}
 			catch (Exception var4)
 			{
 				;
 			}
 
-			this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(this.getGolemType().health + e);
+			this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(this.getGolemType().health + bonus);
 		}
 		catch (Exception var5)
 		{

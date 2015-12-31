@@ -68,10 +68,10 @@ public class AIEssentiaEmpty extends EntityAIBase
 			return;
 		// TODO gamerforEA code end
 
-		if (tile instanceof TileJarFillable)
+		if (tile != null && tile instanceof TileJarFillable)
 		{
-			TileJarFillable fillable = (TileJarFillable) tile;
-			this.theGolem.essentiaAmount = fillable.addToContainer(this.theGolem.essentia, this.theGolem.essentiaAmount);
+			TileJarFillable jar = (TileJarFillable) tile;
+			this.theGolem.essentiaAmount = jar.addToContainer(this.theGolem.essentia, this.theGolem.essentiaAmount);
 			if (this.theGolem.essentiaAmount == 0)
 				this.theGolem.essentia = null;
 
@@ -79,15 +79,15 @@ public class AIEssentiaEmpty extends EntityAIBase
 			this.theGolem.updateCarried();
 			this.theWorld.markBlockForUpdate(this.jarX, this.jarY, this.jarZ);
 		}
-		else if (tile instanceof TileEssentiaReservoir)
+		else if (tile != null && tile instanceof TileEssentiaReservoir)
 		{
-			TileEssentiaReservoir reservoir = (TileEssentiaReservoir) tile;
-			if (reservoir.getSuctionAmount(reservoir.facing) > 0 && (reservoir.getSuctionType(reservoir.facing) == null || reservoir.getSuctionType(reservoir.facing) == this.theGolem.essentia))
+			TileEssentiaReservoir trans = (TileEssentiaReservoir) tile;
+			if (trans.getSuctionAmount(trans.facing) > 0 && (trans.getSuctionType(trans.facing) == null || trans.getSuctionType(trans.facing) == this.theGolem.essentia))
 			{
-				int amount = reservoir.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, reservoir.facing);
-				if (amount > 0)
+				int added = trans.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, trans.facing);
+				if (added > 0)
 				{
-					this.theGolem.essentiaAmount -= amount;
+					this.theGolem.essentiaAmount -= added;
 					if (this.theGolem.essentiaAmount == 0)
 						this.theGolem.essentia = null;
 
@@ -97,14 +97,13 @@ public class AIEssentiaEmpty extends EntityAIBase
 				}
 			}
 		}
-		else if (tile instanceof IEssentiaTransport)
-			for (int side : GolemHelper.getMarkedSides(this.theGolem, tile, (byte) -1))
+		else if (tile != null && tile instanceof IEssentiaTransport)
+			for (Integer side : GolemHelper.getMarkedSides(this.theGolem, tile, (byte) -1))
 			{
 				IEssentiaTransport trans = (IEssentiaTransport) tile;
-				ForgeDirection direction = ForgeDirection.getOrientation(side);
-				if (trans.canInputFrom(direction) && trans.getSuctionAmount(direction) > 0 && (trans.getSuctionType(direction) == null || trans.getSuctionType(direction) == this.theGolem.essentia))
+				if (trans.canInputFrom(ForgeDirection.getOrientation(side.intValue())) && trans.getSuctionAmount(ForgeDirection.getOrientation(side.intValue())) > 0 && (trans.getSuctionType(ForgeDirection.getOrientation(side.intValue())) == null || trans.getSuctionType(ForgeDirection.getOrientation(side.intValue())) == this.theGolem.essentia))
 				{
-					int added = trans.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, direction);
+					int added = trans.addEssentia(this.theGolem.essentia, this.theGolem.essentiaAmount, ForgeDirection.getOrientation(side.intValue()));
 					if (added > 0)
 					{
 						this.theGolem.essentiaAmount -= added;

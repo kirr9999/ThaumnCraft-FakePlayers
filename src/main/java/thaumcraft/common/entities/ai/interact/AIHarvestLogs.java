@@ -24,22 +24,16 @@ public class AIHarvestLogs extends EntityAIBase
 	private float movementSpeed;
 	private float distance;
 	private World theWorld;
-	private Block block;
-	private int blockMd;
-	private int delay;
-	private int maxDelay;
-	private int mod;
+	private Block block = Blocks.air;
+	private int blockMd = 0;
+	private int delay = -1;
+	private int maxDelay = 1;
+	private int mod = 1;
 	FakePlayer player;
-	private int count;
+	private int count = 0;
 
 	public AIHarvestLogs(EntityGolemBase par1EntityCreature)
 	{
-		this.block = Blocks.air;
-		this.blockMd = 0;
-		this.delay = -1;
-		this.maxDelay = 1;
-		this.mod = 1;
-		this.count = 0;
 		this.theGolem = par1EntityCreature;
 		this.theWorld = par1EntityCreature.worldObj;
 		this.setMutexBits(3);

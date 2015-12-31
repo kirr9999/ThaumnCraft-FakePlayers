@@ -59,38 +59,37 @@ public class EntityBottleTaint extends EntityThrowable
 			EntityPlayer player = FastUtils.getThrowerPlayer(this, ModUtils.profile);
 			// TODO gamerforEA cod end
 
-			List<EntityLivingBase> entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(this.posX, this.posY, this.posZ, this.posX, this.posY, this.posZ).expand(5.0D, 5.0D, 5.0D));
-			if (entities.size() > 0)
-				for (EntityLivingBase entity : entities)
-					if (!(entity instanceof ITaintedMob) && !entity.isEntityUndead())
+			List<EntityLivingBase> ents = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, AxisAlignedBB.getBoundingBox(this.posX, this.posY, this.posZ, this.posX, this.posY, this.posZ).expand(5.0D, 5.0D, 5.0D));
+			if (ents.size() > 0)
+				for (EntityLivingBase el : ents)
+					if (!(el instanceof ITaintedMob) && !el.isEntityUndead())
 					{
 						// TODO gamerforEA code start
-						if (EventUtils.cantDamage(player, entity))
+						if (EventUtils.cantDamage(player, el))
 							continue;
 						// TODO gamerforEA cod end
 
-						entity.addPotionEffect(new PotionEffect(Config.potionTaintPoisonID, 100, 0, false));
+						el.addPotionEffect(new PotionEffect(Config.potionTaintPoisonID, 100, 0, false));
 					}
 
 			int x = (int) this.posX;
 			int y = (int) this.posY;
 			int z = (int) this.posZ;
 
-			for (int i = 0; i < 10; ++i)
+			for (int a = 0; a < 10; ++a)
 			{
-				int chunkX = x + (int) ((this.rand.nextFloat() - this.rand.nextFloat()) * 5.0F);
-				int chunkZ = z + (int) ((this.rand.nextFloat() - this.rand.nextFloat()) * 5.0F);
-
-				// TODO gamerforEA code start
-				if (EventUtils.cantBreak(player, chunkX, y, chunkZ))
-					continue;
-				// TODO gamerforEA code end
-
-				if (this.worldObj.rand.nextBoolean() && this.worldObj.getBiomeGenForCoords(chunkX, chunkZ) != ThaumcraftWorldGenerator.biomeTaint)
+				int xx = x + (int) ((this.rand.nextFloat() - this.rand.nextFloat()) * 5.0F);
+				int zz = z + (int) ((this.rand.nextFloat() - this.rand.nextFloat()) * 5.0F);
+				if (this.worldObj.rand.nextBoolean() && this.worldObj.getBiomeGenForCoords(xx, zz) != ThaumcraftWorldGenerator.biomeTaint)
 				{
-					Utils.setBiomeAt(this.worldObj, chunkX, chunkZ, ThaumcraftWorldGenerator.biomeTaint);
-					if (this.worldObj.isBlockNormalCubeDefault(chunkX, y - 1, chunkZ, false) && this.worldObj.getBlock(chunkX, y, chunkZ).isReplaceable(this.worldObj, chunkX, y, chunkZ))
-						this.worldObj.setBlock(chunkX, y, chunkZ, ConfigBlocks.blockTaintFibres, 0, 3);
+					// TODO gamerforEA code start
+					if (EventUtils.cantBreak(player, xx, y, zz))
+						continue;
+					// TODO gamerforEA code end
+
+					Utils.setBiomeAt(this.worldObj, xx, zz, ThaumcraftWorldGenerator.biomeTaint);
+					if (this.worldObj.isBlockNormalCubeDefault(xx, y - 1, zz, false) && this.worldObj.getBlock(xx, y, zz).isReplaceable(this.worldObj, xx, y, zz))
+						this.worldObj.setBlock(xx, y, zz, ConfigBlocks.blockTaintFibres, 0, 3);
 				}
 			}
 
@@ -98,10 +97,11 @@ public class EntityBottleTaint extends EntityThrowable
 		}
 		else
 		{
-			for (int i = 0; i < Thaumcraft.proxy.particleCount(100); ++i)
+			for (int a = 0; a < Thaumcraft.proxy.particleCount(100); ++a)
 				Thaumcraft.proxy.taintsplosionFX(this);
 
 			Thaumcraft.proxy.bottleTaintBreak(this.worldObj, this.posX, this.posY, this.posZ);
 		}
+
 	}
 }
