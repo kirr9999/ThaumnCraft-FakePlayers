@@ -509,6 +509,10 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		if (!this.worldObj.isRemote)
 			FMLCommonHandler.instance().getFMLLogger().log(Level.INFO, "[Thaumcraft] " + this + " was killed by " + ds.getSourceOfDamage() + " (" + ds.getDamageType() + ")");
 
+		// TODO gamerforEA code start
+		this.setDead();
+		// TODO gamerforEA code end
+
 		super.onDeath(ds);
 	}
 
@@ -1031,7 +1035,6 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 	{
 		if (!this.worldObj.isRemote && this.itemCarried != null)
 			this.entityDropItem(this.itemCarried, 0.5F);
-
 	}
 
 	protected boolean addDecoration(String type, ItemStack itemStack)
@@ -1323,7 +1326,7 @@ public class EntityGolemBase extends EntityGolem implements IEntityAdditionalSpa
 		else
 		{
 			// TODO gamerforEA code start
-			if (ds.getSourceOfDamage() != null && EventUtils.cantDamage(this.fake.getPlayer(), ds.getSourceOfDamage()))
+			if (ds.getSourceOfDamage() != null && EventUtils.cantDamage(ds.getSourceOfDamage(), this))
 				return false;
 			// TODO gamerforEA code end
 
