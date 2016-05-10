@@ -393,7 +393,7 @@ public class WarpEvents
 			int level = pe.getAmplifier();
 			int range = Math.min(8 + level * 3, 24);
 			List list = player.worldObj.getEntitiesWithinAABBExcludingEntity(player, player.boundingBox.expand(range, range, range));
-
+		
 			for (int i = 0; i < list.size(); ++i)
 			{
 				Entity entity = (Entity) list.get(i);
@@ -403,7 +403,7 @@ public class WarpEvents
 					((EntityLivingBase) entity).setLastAttacker(player);
 					if (entity instanceof EntityCreature)
 						((EntityCreature) entity).setTarget(player);
-
+		
 					((EntityLivingBase) entity).addPotionEffect(new PotionEffect(Potion.wither.getId(), 80));
 				}
 			}

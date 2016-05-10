@@ -2,6 +2,8 @@ package thaumcraft.common.blocks;
 
 import java.util.Random;
 
+import com.gamerforea.thaumcraft.EventConfig;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -17,6 +19,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.lib.utils.BlockUtils;
 import thaumcraft.common.tiles.TileEldritchNothing;
 
@@ -38,6 +41,17 @@ public class BlockEldritchNothing extends Block
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		this.setTickRandomly(true);
 	}
+
+	// TODO gamerforEA code start
+	@Override
+	public void updateTick(World world, int x, int y, int z, Random rand)
+	{
+		super.updateTick(world, x, y, z, rand);
+
+		if (!EventConfig.blockEldritchNothing && world.getBlock(x, y, z) == ConfigBlocks.blockEldritchNothing)
+			world.setBlockToAir(x, y, z);
+	}
+	// TODO gamerforEA code end
 
 	@Override
 	@SideOnly(Side.CLIENT)
